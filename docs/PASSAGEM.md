@@ -311,3 +311,21 @@ Pedido da sessão do backend, em nome do usuário, sobre a API do commit fb524cc
   - o código errado deu erro, e o código do log confirmou o e-mail.
 - **Dados de teste:** a conta de teste (teste.verificacao@exemplo.test) ficou no banco local api/.data. O seed não a apaga.
 - **Não commitado.** O checkout está no branch backend-contas-avaliacoes.
+
+## Cursos com comprovante e CNH para quem tem veículo (backend) — 20/10/2026
+- **Pedido do usuário:**
+  - No perfil, a profissional adiciona cursos e treinamentos com comprovante; a plataforma valida, e o que foi validado aparece no portfólio.
+  - A CNH é obrigatória para quem atende com veículo.
+- **Feito na API:**
+  - migration `0003_cnh_e_qualificacoes.sql`, com a tabela `qualificacoes` e o tipo de documento `cnh`;
+  - rotas da profissional e da administração para os cursos;
+  - o portfólio público traz `qualificacoes` (só as aprovadas);
+  - com `veiculoIncluso`, a CNH entra nos documentos exigidos;
+  - aprovada sem veículo, ela manda a CNH e só oferece veículo depois de a CNH ser aprovada;
+  - na fila, não dá para ligar o veículo.
+- **Outros ajustes:**
+  - o portfólio público só aparece aprovado e com o valor da hora definido;
+  - o painel leva para verificacao.html quem está em rascunho, na fila ou em correção.
+- **Seed:** a Ana tem CNH aprovada e dois cursos validados. A Joana tem um curso esperando validação.
+- **Testes:** 40 passando.
+- **Telas ainda não feitas:** cursos no perfil (painel ou verificação), cursos no portfolio.html, fila de cursos no admin.html, e a pergunta "Atende com veículo?" com a CNH em verificacao.html.

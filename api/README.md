@@ -37,10 +37,17 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
     - endereço residencial;
     - documento com foto (RG ou CNH) e comprovante de endereço.
   - O CNPJ é opcional. Com ele, pedimos razão social e cartão CNPJ.
+  - Quem atende com veículo (`veiculoIncluso`) também envia a CNH, que entra na lista de documentos.
+  - Na fila, não dá para passar a oferecer veículo. Depois de aprovada, ela pode mandar a CNH e só passa a oferecer veículo quando a CNH for aprovada.
   - Arquivos aceitos: PDF, JPG, PNG ou HEIC até 10 MB, com o tipo conferido pelos primeiros bytes. Eles ficam fora da pasta pública: só a própria profissional e a administração baixam.
   - Na fila, os dados ficam travados. A administração aprova cada documento, ou recusa com motivo, e depois aprova o perfil (com revisão marcada para um mês depois) ou devolve para correção com motivo.
   - A posição na fila segue a data de envio.
   - Nas respostas da profissional, CPF e CNPJ vão mascarados. Só a ficha da administração mostra completos.
+- **Cursos e treinamentos:**
+  - A profissional cadastra cada curso com nome, instituição, carga horária e ano (os dois últimos são opcionais), mais o comprovante. Pode fazer isso em qualquer fase.
+  - A administração aprova o curso, ou recusa com motivo.
+  - Só os aprovados aparecem no portfólio público, com a data da validação.
+  - Ela pode apagar um curso, e o comprovante é apagado junto. O limite é de 30 cursos.
 - **Indicações:**
   - Toda conta tem um código (ex.: `ANA-7K2P`) e links de cadastro para profissional e para família.
   - Quem se cadastra com o código fica ligado a quem indicou.
@@ -79,6 +86,12 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | POST | `/api/profissionais/eu/documentos` | profissional: envia um arquivo (multipart: `tipo` e `arquivo`) |
 | GET | `/api/profissionais/eu/documentos/:id/arquivo` | profissional: baixa o que enviou |
 | POST | `/api/profissionais/eu/analise` | profissional: entra na lista de espera |
+| GET, POST | `/api/profissionais/eu/qualificacoes` | profissional: lista e envia curso (multipart: `titulo`, `instituicao`, `cargaHorariaHoras`, `anoConclusao`, `arquivo`) |
+| GET | `/api/profissionais/eu/qualificacoes/:id/arquivo` | profissional: baixa o comprovante |
+| DELETE | `/api/profissionais/eu/qualificacoes/:id` | profissional: tira o curso do perfil |
+| GET | `/api/admin/qualificacoes` | administração: cursos esperando validação |
+| GET | `/api/admin/qualificacoes/:id/arquivo` | administração: baixa o comprovante |
+| POST | `/api/admin/qualificacoes/:id/aprovar` · `recusar` | administração (`recusar` pede `motivo`) |
 | GET | `/api/indicacoes/eu` | código, links, resumo e pessoas indicadas |
 | GET | `/api/indicacoes/:codigo` | público: de quem é o código ("Ana O.") |
 | GET | `/api/admin/fila` | administração: lista de espera em ordem |
@@ -86,7 +99,7 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET | `/api/admin/documentos/:id/arquivo` | administração: baixa o documento |
 | POST | `/api/admin/documentos/:id/aprovar` · `recusar` | administração (`recusar` pede `motivo`) |
 | POST | `/api/admin/profissionais/:id/aprovar` · `correcao` | administração (`correcao` pede `motivo`) |
-| GET | `/api/profissionais/:slug` | público: portfólio aprovado, com a nota |
+| GET | `/api/profissionais/:slug` | público: portfólio aprovado, com a nota e os cursos validados |
 | GET | `/api/profissionais/:slug/avaliacoes` | público |
 | GET | `/api/contratantes/:id/avaliacoes` | profissional que recebeu pedido da família |
 | POST | `/api/servicos` | família pede um serviço |

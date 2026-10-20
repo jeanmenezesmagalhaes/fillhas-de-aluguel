@@ -41,6 +41,8 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
   - Para começar a atender, a profissional confirma e-mail e WhatsApp, informa CPF (ou CPF e CNPJ) e endereço, e envia documento com foto e comprovante de endereço (mais o cartão CNPJ, se tiver CNPJ).
   - Depois entra numa lista de espera até a aprovação da plataforma.
   - O documento com foto (RG ou CNH) é obrigatório, para comprovar quem ela é (confirmado pelo usuário em 20/10/2026).
+  - Quem atende com veículo envia também a CNH, obrigatória (pedido do usuário em 20/10/2026).
+- **Cursos e treinamentos (pedido do usuário em 20/10/2026):** a profissional cadastra cursos e treinamentos com comprovante. A administração valida, e só os validados aparecem no portfólio. Backend pronto; telas ainda não.
   - O backend está pronto; as telas ainda não.
 - **Indicações (pedido do usuário em 20/10/2026):** enquanto espera, a profissional pode indicar outras profissionais e famílias pelo próprio código ou link. O bônus está **indefinido**: nunca mostrar valor ou regra como decididos.
 - **Avaliação nos dois sentidos (decidido em 20/10/2026):** por serviço realizado, a família avalia a profissional e a profissional avalia a família (1 a 5 e comentário). Às cegas: nenhuma vê a nota da outra até as duas avaliarem ou passarem 14 dias; depois do prazo não se avalia. A nota da profissional é pública; a da família só a vê a profissional que recebeu um pedido dela.

@@ -1,6 +1,6 @@
 import { createHash, randomInt, randomUUID } from 'node:crypto';
 import { and, count, desc, eq, inArray, isNull, lt, ne } from 'drizzle-orm';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { exigirProfissional, exigirUsuario } from '../auth.js';
 import type { Contexto } from '../contexto.js';
@@ -40,7 +40,7 @@ const dadosFiscais = z
   })
   .refine((d) => !d.cnpj || d.razaoSocial, { path: ['razaoSocial'], message: 'Informe a razão social do CNPJ.' });
 
-const tipoDocumento = z.enum(['documento_identidade', 'comprovante_endereco', 'cartao_cnpj'], {
+const tipoDocumento = z.enum(['documento_identidade', 'comprovante_endereco', 'cartao_cnpj', 'cnh'], {
   error: 'Escolha o tipo do documento.',
 });
 
@@ -48,6 +48,7 @@ export const ROTULO_DOCUMENTO: Record<TipoDocumento, string> = {
   documento_identidade: 'Documento com foto (RG ou CNH)',
   comprovante_endereco: 'Comprovante de endereço',
   cartao_cnpj: 'Cartão CNPJ',
+  cnh: 'CNH (para quem atende com veículo)',
 };
 
 // O tipo do arquivo é conferido pelos primeiros bytes, não pelo nome nem pelo que o
@@ -87,8 +88,37 @@ export async function documentosAtuais(db: Db, profissionalId: string) {
   return porTipo;
 }
 
-export const documentosExigidos = (temCnpj: boolean): TipoDocumento[] =>
-  temCnpj ? ['documento_identidade', 'comprovante_endereco', 'cartao_cnpj'] : ['documento_identidade', 'comprovante_endereco'];
+// documento com foto e comprovante sempre; cartão CNPJ com CNPJ; CNH com veículo
+export const documentosExigidos = (temCnpj: boolean, temVeiculo: boolean): TipoDocumento[] => [
+  'documento_identidade',
+  'comprovante_endereco',
+  ...(temCnpj ? (['cartao_cnpj'] as const) : []),
+  ...(temVeiculo ? (['cnh'] as const) : []),
+];
+
+// Lê um envio multipart/form-data: os campos de texto e um arquivo, já conferido.
+export async function lerEnvio(req: FastifyRequest) {
+  if (!req.isMultipart()) throw new ErroApi(415, 'envie_arquivo', 'Envie o arquivo como formulário (multipart/form-data).');
+  const campos: Record<string, string> = {};
+  let arquivo: { nome: string; dados: Buffer } | undefined;
+  for await (const parte of req.parts()) {
+    if (parte.type === 'field') campos[parte.fieldname] = String(parte.value);
+    else {
+      const dados = await parte.toBuffer();
+      if (parte.file.truncated) throw new ErroApi(413, 'arquivo_grande', 'O arquivo passa de 10 MB. Envie uma foto ou PDF menor.');
+      arquivo = { nome: parte.filename.slice(0, 200) || 'arquivo', dados };
+    }
+  }
+  if (!arquivo || !arquivo.dados.length) throw new ErroApi(400, 'dados_invalidos', 'Escolha o arquivo.', { arquivo: 'Escolha o arquivo.' });
+  const tipoArquivo = tipoDoArquivo(arquivo.dados);
+  if (!tipoArquivo) {
+    throw new ErroApi(415, 'formato_invalido', 'Use foto (JPG, PNG ou HEIC) ou PDF.', { arquivo: 'Use foto (JPG, PNG ou HEIC) ou PDF.' });
+  }
+  return {
+    campos,
+    arquivo: { ...arquivo, tipoArquivo, tamanho: arquivo.dados.length, sha256: createHash('sha256').update(arquivo.dados).digest('hex') },
+  };
+}
 
 export async function posicaoNaFila(db: Db, enviadoEm: Date) {
   const [r] = await db
@@ -113,7 +143,7 @@ export async function situacaoDaVerificacao(ctx: Contexto, usuarioId: string) {
     .where(eq(profissionais.usuarioId, usuarioId));
   const { p } = linha!;
   const atuais = await documentosAtuais(ctx.db, usuarioId);
-  const exigidos = documentosExigidos(!!p.cnpj);
+  const exigidos = documentosExigidos(!!p.cnpj, p.veiculoIncluso);
   const docs = exigidos.map((tipo) => {
     const d = atuais.get(tipo);
     return {
@@ -136,6 +166,8 @@ export async function situacaoDaVerificacao(ctx: Contexto, usuarioId: string) {
     .map(([k]) => k);
   return {
     situacao: p.situacao,
+    // com veículo, a CNH entra na lista de documentos
+    veiculoIncluso: p.veiculoIncluso,
     contatos: {
       email: { destino: mascararEmail(linha!.email), verificado: itens.email },
       whatsapp: { destino: mascararCelular(linha!.celular), verificado: itens.whatsapp },
@@ -269,27 +301,14 @@ export function rotasVerificacao(app: FastifyInstance, ctx: Contexto, limite: { 
     return { verificacao: await situacaoDaVerificacao(ctx, u.id) };
   });
 
-  // um arquivo por envio, com o campo `tipo` antes do arquivo (multipart/form-data)
+  // um arquivo por envio, com o campo `tipo` (multipart/form-data). Aprovada, ela ainda pode
+  // mandar a CNH, para passar a oferecer veículo.
   app.post('/api/profissionais/eu/documentos', async (req, reply) => {
     const u = exigirProfissional(req);
-    if (!PODE_EDITAR.includes(await situacaoAtual(ctx.db, u.id))) throw bloqueadoNaFila();
-    if (!req.isMultipart()) throw new ErroApi(415, 'envie_arquivo', 'Envie o documento como arquivo.');
-    let tipo: TipoDocumento | undefined;
-    let arquivo: { nome: string; dados: Buffer } | undefined;
-    for await (const parte of req.parts()) {
-      if (parte.type === 'field' && parte.fieldname === 'tipo') tipo = tipoDocumento.parse(parte.value);
-      if (parte.type === 'file') {
-        const dados = await parte.toBuffer();
-        if (parte.file.truncated) throw new ErroApi(413, 'arquivo_grande', 'O arquivo passa de 10 MB. Envie uma foto ou PDF menor.');
-        arquivo = { nome: parte.filename.slice(0, 200) || 'documento', dados };
-      }
-    }
-    if (!tipo) throw new ErroApi(400, 'dados_invalidos', 'Escolha o tipo do documento.', { tipo: 'Escolha o tipo do documento.' });
-    if (!arquivo || !arquivo.dados.length) throw new ErroApi(400, 'dados_invalidos', 'Escolha o arquivo.', { arquivo: 'Escolha o arquivo.' });
-    const tipoArquivo = tipoDoArquivo(arquivo.dados);
-    if (!tipoArquivo) {
-      throw new ErroApi(415, 'formato_invalido', 'Use foto (JPG, PNG ou HEIC) ou PDF.', { arquivo: 'Use foto (JPG, PNG ou HEIC) ou PDF.' });
-    }
+    const { campos, arquivo } = await lerEnvio(req);
+    const tipo = tipoDocumento.parse(campos.tipo);
+    const situacao = await situacaoAtual(ctx.db, u.id);
+    if (!PODE_EDITAR.includes(situacao) && !(situacao === 'aprovado' && tipo === 'cnh')) throw bloqueadoNaFila();
     const chave = randomUUID();
     await ctx.armazenamento.salvar(chave, arquivo.dados);
     const agora = ctx.agora();
@@ -298,17 +317,17 @@ export function rotasVerificacao(app: FastifyInstance, ctx: Contexto, limite: { 
       await tx
         .update(documentos)
         .set({ situacao: 'substituido' })
-        .where(and(eq(documentos.profissionalId, u.id), eq(documentos.tipo, tipo!), inArray(documentos.situacao, ['enviado', 'recusado'])));
+        .where(and(eq(documentos.profissionalId, u.id), eq(documentos.tipo, tipo), inArray(documentos.situacao, ['enviado', 'recusado'])));
       return tx
         .insert(documentos)
         .values({
           profissionalId: u.id,
-          tipo: tipo!,
+          tipo,
           arquivoChave: chave,
-          nomeOriginal: arquivo!.nome,
-          tipoArquivo,
-          tamanho: arquivo!.dados.length,
-          sha256: createHash('sha256').update(arquivo!.dados).digest('hex'),
+          nomeOriginal: arquivo.nome,
+          tipoArquivo: arquivo.tipoArquivo,
+          tamanho: arquivo.tamanho,
+          sha256: arquivo.sha256,
           enviadoEm: agora,
         })
         .returning({ id: documentos.id, tipo: documentos.tipo, situacao: documentos.situacao, tipoArquivo: documentos.tipoArquivo, tamanho: documentos.tamanho });
@@ -347,7 +366,7 @@ export function rotasVerificacao(app: FastifyInstance, ctx: Contexto, limite: { 
 
 export async function enviarArquivo(
   ctx: Contexto,
-  reply: import('fastify').FastifyReply,
+  reply: FastifyReply,
   d: { chave: string; tipoArquivo: string; nome: string },
 ) {
   const dados = await ctx.armazenamento.ler(d.chave);

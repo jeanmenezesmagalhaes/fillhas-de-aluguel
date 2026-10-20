@@ -14,6 +14,7 @@ import { rotasAdmin } from './rotas/admin.js';
 import { rotasContas } from './rotas/contas.js';
 import { rotasIndicacoes } from './rotas/indicacoes.js';
 import { rotasProfissionais } from './rotas/profissionais.js';
+import { rotasQualificacoes } from './rotas/qualificacoes.js';
 import { rotasServicos } from './rotas/servicos.js';
 import { rotasVerificacao, TAMANHO_MAXIMO_ARQUIVO } from './rotas/verificacao.js';
 
@@ -51,7 +52,7 @@ export async function criarApp(op: OpcoesApp) {
   registrarTratamentoDeErros(app);
   await app.register(cookie);
   await app.register(rateLimit, { global: false });
-  await app.register(multipart, { limits: { fileSize: TAMANHO_MAXIMO_ARQUIVO, files: 1, fields: 5 } });
+  await app.register(multipart, { limits: { fileSize: TAMANHO_MAXIMO_ARQUIVO, files: 1, fields: 8 } });
 
   app.decorateRequest('usuario', null);
   app.addHook('onRequest', async (req) => {
@@ -74,6 +75,7 @@ export async function criarApp(op: OpcoesApp) {
   rotasVerificacao(app, ctx, limite);
   rotasIndicacoes(app, ctx, limite);
   rotasAdmin(app, ctx);
+  rotasQualificacoes(app, ctx);
 
   app.get('/api/saude', async () => ({ ok: true }));
 

@@ -258,3 +258,94 @@ describe('indicações', () => {
     expect(lista.indicadas.map((i: { etapa: string }) => i.etapa)).toEqual(['aprovada', 'primeiro_servico']);
   });
 });
+
+describe('CNH de quem atende com veículo', () => {
+  it('com veículo, a CNH entra na lista e a aprovação espera por ela', async () => {
+    const p = await profissionalCompleta();
+    expect((await p.c.patch('/api/profissionais/eu', { veiculoIncluso: true })).status).toBe(200);
+    let v = (await p.c.get('/api/profissionais/eu/verificacao')).corpo.verificacao;
+    expect(v.veiculoIncluso).toBe(true);
+    expect(v.documentos.find((d: { tipo: string }) => d.tipo === 'cnh')).toMatchObject({ situacao: 'pendente' });
+    expect(v.falta).toEqual(['documentos']);
+    expect((await p.c.post('/api/profissionais/eu/analise')).status).toBe(422);
+
+    await p.c.enviarArquivo('/api/profissionais/eu/documentos', { tipo: 'cnh' }, { nome: 'cnh.pdf', dados: PDF });
+    v = (await p.c.post('/api/profissionais/eu/analise')).corpo.verificacao;
+    expect(v.situacao).toBe('em_analise');
+
+    const ficha = (await admin.get(`/api/admin/profissionais/${p.u.id}`)).corpo.profissional;
+    expect(ficha.documentosExigidos.map((d: { tipo: string }) => d.tipo)).toContain('cnh');
+    for (const d of ficha.documentos.filter((x: { tipo: string }) => x.tipo !== 'cnh')) await admin.post(`/api/admin/documentos/${d.id}/aprovar`);
+    expect((await admin.post(`/api/admin/profissionais/${p.u.id}/aprovar`)).corpo.erro.mensagem).toContain('CNH');
+    const cnh = ficha.documentos.find((x: { tipo: string }) => x.tipo === 'cnh');
+    await admin.post(`/api/admin/documentos/${cnh.id}/aprovar`);
+    expect((await admin.post(`/api/admin/profissionais/${p.u.id}/aprovar`)).status).toBe(200);
+  });
+
+  it('na fila, não dá para passar a oferecer veículo', async () => {
+    const p = await profissionalCompleta();
+    await p.c.post('/api/profissionais/eu/analise');
+    expect((await p.c.patch('/api/profissionais/eu', { veiculoIncluso: true })).status).toBe(409);
+  });
+
+  it('aprovada sem veículo manda a CNH e só oferece veículo depois de aprovada', async () => {
+    const p = await profissionalCompleta();
+    await p.c.post('/api/profissionais/eu/analise');
+    const ficha = (await admin.get(`/api/admin/profissionais/${p.u.id}`)).corpo.profissional;
+    for (const d of ficha.documentos) await admin.post(`/api/admin/documentos/${d.id}/aprovar`);
+    await admin.post(`/api/admin/profissionais/${p.u.id}/aprovar`);
+
+    const antes = await p.c.patch('/api/profissionais/eu', { veiculoIncluso: true });
+    expect(antes.status).toBe(422);
+    expect(antes.corpo.erro.codigo).toBe('cnh_pendente');
+    expect((await p.c.enviarArquivo('/api/profissionais/eu/documentos', { tipo: 'comprovante_endereco' }, { nome: 'x.pdf', dados: PDF })).status).toBe(409);
+    const cnh = await p.c.enviarArquivo('/api/profissionais/eu/documentos', { tipo: 'cnh' }, { nome: 'cnh.png', dados: PNG });
+    expect(cnh.status).toBe(201);
+    expect((await p.c.patch('/api/profissionais/eu', { veiculoIncluso: true })).corpo.erro.campos.veiculoIncluso).toContain('em análise');
+    await admin.post(`/api/admin/documentos/${cnh.corpo.documento.id}/aprovar`);
+    const depois = await p.c.patch('/api/profissionais/eu', { veiculoIncluso: true });
+    expect(depois.corpo.usuario.profissional.veiculoIncluso).toBe(true);
+  });
+});
+
+describe('cursos e treinamentos', () => {
+  it('envia o curso com comprovante; só o aprovado aparece no portfólio', async () => {
+    const pro = await profissionalAprovada(amb);
+    const errado = await pro.c.enviarArquivo('/api/profissionais/eu/qualificacoes', { titulo: 'Cuidador de idosos', instituicao: 'Senac', anoConclusao: '1900' }, { nome: 'cert.pdf', dados: PDF });
+    expect(errado.status).toBe(400);
+    expect(errado.corpo.erro.campos.anoConclusao).toBeDefined();
+
+    const a = await pro.c.enviarArquivo('/api/profissionais/eu/qualificacoes', { titulo: 'Cuidador de idosos', instituicao: 'Senac', cargaHorariaHoras: '160', anoConclusao: '2021' }, { nome: 'certificado.pdf', dados: PDF });
+    expect(a.status).toBe(201);
+    expect(a.corpo.qualificacao).toMatchObject({ titulo: 'Cuidador de idosos', cargaHorariaHoras: 160, anoConclusao: 2021, situacao: 'enviado' });
+    const b = await pro.c.enviarArquivo('/api/profissionais/eu/qualificacoes', { titulo: 'Primeiros socorros', instituicao: 'Cruz Vermelha', cargaHorariaHoras: '' }, { nome: 'ps.png', dados: PNG });
+    expect(b.corpo.qualificacao.cargaHorariaHoras).toBeNull();
+
+    expect((await cliente(amb.app).get(`/api/profissionais/${pro.slug}`)).corpo.profissional.qualificacoes).toEqual([]);
+
+    const pendentes = (await admin.get('/api/admin/qualificacoes')).corpo.qualificacoes;
+    expect(pendentes.filter((q: { profissional: { id: string } }) => q.profissional.id === pro.usuario.id)).toHaveLength(2);
+    expect((await admin.get(`/api/admin/qualificacoes/${a.corpo.qualificacao.id}/arquivo`)).status).toBe(200);
+    expect((await admin.post(`/api/admin/qualificacoes/${b.corpo.qualificacao.id}/recusar`, {})).status).toBe(400);
+    await admin.post(`/api/admin/qualificacoes/${b.corpo.qualificacao.id}/recusar`, { motivo: 'O certificado não mostra o nome completo.' });
+    await admin.post(`/api/admin/qualificacoes/${a.corpo.qualificacao.id}/aprovar`);
+
+    const publico = (await cliente(amb.app).get(`/api/profissionais/${pro.slug}`)).corpo.profissional.qualificacoes;
+    expect(publico).toEqual([{ titulo: 'Cuidador de idosos', instituicao: 'Senac', cargaHorariaHoras: 160, anoConclusao: 2021, verificadoEm: expect.any(String) }]);
+    const meus = (await pro.c.get('/api/profissionais/eu/qualificacoes')).corpo.qualificacoes;
+    expect(meus.find((q: { id: string }) => q.id === b.corpo.qualificacao.id)).toMatchObject({ situacao: 'recusado', motivoRecusa: 'O certificado não mostra o nome completo.' });
+    const ficha = (await admin.get(`/api/admin/profissionais/${pro.usuario.id}`)).corpo.profissional;
+    expect(ficha.qualificacoes).toHaveLength(2);
+  });
+
+  it('só a dona vê e apaga o curso; apagar remove o comprovante', async () => {
+    const pro = await profissionalAprovada(amb);
+    const q = (await pro.c.enviarArquivo('/api/profissionais/eu/qualificacoes', { titulo: 'Curso de libras', instituicao: 'Instituto X' }, { nome: 'libras.pdf', dados: PDF })).corpo.qualificacao;
+    const outra = await profissionalAprovada(amb);
+    expect((await outra.c.get(`/api/profissionais/eu/qualificacoes/${q.id}/arquivo`)).status).toBe(404);
+    expect((await outra.c.delete(`/api/profissionais/eu/qualificacoes/${q.id}`)).status).toBe(404);
+    expect((await pro.c.get(`/api/profissionais/eu/qualificacoes/${q.id}/arquivo`)).status).toBe(200);
+    expect((await pro.c.delete(`/api/profissionais/eu/qualificacoes/${q.id}`)).status).toBe(204);
+    expect((await pro.c.get(`/api/profissionais/eu/qualificacoes/${q.id}/arquivo`)).status).toBe(404);
+  });
+});

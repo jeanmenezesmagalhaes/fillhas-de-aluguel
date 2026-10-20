@@ -8,7 +8,7 @@ import { inArray, or, sql } from 'drizzle-orm';
 import { armazenamentoEmDisco } from '../armazenamento.js';
 import { gerarHashSenha } from '../auth.js';
 import { abrirBanco } from '../db/index.js';
-import { avaliacoes, contratantes, documentos, indicacoes, pessoasAcompanhadas, profissionais, servicos, usuarios } from '../db/schema.js';
+import { avaliacoes, contratantes, documentos, indicacoes, pessoasAcompanhadas, profissionais, qualificacoes, servicos, usuarios } from '../db/schema.js';
 
 if (process.env.NODE_ENV === 'production') {
   console.error('O seed só roda fora de produção.');
@@ -106,15 +106,26 @@ await banco.db.transaction(async (tx) => {
   });
   await tx.insert(indicacoes).values({ indicadorId: ana, indicadoId: joana, codigo: 'ANA-DEMO', criadoEm: em(-3, 10) });
   const arquivos = armazenamentoEmDisco(process.env.PASTA_ARQUIVOS ?? './.data/arquivos');
-  for (const [tipo, nome] of [['documento_identidade', 'rg-joana.pdf'], ['comprovante_endereco', 'conta-de-luz.pdf']] as const) {
+  // arquivo PDF de demonstração, gravado no armazenamento local
+  const pdf = async (nome: string) => {
     const dados = Buffer.from(`%PDF-1.4\n% documento de demonstração: ${nome}\n%%EOF\n`);
     const chave = randomUUID();
     await arquivos.salvar(chave, dados);
-    await tx.insert(documentos).values({
-      profissionalId: joana, tipo, arquivoChave: chave, nomeOriginal: nome, tipoArquivo: 'application/pdf',
-      tamanho: dados.length, sha256: createHash('sha256').update(dados).digest('hex'), enviadoEm: em(-2, 17),
-    });
+    return { arquivoChave: chave, nomeOriginal: nome, tipoArquivo: 'application/pdf', tamanho: dados.length, sha256: createHash('sha256').update(dados).digest('hex') };
+  };
+  for (const [tipo, nome] of [['documento_identidade', 'rg-joana.pdf'], ['comprovante_endereco', 'conta-de-luz.pdf']] as const) {
+    await tx.insert(documentos).values({ profissionalId: joana, tipo, ...(await pdf(nome)), enviadoEm: em(-2, 17) });
   }
+  await tx.insert(qualificacoes).values({
+    profissionalId: joana, titulo: 'Cuidador de idosos', instituicao: 'Senac Campinas', cargaHorariaHoras: 160, anoConclusao: 2022,
+    ...(await pdf('certificado-cuidador.pdf')), enviadoEm: em(-2, 17),
+  });
+  // Ana atende com veículo: CNH aprovada, e um curso validado que aparece no portfólio
+  await tx.insert(documentos).values({ profissionalId: ana, tipo: 'cnh', ...(await pdf('cnh-ana.pdf')), situacao: 'aprovado', enviadoEm: em(-20, 10), revisadoEm: em(-19, 12) });
+  await tx.insert(qualificacoes).values([
+    { profissionalId: ana, titulo: 'Cuidador de idosos', instituicao: 'Senac Campinas', cargaHorariaHoras: 160, anoConclusao: 2019, ...(await pdf('certificado-ana.pdf')), situacao: 'aprovado', enviadoEm: em(-20, 10), revisadoEm: em(-19, 12) },
+    { profissionalId: ana, titulo: 'Primeiros socorros', instituicao: 'Cruz Vermelha Brasileira', cargaHorariaHoras: 16, anoConclusao: 2024, ...(await pdf('primeiros-socorros.pdf')), situacao: 'aprovado', enviadoEm: em(-20, 10), revisadoEm: em(-19, 12) },
+  ]);
 
   await conta('Equipe Minha Companhia', EMAILS[5]!, '19944440000', { admin: true });
 

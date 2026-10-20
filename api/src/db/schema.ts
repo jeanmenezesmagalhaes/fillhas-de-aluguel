@@ -251,7 +251,8 @@ export const verificacoes = pgTable(
   (t) => [index('verificacoes_por_usuario').on(t.usuarioId, t.canal, t.criadoEm)],
 );
 
-export const tipoDocumento = pgEnum('tipo_documento', ['documento_identidade', 'comprovante_endereco', 'cartao_cnpj']);
+// a CNH é exigida de quem atende com veículo, além do documento com foto
+export const tipoDocumento = pgEnum('tipo_documento', ['documento_identidade', 'comprovante_endereco', 'cartao_cnpj', 'cnh']);
 export const situacaoDocumento = pgEnum('situacao_documento', ['enviado', 'aprovado', 'recusado', 'substituido']);
 
 // Arquivos enviados pela profissional. O arquivo fica no armazenamento (disco ou S3),
@@ -302,5 +303,38 @@ export const indicacoes = pgTable(
   (t) => [
     index('indicacoes_por_indicador').on(t.indicadorId),
     check('indicacao_sem_autoindicacao', sql`${t.indicadorId} <> ${t.indicadoId}`),
+  ],
+);
+
+// Cursos e treinamentos da profissional, cada um com o comprovante (certificado) para a
+// administração validar. Só os aprovados aparecem no portfólio.
+export const qualificacoes = pgTable(
+  'qualificacoes',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    profissionalId: uuid('profissional_id')
+      .notNull()
+      .references(() => profissionais.usuarioId, { onDelete: 'cascade' }),
+    titulo: text('titulo').notNull(),
+    instituicao: text('instituicao').notNull(),
+    cargaHorariaHoras: smallint('carga_horaria_horas'),
+    anoConclusao: smallint('ano_conclusao'),
+    arquivoChave: text('arquivo_chave').notNull().unique(),
+    nomeOriginal: text('nome_original').notNull(),
+    tipoArquivo: text('tipo_arquivo').notNull(),
+    tamanho: integer('tamanho').notNull(),
+    sha256: text('sha256').notNull(),
+    situacao: situacaoDocumento('situacao').notNull().default('enviado'),
+    motivoRecusa: text('motivo_recusa'),
+    enviadoEm: quando('enviado_em').notNull().defaultNow(),
+    revisadoEm: quando('revisado_em'),
+    revisadoPor: uuid('revisado_por').references(() => usuarios.id),
+  },
+  (t) => [
+    index('qualificacoes_por_profissional').on(t.profissionalId, t.situacao),
+    index('qualificacoes_pendentes').on(t.situacao, t.enviadoEm),
+    check('qualificacao_recusada_tem_motivo', sql`${t.situacao} <> 'recusado' or ${t.motivoRecusa} is not null`),
+    check('qualificacao_carga_horaria', sql`${t.cargaHorariaHoras} is null or ${t.cargaHorariaHoras} between 1 and 5000`),
+    check('qualificacao_ano', sql`${t.anoConclusao} is null or ${t.anoConclusao} between 1950 and 2100`),
   ],
 );

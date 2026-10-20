@@ -8,6 +8,8 @@ import { profissionais, servicos, usuarios } from '../db/schema.js';
 import { ErroApi, naoEncontrado, proibido } from '../erros.js';
 import * as v from '../validacao.js';
 import { dadosDaConta } from './contas.js';
+import { qualificacoesPublicas } from './qualificacoes.js';
+import { documentosAtuais } from './verificacao.js';
 
 const perfil = z
   .object({
@@ -30,6 +32,25 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
   app.patch('/api/profissionais/eu', async (req) => {
     const u = exigirProfissional(req);
     const dados = perfil.parse(req.body);
+    // oferecer veículo exige CNH: antes da fila ela entra na lista de documentos;
+    // depois de aprovada, só com a CNH já aprovada
+    if (dados.veiculoIncluso) {
+      const [p] = await ctx.db
+        .select({ situacao: profissionais.situacao, veiculo: profissionais.veiculoIncluso })
+        .from(profissionais)
+        .where(eq(profissionais.usuarioId, u.id));
+      if (!p!.veiculo && p!.situacao === 'em_analise') {
+        throw new ErroApi(409, 'em_analise', 'Seu cadastro está na lista de espera. Depois da aprovação, você pode passar a oferecer veículo.');
+      }
+      if (!p!.veiculo && (p!.situacao === 'aprovado' || p!.situacao === 'vencido')) {
+        const cnh = (await documentosAtuais(ctx.db, u.id)).get('cnh');
+        if (cnh?.situacao !== 'aprovado') {
+          throw new ErroApi(422, 'cnh_pendente', 'Para oferecer veículo, envie sua CNH. Ela passa pela nossa análise e, aprovada, o veículo aparece no seu perfil.', {
+            veiculoIncluso: cnh ? 'Sua CNH ainda está em análise.' : 'Envie sua CNH primeiro.',
+          });
+        }
+      }
+    }
     if (Object.keys(dados).length) {
       await ctx.db
         .update(profissionais)
@@ -64,7 +85,14 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
     if (!p || (!noAr(p) && req.usuario?.id !== p.usuarioId)) throw naoEncontrado('Profissional não encontrada.');
     const { usuarioId, ...publico } = p;
     const notas = await avaliacoesRecebidas(ctx.db, usuarioId, 'familia_avalia_profissional', ctx.agora());
-    return { profissional: { ...publico, nota: { media: notas.media, total: notas.total } } };
+    return {
+      profissional: {
+        ...publico,
+        nota: { media: notas.media, total: notas.total },
+        // só cursos com o comprovante aprovado pela administração
+        qualificacoes: await qualificacoesPublicas(ctx.db, usuarioId),
+      },
+    };
   });
 
   app.get('/api/profissionais/:slug/avaliacoes', async (req) => {

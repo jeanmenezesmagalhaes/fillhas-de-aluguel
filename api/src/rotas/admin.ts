@@ -4,7 +4,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { exigirAdmin } from '../auth.js';
 import type { Contexto } from '../contexto.js';
-import { documentos, indicacoes, profissionais, usuarios } from '../db/schema.js';
+import { documentos, indicacoes, profissionais, qualificacoes, usuarios } from '../db/schema.js';
 import { conflito, ErroApi, naoEncontrado } from '../erros.js';
 import * as v from '../validacao.js';
 import { documentosAtuais, documentosExigidos, enviarArquivo, ROTULO_DOCUMENTO } from './verificacao.js';
@@ -75,6 +75,20 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
       .from(indicacoes)
       .innerJoin(indicador, eq(indicador.id, indicacoes.indicadorId))
       .where(eq(indicacoes.indicadoId, id));
+    const cursos = await ctx.db
+      .select({
+        id: qualificacoes.id,
+        titulo: qualificacoes.titulo,
+        instituicao: qualificacoes.instituicao,
+        cargaHorariaHoras: qualificacoes.cargaHorariaHoras,
+        anoConclusao: qualificacoes.anoConclusao,
+        situacao: qualificacoes.situacao,
+        motivoRecusa: qualificacoes.motivoRecusa,
+        enviadoEm: qualificacoes.enviadoEm,
+      })
+      .from(qualificacoes)
+      .where(eq(qualificacoes.profissionalId, id))
+      .orderBy(asc(qualificacoes.enviadoEm));
     const { p, u } = l;
     return {
       profissional: {
@@ -90,8 +104,10 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
         enviadoAnaliseEm: p.enviadoAnaliseEm,
         motivoCorrecao: p.motivoCorrecao,
         indicadoPor: ind ?? null,
-        documentosExigidos: documentosExigidos(!!p.cnpj).map((tipo) => ({ tipo, rotulo: ROTULO_DOCUMENTO[tipo] })),
+        veiculoIncluso: p.veiculoIncluso,
+        documentosExigidos: documentosExigidos(!!p.cnpj, p.veiculoIncluso).map((tipo) => ({ tipo, rotulo: ROTULO_DOCUMENTO[tipo] })),
         documentos: historico,
+        qualificacoes: cursos,
       },
     };
   });
@@ -129,13 +145,13 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
     const admin = exigirAdmin(req);
     const { id } = idParam.parse(req.params);
     const [p] = await ctx.db
-      .select({ situacao: profissionais.situacao, cnpj: profissionais.cnpj })
+      .select({ situacao: profissionais.situacao, cnpj: profissionais.cnpj, veiculo: profissionais.veiculoIncluso })
       .from(profissionais)
       .where(eq(profissionais.usuarioId, id));
     if (!p) throw naoEncontrado('Profissional não encontrada.');
     if (p.situacao !== 'em_analise') throw conflito('fora_da_fila', 'Este perfil não está na lista de espera.');
     const atuais = await documentosAtuais(ctx.db, id);
-    const pendentes = documentosExigidos(!!p.cnpj).filter((t) => atuais.get(t)?.situacao !== 'aprovado');
+    const pendentes = documentosExigidos(!!p.cnpj, p.veiculo).filter((t) => atuais.get(t)?.situacao !== 'aprovado');
     if (pendentes.length) {
       throw new ErroApi(422, 'documentos_pendentes', `Aprove antes: ${pendentes.map((t) => ROTULO_DOCUMENTO[t]).join(', ')}.`);
     }
