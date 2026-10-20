@@ -286,8 +286,8 @@ O usuário preferiu a tabela à lista em frases, mas com mais respiro e com filt
 - **Ainda sem provedor:** e-mail e WhatsApp só aparecem no log do servidor, e os arquivos ficam em `api/.data/arquivos`. Para produção faltam provedor de mensagens e bucket privado.
 - **Seed:** Joana Prado na fila, com dois documentos e indicada pela Ana (código ANA-DEMO). Conta de administração equipe@demo.minhacompanhia.test.
 - **Testes:** 34 passando (`cd api && npm test`).
+- **Decidido:** o documento com foto (RG ou CNH) é obrigatório.
 - **A decidir com o cliente:**
-  - se o documento com foto entra mesmo;
   - regras do bônus de indicação;
   - se indicar faz a pessoa subir na fila;
   - se a profissional aprovada pode indicar famílias também (hoje pode).
