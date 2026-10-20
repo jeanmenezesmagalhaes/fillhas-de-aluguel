@@ -1,0 +1,511 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-20T16:52:08+00:00",
+  "title": "Design System: Minha companhia",
+  "extensions": {
+    "colorMeta": {
+      "chao": {
+        "role": "neutral",
+        "displayName": "Chão",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#808080",
+          "#a4a4a4",
+          "#cacaca",
+          "#eeeeee"
+        ]
+      },
+      "copa": {
+        "role": "neutral",
+        "displayName": "Copa",
+        "canonical": "#10251e",
+        "tonalRamp": [
+          "#000f09",
+          "#142922",
+          "#2f453d",
+          "#4d635b",
+          "#6f867d",
+          "#93aba2",
+          "#b8d1c7",
+          "#dbf6eb"
+        ]
+      },
+      "copa-clara": {
+        "role": "neutral",
+        "displayName": "Copa clara",
+        "canonical": "#163229",
+        "tonalRamp": [
+          "#001009",
+          "#0e2a21",
+          "#2a463d",
+          "#48655a",
+          "#6a887d",
+          "#8eada1",
+          "#b3d3c7",
+          "#d6f7eb"
+        ]
+      },
+      "folha": {
+        "role": "secondary",
+        "displayName": "Folha",
+        "canonical": "#2d5e4b",
+        "tonalRamp": [
+          "#001205",
+          "#002d1d",
+          "#184a38",
+          "#386956",
+          "#5b8c78",
+          "#7fb29c",
+          "#a4d8c1",
+          "#c8fde5"
+        ]
+      },
+      "folha-escura": {
+        "role": "secondary",
+        "displayName": "Folha escura",
+        "canonical": "#24503f",
+        "tonalRamp": [
+          "#001206",
+          "#002c1d",
+          "#1d4939",
+          "#3c6856",
+          "#5f8b78",
+          "#83b19c",
+          "#a8d7c2",
+          "#cbfbe6"
+        ]
+      },
+      "ipe-rosa": {
+        "role": "primary",
+        "displayName": "Ipê-rosa",
+        "canonical": "#f28cb1",
+        "tonalRamp": [
+          "#2c000b",
+          "#4e0024",
+          "#711540",
+          "#94385e",
+          "#bc5c81",
+          "#e580a5",
+          "#ffa6cb",
+          "#ffc9ef"
+        ]
+      },
+      "ipe-rosa-claro": {
+        "role": "primary",
+        "displayName": "Ipê-rosa claro",
+        "canonical": "#f6a9c5",
+        "tonalRamp": [
+          "#25000c",
+          "#450625",
+          "#652641",
+          "#87445f",
+          "#ae6782",
+          "#d58ba7",
+          "#feb0cd",
+          "#ffd4f1"
+        ]
+      },
+      "ipe-amarelo": {
+        "role": "secondary",
+        "displayName": "Ipê-amarelo",
+        "canonical": "#f2c94c",
+        "tonalRamp": [
+          "#1f0100",
+          "#3b1b00",
+          "#5a3900",
+          "#795800",
+          "#9e7c00",
+          "#c4a032",
+          "#ebc75e",
+          "#ffeb83"
+        ]
+      },
+      "salvia": {
+        "role": "neutral",
+        "displayName": "Sálvia",
+        "canonical": "#dce8e0",
+        "tonalRamp": [
+          "#060d08",
+          "#1e2721",
+          "#39433c",
+          "#56615a",
+          "#79837c",
+          "#9da8a0",
+          "#c2cec6",
+          "#e6f2ea"
+        ]
+      },
+      "salvia-funda": {
+        "role": "neutral",
+        "displayName": "Sálvia funda",
+        "canonical": "#c3d6ca",
+        "tonalRamp": [
+          "#030e07",
+          "#19281f",
+          "#34443a",
+          "#526258",
+          "#74857a",
+          "#98aa9e",
+          "#bdd0c4",
+          "#e1f4e8"
+        ]
+      },
+      "papel": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#808080",
+          "#a4a4a4",
+          "#cacaca",
+          "#eeeeee"
+        ]
+      },
+      "liquen-claro": {
+        "role": "neutral",
+        "displayName": "Líquen claro",
+        "canonical": "#b3c7bd",
+        "tonalRamp": [
+          "#020f08",
+          "#182821",
+          "#33443c",
+          "#51625a",
+          "#73857c",
+          "#97aaa0",
+          "#bcd0c6",
+          "#e0f4ea"
+        ]
+      },
+      "liquen": {
+        "role": "neutral",
+        "displayName": "Líquen",
+        "canonical": "#55695f",
+        "tonalRamp": [
+          "#010f08",
+          "#162820",
+          "#32453b",
+          "#4f6359",
+          "#71867b",
+          "#95aba0",
+          "#bad1c5",
+          "#def5e9"
+        ]
+      },
+      "liquen-salvia": {
+        "role": "neutral",
+        "displayName": "Líquen-sálvia",
+        "canonical": "#4d6359",
+        "tonalRamp": [
+          "#000f08",
+          "#152920",
+          "#30453c",
+          "#4d6359",
+          "#6f867c",
+          "#93aba0",
+          "#b9d1c6",
+          "#dcf6ea"
+        ]
+      },
+      "ipe-escuro": {
+        "role": "secondary",
+        "displayName": "Ipê escuro",
+        "canonical": "#e3b53a",
+        "tonalRamp": [
+          "#200000",
+          "#3e1900",
+          "#5c3700",
+          "#7d5600",
+          "#a17a00",
+          "#c79f32",
+          "#efc55e",
+          "#ffe983"
+        ]
+      },
+      "ipe-texto": {
+        "role": "neutral",
+        "displayName": "Texto sobre ipê escuro",
+        "canonical": "#5a4a12",
+        "tonalRamp": [
+          "#160800",
+          "#312200",
+          "#4e3e01",
+          "#6d5c27",
+          "#907f4a",
+          "#b5a46d",
+          "#dcca92",
+          "#ffeeb5"
+        ]
+      },
+      "folha-texto": {
+        "role": "neutral",
+        "displayName": "Texto sobre folha",
+        "canonical": "#c9dad1",
+        "tonalRamp": [
+          "#030e09",
+          "#1a2721",
+          "#35443c",
+          "#53625a",
+          "#75857c",
+          "#99a9a1",
+          "#becfc6",
+          "#e2f3ea"
+        ]
+      },
+      "app-chao": {
+        "role": "neutral",
+        "displayName": "Chão do resumo",
+        "canonical": "#f2f5f2",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#222523",
+          "#3e403e",
+          "#5c5e5c",
+          "#7e817e",
+          "#a3a5a3",
+          "#c8cbc8",
+          "#ecefec"
+        ]
+      },
+      "app-borda": {
+        "role": "neutral",
+        "displayName": "Borda do resumo",
+        "canonical": "#e3e8e4",
+        "tonalRamp": [
+          "#090c0a",
+          "#212522",
+          "#3d413e",
+          "#5b5f5b",
+          "#7d817e",
+          "#a1a6a2",
+          "#c7ccc8",
+          "#ebf0ec"
+        ]
+      },
+      "app-linha": {
+        "role": "neutral",
+        "displayName": "Linha do resumo",
+        "canonical": "#eef1ee",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#222522",
+          "#3e403e",
+          "#5c5e5c",
+          "#7e817e",
+          "#a3a5a3",
+          "#c8cbc8",
+          "#ecefec"
+        ]
+      },
+      "app-dado": {
+        "role": "tertiary",
+        "displayName": "Dado do resumo",
+        "canonical": "#c2366f",
+        "tonalRamp": [
+          "#2c0009",
+          "#4f0021",
+          "#71153d",
+          "#95385a",
+          "#bd5b7d",
+          "#e680a1",
+          "#ffa6c7",
+          "#ffc9ea"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título da capa, palavra da chamada e marca do rodapé, em caixa alta."
+      },
+      "headline": {
+        "displayName": "Título",
+        "purpose": "Títulos de seção, bairros, preços, nome de Ana."
+      },
+      "lead": {
+        "displayName": "Destaque",
+        "purpose": "Frase de apoio, listas, títulos de cartões."
+      },
+      "body": {
+        "displayName": "Corpo",
+        "purpose": "Texto corrido, até 60ch."
+      },
+      "small": {
+        "displayName": "Nota",
+        "purpose": "Notas, legendas, créditos, rótulos."
+      },
+      "app-title": {
+        "displayName": "Título do resumo",
+        "purpose": "h1 da tela de trabalho."
+      },
+      "app-body": {
+        "displayName": "Corpo do resumo",
+        "purpose": "Linhas e valores da tela de trabalho."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Chegada das pastas e das linhas do título."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Chegada de seções e retorno ao toque."
+      },
+      {
+        "name": "deriva",
+        "value": "18s ease-soft alternate",
+        "purpose": "Escala lenta na foto grande dos bairros e na foto do portfólio."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "telefone",
+        "value": "760px"
+      },
+      {
+        "name": "tablet",
+        "value": "1100px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Marca",
+      "kind": "custom",
+      "refersTo": "botao-primario",
+      "description": "Direção Lado a lado: duas abas que se apoiam e o nome em Jost 500.",
+      "html": "<a class=\"ds-marca\" href=\"#\"><svg viewBox=\"0 0 64 44\" aria-hidden=\"true\"><path d=\"M2 44 10 6h20l6 38z\" fill=\"#f28cb1\"/><path d=\"M26 44 34 0h20l8 44z\" fill=\"#10251e\"/></svg>minha companhia</a>",
+      "css": ".ds-marca{font-family:Jost,system-ui,sans-serif;display:inline-flex;align-items:center;gap:10px;font-size:26px;font-weight:500;letter-spacing:-.01em;color:#10251e;text-decoration:none}.ds-marca svg{width:32px;height:22px}.ds-marca:focus-visible{outline:3px solid #10251e;outline-offset:4px}"
+    },
+    {
+      "name": "Botão principal",
+      "kind": "button",
+      "refersTo": "botao-primario",
+      "description": "Trapézio ipê-rosa; a ação principal.",
+      "html": "<button class=\"ds-botao\">Encontrar profissionais</button>",
+      "css": ".ds-botao{font-family:Jost,system-ui,sans-serif;display:inline-flex;align-items:center;height:52px;padding:0 32px;border:0;background:#f28cb1;color:#10251e;font-size:18px;font-weight:500;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 100%,0 100%);transition:transform 140ms cubic-bezier(.22,1,.36,1),background-color 180ms ease;cursor:pointer}.ds-botao:hover{background:#f6a9c5}.ds-botao:active{transform:scale(.97)}.ds-botao:focus-visible{outline:3px solid #10251e;outline-offset:-7px}"
+    },
+    {
+      "name": "Pasta com aba",
+      "kind": "card",
+      "refersTo": "pasta-salvia",
+      "description": "Cada seção é uma pasta: campo de cor reto com aba trapezoidal.",
+      "html": "<section class=\"ds-pasta\"><span class=\"ds-aba\"></span><h2>Perto de casa</h2><p>A busca mostra quem atende o bairro de quem vai receber o cuidado.</p></section>",
+      "css": ".ds-pasta{font-family:Jost,system-ui,sans-serif;position:relative;margin-top:40px;padding:32px;background:#dce8e0;color:#10251e;max-width:420px}.ds-aba{position:absolute;bottom:100%;left:17%;width:140px;height:40px;background:inherit;clip-path:polygon(16px 0,calc(100% - 16px) 0,100% 100%,0 100%);}.ds-pasta h2{margin:0;font-size:36px;line-height:1;letter-spacing:-.03em}.ds-pasta p{margin:12px 0 0;font-size:17px;line-height:1.5}"
+    },
+    {
+      "name": "Cartão de acompanhante",
+      "kind": "card",
+      "refersTo": "ladrilho",
+      "description": "Item da lista da home: valor, mínimo, veículo, nota e exemplo de 4 horas.",
+      "html": "<article class=\"ds-pc\"><h3>Ana Oliveira</h3><p class=\"ds-pc-preco\"><b>R$ 70</b> por hora</p><p class=\"ds-pc-sub\">R$ 60/h a partir de 4 h</p><ul><li>Mínimo de 2 horas</li><li>Veículo incluso</li><li>4,9 de 5 · 12 avaliações</li></ul><p class=\"ds-pc-ex\"><span>4 horas</span><b>R$ 240,00</b></p><a class=\"ds-pc-btn\" href=\"#\">Ver perfil e orçar</a></article>",
+      "css": ".ds-pc{font-family:Jost,system-ui,sans-serif;display:flex;flex-direction:column;gap:8px;width:280px;padding:22px;background:#dce8e0;color:#10251e}.ds-pc h3{margin:0;font-size:22px}.ds-pc p,.ds-pc ul{margin:0}.ds-pc ul{padding:0;list-style:none;display:grid;gap:4px}.ds-pc-preco{color:#4d6359}.ds-pc-preco b{font-size:44px;color:#10251e;letter-spacing:-.03em}.ds-pc-sub{font-size:14px;color:#4d6359}.ds-pc-ex{display:flex;justify-content:space-between;padding:10px 12px;background:#fff;font-variant-numeric:tabular-nums}.ds-pc-btn{display:flex;justify-content:center;align-items:center;min-height:48px;background:#10251e;color:#fff;text-decoration:none;font-weight:500;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 100%,0 100%)}.ds-pc-btn:focus-visible{outline:3px solid #fff;outline-offset:-7px}"
+    },
+    {
+      "name": "Campo da busca",
+      "kind": "input",
+      "refersTo": "campo",
+      "description": "Fundo sálvia, sem borda, rótulo em pergunta.",
+      "html": "<label class=\"ds-campo\"><span>Cidade de quem vai receber o cuidado</span><input value=\"Campinas\"></label>",
+      "css": ".ds-campo{font-family:Jost,system-ui,sans-serif;display:block;max-width:360px;color:#10251e}.ds-campo span{display:block;font-size:15px;font-weight:500;margin-bottom:8px}.ds-campo input{width:100%;box-sizing:border-box;height:52px;padding:0 16px;border:0;background:#dce8e0;color:#10251e;font:17px Jost,system-ui,sans-serif}.ds-campo input:focus-visible{outline:3px solid #f28cb1;outline-offset:4px}"
+    },
+    {
+      "name": "Orçamento por horas",
+      "kind": "custom",
+      "refersTo": "barra-hora",
+      "description": "Barras de 1 a 6 h; a escolhida em verde-copa, abaixo do mínimo em ipê escuro.",
+      "html": "<div class=\"ds-orc\"><span class=\"ds-b ds-min\" style=\"height:30%\"><b>1 h</b></span><span class=\"ds-b\" style=\"height:39%\"><b>2 h</b>R$ 140</span><span class=\"ds-b\" style=\"height:58%\"><b>3 h</b>R$ 210</span><span class=\"ds-b ds-on\" style=\"height:67%\"><b>4 h</b>R$ 240</span><span class=\"ds-b\" style=\"height:83%\"><b>5 h</b>R$ 300</span><span class=\"ds-b\" style=\"height:100%\"><b>6 h</b>R$ 360</span></div>",
+      "css": ".ds-orc{font-family:Jost,system-ui,sans-serif;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;align-items:end;height:220px;width:420px;padding:16px;background:#f2c94c;color:#10251e;font-size:13px}.ds-b{display:flex;flex-direction:column;padding:12px 8px 8px;background:#fff;clip-path:polygon(0 8px,8px 0,50% 0,calc(50% + 8px) 8px,100% 8px,100% 100%,0 100%)}.ds-b b{font-size:17px}.ds-on{background:#10251e;color:#fff}.ds-min{background:#e3b53a;color:#5a4a12}"
+    },
+    {
+      "name": "Ladrilho de documento",
+      "kind": "card",
+      "refersTo": "ladrilho",
+      "description": "Um documento por ladrilho, sobre o chão escuro.",
+      "html": "<div class=\"ds-ladrilho\"><strong>Próxima</strong><span>01/11/2026</span><span>Faltam 12 dias.</span></div>",
+      "css": ".ds-ladrilho{font-family:Jost,system-ui,sans-serif;display:flex;flex-direction:column;gap:6px;width:240px;aspect-ratio:3/2;padding:24px;background:#dce8e0;color:#10251e}.ds-ladrilho strong{font-size:24px}.ds-ladrilho span{color:#4d6359;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Cartão do resumo",
+      "kind": "card",
+      "refersTo": "app-cartao",
+      "description": "Tela de trabalho: borda de 1px, cantos de 8px, cor só no dado.",
+      "html": "<section class=\"ds-cartao\"><h2>Valores</h2><div class=\"ds-total\"><span>Total</span><b>R$ 330,00</b></div><div class=\"ds-comp\"><i style=\"flex:280;background:#c2366f\"></i><i style=\"flex:20\"></i><i style=\"flex:15\"></i><i style=\"flex:15\"></i></div></section>",
+      "css": ".ds-cartao{font-family:Jost,system-ui,sans-serif;width:360px;padding:24px;background:#fff;border:1px solid #e3e8e4;border-radius:8px;color:#10251e}.ds-cartao h2{margin:0 0 12px;font-size:16px;font-weight:500}.ds-total{display:flex;justify-content:space-between;align-items:baseline}.ds-total b{font-size:30px;font-variant-numeric:tabular-nums}.ds-comp{display:flex;gap:2px;height:10px;margin-top:16px}.ds-comp i{border-radius:2px;background:#9aaba2}"
+    },
+    {
+      "name": "Botão do resumo",
+      "kind": "button",
+      "refersTo": "app-botao-primario",
+      "description": "Primário quase preto da tela de trabalho.",
+      "html": "<button class=\"ds-app-btn\">Enviar solicitação</button>",
+      "css": ".ds-app-btn{font-family:Jost,system-ui,sans-serif;height:40px;padding:0 16px;border:0;border-radius:6px;background:#10251e;color:#fff;font-size:15px;font-weight:500;transition:transform 120ms ease}.ds-app-btn:active{transform:scale(.97)}.ds-app-btn:focus-visible{outline:2px solid #c2366f;outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "A pasta de documentos",
+    "overview": "A pessoa que decide é a filha que contrata uma acompanhante para levar a mãe ou o pai a uma consulta, ao banco ou ao mercado, quase sempre pelo celular e de dia. O que separa este serviço dos outros é que os documentos de cada profissional são revisados todo mês. A pasta onde eles ficam deu a forma do sistema: a aba trapezoidal recorta fotos, retratos, botões e blocos. Na home ela ficou só como detalhe: a validação com uma usuária mostrou que a pilha de pastas confundia e escondia o essencial, que ali se escolhe e se contrata uma profissional. A home agora é um marketplace: título que diz isso, busca, atalhos de tarefa com foto e a lista de acompanhantes com preço, mínimo, veículo e avaliações já na primeira tela.\n\nAs cores vêm de Campinas: o verde-escuro da copa das tipuanas e do Bosque dos Jequitibás como tinta e campo forte, os dois ipês da cidade (o rosa para a ação, o amarelo para o orçamento) e a sálvia como papel. O chão é branco: a filha lê preço e condições de dia, no celular, e o fundo escuro anterior gritava demais para esse momento. Fotos reais da cidade, de acervos abertos e com crédito no rodapé, mostram onde o cuidado acontece; pessoas continuam sendo ilustração. A tipografia é uma família só, Jost, em caixa normal, com o título da capa em peso 700.\n\nRejeições confirmadas: nada de hospital ou clínica (branco frio, azul hospitalar, cruz médica) e nada de clichê de asilo (fotos de banco de imagem, mãos enrugadas, velhice como tristeza).\n\nO resumo da solicitação é uma tela de trabalho e segue regras próprias: chão de sálvia, cartões brancos com borda de 1px, título de 24px e uma cor só nos dados (as horas de Ana em rosa escurecido).\n\nAplicado hoje em `index.html`, `portfolio.html` (`site.css`, `site.js`) e `resumo.html` (`resumo.css`). As telas de valores, login, cadastro, pagamento e mapa ainda usam o sistema anterior (`styles.css`, sálvia e terracota com Georgia) até serem migradas.",
+    "keyCharacteristics": [
+      "Chão branco e tinta verde-copa; campos de cor separam as seções.",
+      "Home de marketplace: lista de cartões de acompanhantes logo abaixo da busca.",
+      "O orçamento é a peça viva do perfil: seletor de horas sem teto, com mínimo, desconto e veículo.",
+      "Uma forma só (a aba), em escalas muito diferentes: capa, seções, fotos, botões, marcadores.",
+      "Jost em cinco tamanhos: display, título, destaque, corpo, nota.",
+      "Cantos retos em todo o site; a aba é a única quebra da geometria.",
+      "Fotos reais de Campinas com crédito; pessoas só em ilustração.",
+      "Sem sombras, sem degradês, sem linhas finas; separação por campo de cor."
+    ],
+    "rules": [
+      {
+        "name": "A Regra dos Dois Ipês",
+        "body": "Rosa é ação e motivo; amarelo é orçamento. Nenhum dos dois vira texto corrido, e só o rosa preenche botões.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra da Pasta",
+        "body": "Toda seção do site é uma pasta: um campo de cor, recuado, com aba. Nunca uma linha ou uma sombra separando blocos.",
+        "section": "colors"
+      },
+      {
+        "name": "A Regra da Caixa Alta Única",
+        "body": "Caixa alta só na marca em blocos do rodapé e no carimbo da ficha. Nenhum rótulo pequeno em caixa alta, nenhum sobretítulo acima de título.",
+        "section": "typography"
+      },
+      {
+        "name": "A Regra da Pilha",
+        "body": "O que está mais perto da pessoa fica na frente e é mais claro: a pasta branca da busca cobre todas as outras.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** mostrar pessoas e preços na primeira tela da home; ela é um marketplace.",
+      "**Do** usar o ipê-rosa no botão principal e no motivo grande, e o ipê-amarelo só para o orçamento.",
+      "**Do** mostrar valor da hora, mínimo e veículo antes de qualquer botão de pedido.",
+      "**Do** mostrar a data da revisão de documentos onde a família decide: capa, perfil, ladrilhos, resumo.",
+      "**Do** usar fotos reais de Campinas com crédito no rodapé, nunca como se fossem da profissional ou da família.",
+      "**Do** manter a faixa de protótipo, a navegação de revisão no rodapé e as notas de dado fictício.",
+      "**Do** manter títulos em até duas linhas em qualquer largura."
+    ],
+    "donts": [
+      "**Don't** usar visual de hospital ou clínica, nem clichê de asilo.",
+      "**Don't** colocar sobretítulo, rótulo em caixa alta pequena, numeração 01/02/03 ou pílula acima de título.",
+      "**Don't** usar sombras, degradês, linhas finas de separação ou caixas com contorno no site.",
+      "**Don't** usar fotos de pessoas; Ana e as famílias aparecem só em ilustração.",
+      "**Don't** apresentar a taxa da plataforma, o desconto por volume ou o pagamento da profissional como decididos.",
+      "**Don't** dar à profissional mais que um botão na home: a página fala com a filha.",
+      "**Don't** voltar à pilha de pastas na home: na validação, a metáfora confundiu.",
+      "**Don't** misturar o estilo do site com o do resumo: o resumo é tela de trabalho (24px, bordas de 1px, cantos de 8px)."
+    ]
+  }
+}

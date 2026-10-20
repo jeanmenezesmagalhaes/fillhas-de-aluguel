@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Minha companhia · direções de marca</title>
+<style>
+@font-face { font-family: "Jost"; src: url("../../fonts/jost-latin.woff2") format("woff2"); font-weight: 400 700; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #fff; color: #10251e; font: 400 18px/1.5 "Jost", system-ui, sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 48px 24px 96px; }
+h1 { margin: 0; font-size: clamp(2.25rem, 5vw, 4rem); line-height: 1; letter-spacing: -0.03em; }
+.intro { max-width: 62ch; margin: 18px 0 0; font-size: 20px; }
+.dir { margin-top: 96px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dir-cab { grid-column: 1 / -1; margin-bottom: 12px; }
+.dir-cab h2 { margin: 0; font-size: 36px; letter-spacing: -0.02em; }
+.dir-cab p { max-width: 70ch; margin: 8px 0 0; }
+.painel { display: grid; place-items: center; min-height: 240px; padding: 32px; }
+.claro { background: #dce8e0; } .escuro { background: #10251e; }
+.mc { display: inline-flex; align-items: center; gap: calc(var(--t) * 0.32); font-size: var(--t); letter-spacing: -0.02em; line-height: 1; white-space: nowrap; }
+.mc svg { height: calc(var(--t) * 1.05); width: auto; flex: none; }
+.usos { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 12px; }
+.uso { display: flex; flex-direction: column; gap: 12px; padding: 20px; background: #f4f7f5; }
+.rotulo { font-size: 15px; color: #55695f; }
+.icones { display: flex; align-items: flex-end; gap: 16px; }
+.ico { display: grid; place-items: center; background: #fff; }
+.ico svg { width: 66%; height: auto; }
+.ico.g { width: 96px; height: 96px; border-radius: 22px; background: #dce8e0; }
+.ico.m { width: 48px; height: 48px; border-radius: 11px; background: #dce8e0; }
+.ico.p { width: 24px; height: 24px; border-radius: 5px; background: #dce8e0; }
+.topo-demo { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; background: #fff; }
+.topo-demo .links { font-size: 15px; font-weight: 500; }
+.empilhada { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px; background: #fff; text-align: center; font-weight: 600; font-size: 22px; line-height: 1; }
+.empilhada svg { width: 64px; height: auto; }
+.pros { grid-column: 1 / -1; margin: 8px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pros li { padding: 16px 20px; background: #f4f7f5; }
+.nota { margin-top: 96px; color: #55695f; font-size: 16px; }
+@media (max-width: 760px) {
+  .dir, .usos, .pros { grid-template-columns: 1fr; }
+  .painel { min-height: 180px; }
+  .mc { --t: 30px !important; }
+  .topo-demo .links { display: none; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Minha companhia: três direções</h1>
+  <p class="intro">Todas usam a fonte Jost e as cores atuais do site: verde-copa, ipê-rosa, ipê-amarelo e sálvia. O nome fica em minúsculas, como uma frase dita pela filha: "minha companhia". Escolha uma (ou peça uma mistura) e eu aplico nas telas.</p>
+  
+<section class="dir" id="dir-A">
+  <div class="dir-cab"><h2>A. Lado a lado</h2><p>Duas abas de pasta que se apoiam uma na outra. Continua o motivo que o sistema já usa (a pasta de documentos revisados) e lê como duas pessoas próximas: quem acompanha e quem é acompanhada.</p></div>
+  <div class="painel claro"><span class="mc" style="--t:56px;color:#10251e"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg><span style="font-weight:500">minha companhia</span></span></div>
+  <div class="painel escuro"><span class="mc" style="--t:56px;color:#ffffff"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#ffffff"/></svg><span style="font-weight:500">minha companhia</span></span></div>
+  <div class="usos">
+    <div class="uso"><span class="rotulo">Ícone do app e favicon</span><div class="icones"><span class="ico g"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#10251e"/><path d="M26 44 34 0h20l8 44z" fill="#f28cb1"/></svg></span><span class="ico m"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#10251e"/><path d="M26 44 34 0h20l8 44z" fill="#f28cb1"/></svg></span><span class="ico p"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#10251e"/><path d="M26 44 34 0h20l8 44z" fill="#f28cb1"/></svg></span></div></div>
+    <div class="uso"><span class="rotulo">No topo do site</span><div class="topo-demo"><span class="mc" style="--t:26px;color:#10251e"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg><span style="font-weight:500">minha companhia</span></span><span class="links">Acompanhantes · Como contratar · Meu pedido</span></div></div>
+    <div class="uso"><span class="rotulo">Empilhada</span><div class="empilhada"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg><span>minha<br>companhia</span></div></div>
+  </div>
+  <ul class="pros"><li><strong>A favor:</strong> Liga direto ao visual atual e à confiança dos documentos. Funciona bem pequena.</li><li><strong>Cuidado:</strong> Abstrata: sem o nome ao lado, não diz "companhia" sozinha.</li></ul>
+</section>
+<section class="dir" id="dir-B">
+  <div class="dir-cab"><h2>B. O m de braço dado</h2><p>O "m" de minha desenhado como dois arcos entrelaçados, em duas cores: dois ombros lado a lado, de braço dado. O símbolo é a própria inicial do nome.</p></div>
+  <div class="painel claro"><span class="mc" style="--t:56px;color:#10251e"><svg viewBox="0 0 62 48" aria-hidden="true"><path d="M28 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/><path d="M6 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/><path d="M30.5 15.5a14 14 0 0 1 3.5 8.5" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/></svg><span style="font-weight:500">minha companhia</span></span></div>
+  <div class="painel escuro"><span class="mc" style="--t:56px;color:#ffffff"><svg viewBox="0 0 62 48" aria-hidden="true"><path d="M28 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/><path d="M6 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/><path d="M30.5 15.5a14 14 0 0 1 3.5 8.5" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/></svg><span style="font-weight:500">minha companhia</span></span></div>
+  <div class="usos">
+    <div class="uso"><span class="rotulo">Ícone do app e favicon</span><div class="icones"><span class="ico g"><svg viewBox="0 0 62 48" aria-hidden="true"><path d="M28 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/><path d="M6 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/><path d="M30.5 15.5a14 14 0 0 1 3.5 8.5" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/></svg></span><span class="ico m"><svg viewBox="0 0 62 48" aria-hidden="true"><path d="M28 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/><path d="M6 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/><path d="M30.5 15.5a14 14 0 0 1 3.5 8.5" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/></svg></span><span class="ico p"><svg viewBox="0 0 62 48" aria-hidden="true"><path d="M28 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/><path d="M6 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/><path d="M30.5 15.5a14 14 0 0 1 3.5 8.5" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/></svg></span></div></div>
+    <div class="uso"><span class="rotulo">No topo do site</span><div class="topo-demo"><span class="mc" style="--t:26px;color:#10251e"><svg viewBox="0 0 62 48" aria-hidden="true"><path d="M28 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/><path d="M6 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/><path d="M30.5 15.5a14 14 0 0 1 3.5 8.5" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/></svg><span style="font-weight:500">minha companhia</span></span><span class="links">Acompanhantes · Como contratar · Meu pedido</span></div></div>
+    <div class="uso"><span class="rotulo">Empilhada</span><div class="empilhada"><svg viewBox="0 0 62 48" aria-hidden="true"><path d="M28 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/><path d="M6 46V24a14 14 0 0 1 28 0v22" fill="none" stroke="#f28cb1" stroke-width="9" stroke-linecap="round"/><path d="M30.5 15.5a14 14 0 0 1 3.5 8.5" fill="none" stroke="#10251e" stroke-width="9" stroke-linecap="round"/></svg><span>minha<br>companhia</span></div></div>
+  </div>
+  <ul class="pros"><li><strong>A favor:</strong> A mais calorosa e humana das três; o símbolo nasce do nome.</li><li><strong>Cuidado:</strong> Arcos arredondados fogem um pouco da geometria reta das abas usadas nas telas.</li></ul>
+</section>
+<section class="dir" id="dir-C">
+  <div class="dir-cab"><h2>C. Ida e volta</h2><p>Um caminho fechado, de casa até a tarefa e de volta, com dois pontos andando juntos. É a promessa do serviço: busca em casa, vai junto e traz de volta.</p></div>
+  <div class="painel claro"><span class="mc" style="--t:56px;color:#10251e"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M22 6h20a16 16 0 0 1 0 32H22a16 16 0 0 1 0-32z" fill="none" stroke="#2d5e4b" stroke-width="6"/><circle cx="40" cy="6" r="6.5" fill="#f28cb1"/><circle cx="26" cy="6" r="6.5" fill="#f2c94c"/></svg><span style="font-weight:500">minha companhia</span></span></div>
+  <div class="painel escuro"><span class="mc" style="--t:56px;color:#ffffff"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M22 6h20a16 16 0 0 1 0 32H22a16 16 0 0 1 0-32z" fill="none" stroke="#ffffff" stroke-width="6"/><circle cx="40" cy="6" r="6.5" fill="#f28cb1"/><circle cx="26" cy="6" r="6.5" fill="#f2c94c"/></svg><span style="font-weight:500">minha companhia</span></span></div>
+  <div class="usos">
+    <div class="uso"><span class="rotulo">Ícone do app e favicon</span><div class="icones"><span class="ico g"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M22 6h20a16 16 0 0 1 0 32H22a16 16 0 0 1 0-32z" fill="none" stroke="#10251e" stroke-width="6"/><circle cx="40" cy="6" r="6.5" fill="#f28cb1"/><circle cx="26" cy="6" r="6.5" fill="#f2c94c"/></svg></span><span class="ico m"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M22 6h20a16 16 0 0 1 0 32H22a16 16 0 0 1 0-32z" fill="none" stroke="#10251e" stroke-width="6"/><circle cx="40" cy="6" r="6.5" fill="#f28cb1"/><circle cx="26" cy="6" r="6.5" fill="#f2c94c"/></svg></span><span class="ico p"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M22 6h20a16 16 0 0 1 0 32H22a16 16 0 0 1 0-32z" fill="none" stroke="#10251e" stroke-width="6"/><circle cx="40" cy="6" r="6.5" fill="#f28cb1"/><circle cx="26" cy="6" r="6.5" fill="#f2c94c"/></svg></span></div></div>
+    <div class="uso"><span class="rotulo">No topo do site</span><div class="topo-demo"><span class="mc" style="--t:26px;color:#10251e"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M22 6h20a16 16 0 0 1 0 32H22a16 16 0 0 1 0-32z" fill="none" stroke="#2d5e4b" stroke-width="6"/><circle cx="40" cy="6" r="6.5" fill="#f28cb1"/><circle cx="26" cy="6" r="6.5" fill="#f2c94c"/></svg><span style="font-weight:500">minha companhia</span></span><span class="links">Acompanhantes · Como contratar · Meu pedido</span></div></div>
+    <div class="uso"><span class="rotulo">Empilhada</span><div class="empilhada"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M22 6h20a16 16 0 0 1 0 32H22a16 16 0 0 1 0-32z" fill="none" stroke="#2d5e4b" stroke-width="6"/><circle cx="40" cy="6" r="6.5" fill="#f28cb1"/><circle cx="26" cy="6" r="6.5" fill="#f2c94c"/></svg><span>minha<br>companhia</span></div></div>
+  </div>
+  <ul class="pros"><li><strong>A favor:</strong> Conta o serviço em uma forma: acompanhar o trajeto inteiro.</li><li><strong>Cuidado:</strong> Lembra levemente um ícone de transporte; precisa do nome para não parecer app de corrida.</li></ul>
+</section>
+  <p class="nota">Rascunho de marca para validação. Os símbolos foram desenhados em SVG para este protótipo; antes de registrar o nome ou a marca, vale uma busca de anterioridade.</p>
+</main>
+</body>
+</html>

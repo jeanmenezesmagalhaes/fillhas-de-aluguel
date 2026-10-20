@@ -1,1 +1,180 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Encontre cuidado · Filha de Aluguel</title><link rel="stylesheet" href="styles.css"></head><body><div class="demo">PROTÓTIPO PARA VALIDAÇÃO · Dados e valores fictícios · Nenhuma ação real</div><header><a class="brand" href="index.html">filha de aluguel<span> ✳</span></a><nav aria-label="Navegação do protótipo"><a href="index.html">Encontrar cuidado</a><a href="login.html">Área da cuidadora</a><a href="mapa.html">Mapa das telas</a></nav></header><main><section class="hero"><div><div class="eyebrow">Presença que faz a diferença</div><h1>Cuidado por perto.<br>Tranquilidade para<br>quem você ama.</h1><p class="lead">Encontre uma pessoa para acompanhar quem você ama, com atenção à rotina e respeito à sua história.</p><div class="tags"><span class="pill">Perfis detalhados</span><span class="pill">Valores à vista</span><span class="pill">Cuidado com presença</span></div></div><div class="art"><svg viewBox="0 0 420 330" role="img" aria-label="Ilustração de uma cuidadora fazendo companhia a uma pessoa idosa"><circle cx="210" cy="155" r="142" fill="#d4dec9"/><path d="M30 305q10-130 115-130t115 130" fill="#ba795a"/><path d="M190 305q0-132 103-132t106 132" fill="#3c6554"/><ellipse cx="145" cy="123" rx="47" ry="58" fill="#d7ab88"/><path d="M98 125Q70 49 143 49q68 0 48 82l-14-34q-48 6-63-15Z" fill="#e8e5da"/><ellipse cx="286" cy="120" rx="43" ry="54" fill="#b9825f"/><path d="M243 124q-24-80 43-80t42 88l-20-45q-30 16-56-5Z" fill="#3e3931"/><path d="M130 143q16 14 31-1m110-1q16 14 30-1" stroke="#fff" stroke-width="4" fill="none"/><path d="M186 236q65 50 97 5" stroke="#d6a481" stroke-width="23" fill="none" stroke-linecap="round"/><circle cx="133" cy="119" r="3" fill="#443c32"/><circle cx="160" cy="119" r="3" fill="#443c32"/><circle cx="274" cy="116" r="3" fill="#443c32"/><circle cx="300" cy="116" r="3" fill="#443c32"/></svg><div class="quote">“Ter companhia também é ter cuidado.”<div class="hint">Ilustração conceitual · personagens fictícios</div></div></div></section><section class="search" aria-label="Representação da busca"><div><label for="cidade">Em qual cidade?</label><input id="cidade" type="search" placeholder="Digite o nome da cidade" value="Campinas" aria-describedby="cidade-ajuda" disabled><span id="cidade-ajuda" class="hint">Busque pelo nome da cidade · exemplo: Campinas, SP</span></div><div><label for="servico">Que cuidado você procura?</label><select id="servico" disabled><option>Companhia e rotina</option></select></div><button class="btn" disabled>Encontrar cuidador ↗</button></section><p class="hint">Busca ilustrativa. As cidades disponíveis acompanharão a cobertura dos profissionais.</p><section class="section"><div class="eyebrow">Um passo de cada vez</div><h2>Mais clareza para escolher.</h2><div class="grid"><article class="card"><span class="number">01</span><h3>Conheça os perfis</h3><p>Veja experiências, regiões atendidas, valores e verificações.</p></article><article class="card"><span class="number">02</span><h3>Conte o que precisa</h3><p>Informe a rotina, o endereço e o melhor horário para o cuidado.</p></article><article class="card"><span class="number">03</span><h3>Revise o combinado</h3><p>Confira os valores e aguarde o aceite do profissional.</p></article></div></section><section class="card section"><h3>Seu trabalho é cuidar?</h3><p>Apresente sua experiência em um portfólio e seja encontrado pelas famílias da sua região.</p><button class="btn light" disabled>Quero ser cuidador</button><p class="hint">Entrada de cadastro ilustrativa. Tela prevista na próxima etapa.</p></section></main><div class="reviewbar">Navegação de revisão (somente entre amostras): <a href="index.html">01 · Busca</a><a href="portfolio.html">02 · Portfólio</a><a href="resumo.html">03 · Resumo</a><a href="valores.html">04 · Configurar valores</a><a href="login.html">05 · Login</a><a href="cadastro.html">06 · Cadastro</a><a href="pagamento.html">07 · Pagamento</a><a href="mapa.html">Ver escopo completo</a></div><footer>Filha de Aluguel · Nome provisório · Amostra visual v0.1<br>Personagens, avaliações e verificações demonstrativos. Atendimento, envio de dados e cobranças não estão disponíveis.</footer></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Acompanhantes para sua mãe ou seu pai em Campinas · Minha companhia</title>
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="site.css">
+<script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__fa)document.documentElement.classList.remove('js')},2500)</script>
+</head>
+<body class="pagina-home">
+<p class="prototipo">Protótipo para validação: pessoas, documentos e valores fictícios. Nenhum pedido é enviado.</p>
+
+<header class="site-topo" data-topo>
+  <div class="site-barra">
+    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
+    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="index.html#acompanhantes">Acompanhantes</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="resumo.html">Meu pedido</a><a class="botao-linha" href="login.html">Área profissional</a></nav>
+  </div>
+  <form class="busca-fixa" role="search" aria-label="Busca rápida (representação)" onsubmit="return false">
+    <label class="vh" for="cidade-fixa">Cidade</label><input id="cidade-fixa" type="search" value="Campinas" disabled>
+    <label class="vh" for="tarefa-fixa">Tarefa</label><select id="tarefa-fixa" disabled><option>Consulta ou exame</option></select>
+    <label class="vh" for="data-fixa">Data</label><input id="data-fixa" type="text" value="28/10/2026" disabled>
+    <a class="botao" href="#acompanhantes">Ver acompanhantes</a>
+  </form>
+</header>
+<div class="topo-home">
+  <div class="abertura">
+    <h1><span class="linha" style="--i:0">Escolha quem</span> <span class="linha" style="--i:1">acompanha sua mãe</span></h1>
+    <p class="apoio">Compare acompanhantes de Campinas pelo valor da hora, tempo mínimo, veículo e avaliações. Faça o orçamento e contrate pelo site.</p>
+    <form class="busca busca-home" role="search" aria-label="Busca (representação)" onsubmit="return false">
+      <div><label for="cidade">Cidade</label><input id="cidade" type="search" value="Campinas" disabled></div>
+      <div><label for="tarefa">Tarefa</label><select id="tarefa" disabled><option>Consulta ou exame</option></select></div>
+      <div><label for="data">Data</label><input id="data" type="text" value="28/10/2026" disabled></div>
+      <a class="botao" href="#acompanhantes">Ver acompanhantes</a>
+    </form>
+  </div>
+</div>
+
+<main>
+  <section class="lista" id="acompanhantes" aria-labelledby="t-lista">
+    <div class="lista-cab">
+      <h2 class="lista-titulo" id="t-lista">Acompanhantes em Campinas</h2>
+      <p class="lista-conta" data-conta-lista aria-live="polite">4 acompanhantes para todas as tarefas</p>
+    </div>
+    <div class="filtro" role="group" aria-label="Filtrar por tarefa"><button type="button" class="ft ft-todas" data-t="todas" aria-pressed="true"><span class="ft-nome">Todas as tarefas</span><small>4 acompanhantes</small></button><button type="button" class="ft" data-t="consulta" aria-pressed="false"><img src="assets/rua-maria-monteiro-cambui-campinas-sp-800.webp" alt="" width="800" height="600" loading="lazy"><span class="ft-nome">Consulta ou exame</span><small>em geral 2 a 4 h · 4 acompanhantes</small></button><button type="button" class="ft" data-t="banco" aria-pressed="false"><img src="assets/werner-haberkorn-praca-bento-quirino-campinas-1-800.webp" alt="" width="800" height="531" loading="lazy"><span class="ft-nome">Banco ou cartório</span><small>em geral 2 a 3 h · 2 acompanhantes</small></button><button type="button" class="ft" data-t="mercado" aria-pressed="false"><img src="assets/mercado-municipal-de-campinas-1-800.webp" alt="" width="800" height="534" loading="lazy"><span class="ft-nome">Mercado e farmácia</span><small>em geral 1 a 2 h · 3 acompanhantes</small></button><button type="button" class="ft" data-t="passeio" aria-pressed="false"><img src="assets/lagoa-do-taquaral-panoramio-26-800.webp" alt="" width="800" height="533" loading="lazy"><span class="ft-nome">Passeio</span><small>em geral 1 a 3 h · 3 acompanhantes</small></button></div>
+    <ul class="cartoes">
+        <li class="pc" data-tarefas="consulta banco mercado passeio">
+          <div class="pc-topo"><span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato ilustrativo da personagem fictícia Ana Oliveira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#2d5e4b"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#3d332b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span><h3>Ana Oliveira</h3></div>
+          <p class="pc-preco num"><strong>R$ 70</strong> por hora</p>
+          <p class="pc-sub">R$ 60/h a partir de 4 h</p>
+          <ul class="pc-fatos">
+            <li>Cambuí e Taquaral · 6 anos</li>
+            <li class="num">Mínimo de 2 horas</li>
+            <li class="pc-veiculo sim"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+            <li class="num">4,9 de 5 · 12 avaliações</li>
+            <li class="num">Documentos revisados em 01/10/2026</li>
+          </ul>
+          <p class="pc-tarefas">Faz: consulta ou exame, banco ou cartório, mercado e farmácia, passeio</p>
+          <p class="pc-exemplo num"><span>4 horas</span><strong>R$ 240,00</strong></p>
+          <a class="botao escuro pc-acao" href="portfolio.html">Ver perfil e orçar</a>
+        </li>
+        <li class="pc" data-tarefas="consulta mercado passeio">
+          <div class="pc-topo"><span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato ilustrativo da personagem fictícia Cláudia Ramos"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#8d5a3b"/><circle cx="40" cy="30" r="13" fill="#1f1a17"/><circle cx="52" cy="20" r="14" fill="#1f1a17"/><circle cx="66" cy="20" r="14" fill="#1f1a17"/><circle cx="79" cy="30" r="13" fill="#1f1a17"/><circle cx="36" cy="44" r="10" fill="#1f1a17"/><circle cx="84" cy="44" r="10" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span><h3>Cláudia Ramos</h3></div>
+          <p class="pc-preco num"><strong>R$ 65</strong> por hora</p>
+          <p class="pc-sub">Mesmo valor em qualquer duração</p>
+          <ul class="pc-fatos">
+            <li>Taquaral · 4 anos</li>
+            <li class="num">Mínimo de 1 hora</li>
+            <li class="pc-veiculo nao"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/><path d="M2 20L28 2" stroke="#f28cb1" stroke-width="3"/></svg>Sem veículo</li>
+            <li class="num">4,8 de 5 · 7 avaliações</li>
+            <li class="num">Documentos revisados em 05/10/2026</li>
+          </ul>
+          <p class="pc-tarefas">Faz: consulta ou exame, mercado e farmácia, passeio</p>
+          <p class="pc-exemplo num"><span>4 horas</span><strong>R$ 260,00</strong></p>
+          <button class="botao escuro pc-acao" type="button" disabled>Perfil fora da amostra</button>
+        </li>
+        <li class="pc" data-tarefas="consulta banco">
+          <div class="pc-topo"><span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato ilustrativo da personagem fictícia Marta Ferreira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f2c94c"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#e0b08f"/><path d="M30 62Q24 12 60 12t30 50h-9q2-24-21-27-23 3-21 27z" fill="#b9b4ad"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span><h3>Marta Ferreira</h3></div>
+          <p class="pc-preco num"><strong>R$ 75</strong> por hora</p>
+          <p class="pc-sub">R$ 68/h a partir de 3 h</p>
+          <ul class="pc-fatos">
+            <li>Centro e Bosque · 9 anos</li>
+            <li class="num">Mínimo de 3 horas</li>
+            <li class="pc-veiculo sim"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+            <li class="num">5,0 de 5 · 4 avaliações</li>
+            <li class="num">Documentos revisados em 08/10/2026</li>
+          </ul>
+          <p class="pc-tarefas">Faz: consulta ou exame, banco ou cartório</p>
+          <p class="pc-exemplo num"><span>4 horas</span><strong>R$ 272,00</strong></p>
+          <button class="botao escuro pc-acao" type="button" disabled>Perfil fora da amostra</button>
+        </li>
+        <li class="pc" data-tarefas="consulta mercado passeio">
+          <div class="pc-topo"><span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato ilustrativo da personagem fictícia Joana Prado"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#24503f"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#a86f4c"/><circle cx="60" cy="14" r="11" fill="#2b211b"/><path d="M35 46Q34 22 60 22t25 24q-10-12-25-12T35 46z" fill="#2b211b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span><h3>Joana Prado</h3></div>
+          <p class="pc-preco num"><strong>R$ 70</strong> por hora</p>
+          <p class="pc-sub">Mesmo valor em qualquer duração</p>
+          <ul class="pc-fatos">
+            <li>Cambuí · 3 anos</li>
+            <li class="num">Mínimo de 2 horas</li>
+            <li class="pc-veiculo nao"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/><path d="M2 20L28 2" stroke="#f28cb1" stroke-width="3"/></svg>Sem veículo</li>
+            <li class="num">4,7 de 5 · 19 avaliações</li>
+            <li class="num">Documentos revisados em 29/09/2026</li>
+          </ul>
+          <p class="pc-tarefas">Faz: consulta ou exame, mercado e farmácia, passeio</p>
+          <p class="pc-exemplo num"><span>4 horas</span><strong>R$ 280,00</strong></p>
+          <button class="botao escuro pc-acao" type="button" disabled>Perfil fora da amostra</button>
+        </li>
+    </ul>
+    <p class="lista-vazia" data-vazia hidden>Ninguém faz essa tarefa em Campinas por enquanto. Veja todas as tarefas.</p>
+    <p class="lista-nota nota">Perfis, avaliações e valores fictícios. O exemplo de 4 horas já aplica o mínimo e o desconto de cada profissional.</p>
+  </section>
+
+  <section class="como" id="como-contratar" aria-labelledby="t-como">
+    <h2 class="cabeca" id="t-como" data-chega>Como contratar</h2>
+    <ol class="passos-home">
+      <li data-chega style="--i:1"><strong>Escolha</strong><p>Compare valor da hora, mínimo, veículo e avaliações das acompanhantes que atendem o bairro da sua mãe.</p></li>
+      <li data-chega style="--i:2"><strong>Faça o orçamento</strong><p>No perfil, diga quantas horas a tarefa deve levar. O total respeita o mínimo e aplica o desconto, quando houver.</p></li>
+      <li data-chega style="--i:3"><strong>Confirme</strong><p>Envie o pedido. Nada fica marcado sem o aceite da acompanhante, e você recebe a confirmação por e-mail.</p></li>
+    </ol>
+  </section>
+
+  <section class="confianca" id="confianca" aria-labelledby="t-conf">
+    <div class="pasta-grande" data-chega>
+      <span class="aba vazia" aria-hidden="true"></span>
+      <svg class="documento" viewBox="0 0 400 500" role="img" aria-label="Ficha ilustrativa dos documentos de Ana Oliveira, revisada em 1º de outubro de 2026">
+          <g transform="rotate(-3 200 250)">
+            <rect x="20" y="10" width="360" height="480" fill="#ffffff"/>
+            <text x="52" y="78" font-size="30" font-weight="700" fill="#10251e">Ana Oliveira</text>
+            <text x="52" y="108" font-size="17" fill="#55695f">Acompanhante · Campinas, SP</text>
+            <g font-size="17" fill="#10251e">
+              <text x="52" y="168">Identidade</text><text x="348" y="168" text-anchor="end">aprovada</text>
+              <rect x="52" y="182" width="296" height="2" fill="#dce8e0"/>
+              <text x="52" y="218">Certificado 160 h</text><text x="348" y="218" text-anchor="end">aprovado</text>
+              <rect x="52" y="232" width="296" height="2" fill="#dce8e0"/>
+              <text x="52" y="268">Veículo</text><text x="348" y="268" text-anchor="end">incluso</text>
+              <rect x="52" y="282" width="296" height="2" fill="#dce8e0"/>
+              <text x="52" y="318">Próxima revisão</text><text x="348" y="318" text-anchor="end">01/11/2026</text>
+            </g>
+            <g transform="rotate(-12 268 400)" fill="#2d5e4b">
+              <circle cx="268" cy="400" r="62" fill="none" stroke="#2d5e4b" stroke-width="5"/>
+              <circle cx="268" cy="400" r="50" fill="none" stroke="#2d5e4b" stroke-width="2"/>
+              <text x="268" y="392" font-size="17" font-weight="700" text-anchor="middle">REVISADO</text>
+              <text x="268" y="416" font-size="15" font-weight="500" text-anchor="middle">01 OUT 2026</text>
+            </g>
+          </g>
+        </svg>
+    </div>
+    <div class="confianca-texto">
+      <h2 class="cabeca" id="t-conf" data-chega>Por que confiar</h2>
+      <div class="motivo" data-chega style="--i:1"><h3>Documentos revisados todo mês</h3><p>Identidade e certificados são conferidos de novo a cada mês. A data da última revisão aparece no cartão e no perfil. <span data-faltam="2026-11-01" data-curto>A próxima de Ana é em 01/11/2026.</span></p></div>
+      <div class="motivo" data-chega style="--i:2"><h3>Avaliações de quem contratou</h3><blockquote><p>“Eu estava no trabalho. A Ana levou minha mãe ao exame e esperou até o fim.”</p></blockquote><p class="nota">Beatriz M., filha · avaliação fictícia</p></div>
+      <div class="motivo" data-chega style="--i:3"><h3>Valor fechado antes do pedido</h3><p>O orçamento mostra horas, valor da hora, mínimo e se o veículo está incluso. A taxa da plataforma ainda está em definição e não entra no total.</p></div>
+    </div>
+  </section>
+
+  <a class="chamada" href="#acompanhantes">
+    <span class="aba vazia" aria-hidden="true"></span>
+    <span class="frase">Sua mãe tem uma consulta marcada? Escolha quem vai com ela.</span>
+    <svg class="seta" viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36L36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+    <span class="palavra" aria-hidden="true">Escolher</span>
+    <span class="vh">Voltar à lista de acompanhantes</span>
+  </a>
+</main>
+
+<footer class="rodape">
+  <div class="blocos" aria-hidden="true"><span style="height:100%;background:#f28cb1" data-l="m"></span><span style="height:78%;background:#f2c94c" data-l="i"></span><span style="height:92%;background:#dce8e0" data-l="n"></span><span style="height:64%;background:#ffffff" data-l="h"></span><span style="height:86%;background:#f28cb1" data-l="a"></span><span class="espaco"></span><span style="height:72%;background:#f2c94c" data-l="c"></span><span style="height:100%;background:#dce8e0" data-l="o"></span><span style="height:76%;background:#ffffff" data-l="m"></span><span style="height:90%;background:#f28cb1" data-l="p"></span><span style="height:68%;background:#f2c94c" data-l="a"></span><span style="height:76%;background:#dce8e0" data-l="n"></span><span style="height:84%;background:#ffffff" data-l="h"></span><span style="height:100%;background:#f28cb1" data-l="i"></span><span style="height:70%;background:#f2c94c" data-l="a"></span></div>
+  <p class="vh">Minha companhia</p>
+  <div class="rodape-colunas">
+    <div><h2>Famílias</h2><ul><li><a href="index.html">Busca</a></li><li><a href="portfolio.html">Portfólio de Ana</a></li><li><a href="resumo.html">Resumo da solicitação</a></li></ul></div>
+    <div><h2>Profissionais</h2><ul><li><a href="login.html">Área profissional</a></li><li><a href="cadastro.html">Cadastro</a></li><li><a href="valores.html">Configurar valores</a></li><li><a href="pagamento.html">Pagamento</a></li></ul></div>
+    <div><h2>Protótipo</h2><ul><li><a href="mapa.html">Mapa das 16 telas</a></li></ul></div>
+    <div class="contato"><h2>Sobre esta amostra</h2><p>Amostra visual v0.4 para validar estilo, legibilidade, organização e tom.</p><p>Atendimento, envio de dados e cobranças não estão disponíveis.</p></div>
+  </div>
+  <p class="creditos">Fotos: <a href="https://commons.wikimedia.org/wiki/File:Lagoa_do_Taquaral_-_panoramio_(26).jpg">“Lagoa do Taquaral - panoramio (26)”</a>, de enioprado, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Rua_Maria_Monteiro_-_Cambu%C3%AD_-_Campinas,_SP.JPG">“Rua Maria Monteiro - Cambuí - Campinas, SP”</a>, de Fasouzafreitas, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Werner_Haberkorn_-_Pra%C3%A7a_Bento_Quirino_-_Campinas_1.jpg">“Werner Haberkorn - Praça Bento Quirino - Campinas 1”</a>, de Werner Haberkorn/Fotolabor/Museu Paulista da USP, <a href="https://creativecommons.org/publicdomain/mark/1.0/">domínio público</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Mercado_Municipal_de_Campinas_1.tif">“Mercado Municipal de Campinas 1”</a>, de Bel Young, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons.</p>
+  <div class="rodape-fim"><span>Minha companhia · 2026</span><a class="botao" href="mapa.html">Ver mapa das telas</a></div>
+</footer>
+<script src="site.js" defer></script>
+</body>
+</html>

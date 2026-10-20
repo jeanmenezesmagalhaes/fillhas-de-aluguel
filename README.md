@@ -1,6 +1,6 @@
 # Fillhas de aluguel
 
-Protótipo estático privado. Nome provisório nas telas: **Filha de Aluguel**.
+Protótipo estático privado. Nome da solução: **Minha companhia** (antes, provisório: Filha de Aluguel). Marca: direção "Lado a lado" (`docs/marca/direcoes.html`).
 
 ## Primeira entrega
 - `index.html`: página inicial e busca.
@@ -9,7 +9,7 @@ Protótipo estático privado. Nome provisório nas telas: **Filha de Aluguel**.
 - `valores.html`: painel do cuidador com valor mínimo de R$ 70/h.
 - `mapa.html`: mapa das 16 telas e fluxos.
 
-Abra `index.html` no navegador. Não há instalação, dependências, JavaScript, backend ou coleta de dados. Para visualização local opcional: `python3 -m http.server 4173 --bind 127.0.0.1`.
+Abra `index.html` no navegador. Não há instalação, dependências, backend ou coleta de dados. Um JavaScript pequeno (`site.js`) cuida do movimento, da prévia das tarefas, da contagem de dias até a próxima revisão e do orçamento por horas (que só calcula na tela e não envia nada); sem ele as páginas continuam completas, com o total de cada hora escrito nas barras. Para visualização local opcional: `python3 -m http.server 4173 --bind 127.0.0.1`.
 
 Links de revisão navegam entre as amostras. Botões, filtros e campos do produto são representações inativas. Todos os personagens, valores, documentos e avaliações são fictícios; retratos são ilustrações, não fotografias de pessoas reais.
 
