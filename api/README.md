@@ -29,7 +29,7 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
 - **Sessão:** cookie `mc_sessao` httpOnly, SameSite=Lax (Secure em produção), válido por 30 dias. O banco guarda só o hash SHA-256 do token. Pedidos que mudam algo vindos de outra origem são recusados.
 - **Login:** a mesma mensagem e o mesmo tempo de resposta para senha errada e e-mail sem conta. Cadastro e login aceitam 10 tentativas por minuto por IP.
 - **Senha:** no mínimo 8 caracteres.
-- **Profissional:** começa em `rascunho`. O valor da hora é definido depois, no mínimo R$ 70 (7000 centavos, conferido também no banco). O portfólio público só aparece quando o perfil está `aprovado`.
+- **Profissional:** começa em `rascunho`. O valor da hora é definido depois, no mínimo R$ 70 (7000 centavos, conferido também no banco). O valor não é exigido para entrar na lista de espera. O portfólio público só aparece com o perfil `aprovado` e o valor da hora definido.
 - **Verificação e lista de espera:**
   - Para entrar na lista de espera (`em_analise`), a profissional precisa de:
     - e-mail e WhatsApp confirmados por código de 6 dígitos (vale 15 minutos, 5 tentativas, um reenvio por minuto);

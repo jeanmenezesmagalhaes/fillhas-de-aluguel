@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ambiente, cliente, DIA, familia, profissional, type Ambiente } from './ajuda.js';
+import { eq } from 'drizzle-orm';
+import { profissionais } from '../src/db/schema.js';
+import { ambiente, cliente, DIA, familia, profissional, profissionalAprovada, type Ambiente } from './ajuda.js';
 
 let amb: Ambiente;
 beforeAll(async () => {
@@ -131,5 +133,15 @@ describe('limite de tentativas', () => {
     } finally {
       await outro.fechar();
     }
+  });
+});
+
+describe('portfólio público', () => {
+  it('aprovado sem valor da hora ainda não aparece', async () => {
+    const pro = await profissionalAprovada(amb);
+    expect((await cliente(amb.app).get(`/api/profissionais/${pro.slug}`)).status).toBe(200);
+    await amb.banco.db.update(profissionais).set({ valorHoraCentavos: null }).where(eq(profissionais.slug, pro.slug));
+    expect((await cliente(amb.app).get(`/api/profissionais/${pro.slug}`)).status).toBe(404);
+    expect((await pro.c.get(`/api/profissionais/${pro.slug}`)).status).toBe(200);
   });
 });

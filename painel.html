@@ -222,6 +222,8 @@
     if (!window.mc || !mc.comApi) return;
     const eu = await mc.entrar('profissional');
     if (!eu) return;
+    // quem ainda não foi aprovada continua o cadastro na verificação
+    if (eu.profissional && ['rascunho', 'em_analise', 'correcao'].includes(eu.profissional.situacao)) { location.replace('verificacao.html'); return; }
     const { esc, dia, faixa, brl, primeiro } = mc;
     const $ = (s) => document.querySelector(s);
     $('[data-nome-conta]').textContent = eu.nome;

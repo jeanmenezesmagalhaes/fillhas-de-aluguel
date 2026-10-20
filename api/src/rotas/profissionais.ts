@@ -22,6 +22,9 @@ const perfil = z
 
 const slugParam = z.object({ slug: z.string().min(1).max(80) });
 
+// no ar para o público: aprovado e com o valor da hora definido (sem valor não dá para contratar)
+const noAr = (p: { situacao: string; valorHoraCentavos: number | null }) => p.situacao === 'aprovado' && p.valorHoraCentavos != null;
+
 export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
   // a própria profissional edita preço, mínimo, veículo, bairros e apresentação
   app.patch('/api/profissionais/eu', async (req) => {
@@ -58,7 +61,7 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
       .from(profissionais)
       .innerJoin(usuarios, eq(usuarios.id, profissionais.usuarioId))
       .where(eq(profissionais.slug, slug));
-    if (!p || (p.situacao !== 'aprovado' && req.usuario?.id !== p.usuarioId)) throw naoEncontrado('Profissional não encontrada.');
+    if (!p || (!noAr(p) && req.usuario?.id !== p.usuarioId)) throw naoEncontrado('Profissional não encontrada.');
     const { usuarioId, ...publico } = p;
     const notas = await avaliacoesRecebidas(ctx.db, usuarioId, 'familia_avalia_profissional', ctx.agora());
     return { profissional: { ...publico, nota: { media: notas.media, total: notas.total } } };
@@ -67,10 +70,10 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
   app.get('/api/profissionais/:slug/avaliacoes', async (req) => {
     const { slug } = slugParam.parse(req.params);
     const [p] = await ctx.db
-      .select({ usuarioId: profissionais.usuarioId, situacao: profissionais.situacao })
+      .select({ usuarioId: profissionais.usuarioId, situacao: profissionais.situacao, valorHoraCentavos: profissionais.valorHoraCentavos })
       .from(profissionais)
       .where(eq(profissionais.slug, slug));
-    if (!p || (p.situacao !== 'aprovado' && req.usuario?.id !== p.usuarioId)) throw naoEncontrado('Profissional não encontrada.');
+    if (!p || (!noAr(p) && req.usuario?.id !== p.usuarioId)) throw naoEncontrado('Profissional não encontrada.');
     return avaliacoesRecebidas(ctx.db, p.usuarioId, 'familia_avalia_profissional', ctx.agora());
   });
 
