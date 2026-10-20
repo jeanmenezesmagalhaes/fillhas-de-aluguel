@@ -86,7 +86,7 @@
     const form = document.querySelector('[data-form]');
     const botoes = document.querySelectorAll('[data-modo]');
     const voltar = document.querySelector('[data-voltar]');
-    if (volta) { voltar.href = volta; document.querySelector('[data-voltar-texto]').textContent = 'Voltar ao pedido'; }
+    if (volta) { voltar.href = volta; document.querySelector('[data-voltar-texto]').textContent = volta.startsWith('resumo') ? 'Voltar ao pedido' : 'Voltar'; }
     else { voltar.href = 'index.html'; document.querySelector('[data-voltar-texto]').textContent = 'Início'; document.querySelector('[data-titulo]').textContent = 'Entre na sua conta'; document.querySelector('[data-sub]').textContent = 'Acompanhe seus pedidos e as respostas das profissionais.'; }
     // ?perfil=pro: a mesma tela, para a profissional entrar no painel ou criar a conta dela
     const pro = params.get('perfil') === 'pro';
@@ -139,7 +139,7 @@
       // aberta direto do arquivo, sem a API: a tela segue só lembrando o nome no navegador
       if (!/^https?:$/.test(location.protocol)) {
         lembra(criar ? form.nome.value.trim() : email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), email);
-        location.href = destino;
+        location.href = pro && modo === 'criar' && !volta ? 'verificacao.html' : destino;
         return;
       }
 
@@ -168,7 +168,7 @@
           return;
         }
         lembra(u.nome, u.email);
-        location.href = destino;
+        location.href = pro && modo === 'criar' && !volta ? 'verificacao.html' : destino;
       } catch (_) {
         avisa('Não conseguimos conectar. Confira sua internet e tente de novo.');
       } finally {

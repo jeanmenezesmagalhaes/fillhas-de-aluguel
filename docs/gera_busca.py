@@ -304,7 +304,7 @@ html = f'''<!doctype html>
   <p class="vh">Minha companhia</p>
   <div class="rodape-colunas">
     <div><h2>Famílias</h2><ul><li><a href="busca.html">Encontrar profissional</a></li><li><a href="index.html#como-contratar">Como contratar</a></li><li><a href="index.html#confianca">Por que confiar</a></li><li><a href="pedidos.html">Meus pedidos</a></li></ul></div>
-    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="cadastro.html">Quero me cadastrar</a></li></ul></div>
+    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="entrar.html?perfil=pro&amp;modo=criar">Quero me cadastrar</a></li></ul></div>
     <div class="contato"><h2>Onde atendemos</h2><p>Em todo o Brasil, nas cidades com profissionais cadastradas.</p></div>
   </div>
   <div class="rodape-fim"><span>Minha companhia · 2026</span></div>

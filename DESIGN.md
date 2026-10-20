@@ -359,6 +359,32 @@ Extrato para a profissional não precisar do suporte.
   - No celular, a tabela vira lista.
 - **Dúvidas sobre pagamento:** seis perguntas que se abrem e um e-mail de ajuda com o assunto já preenchido.
 
+### Cadastro da profissional (verificacao.html, verificacao.js, verificacao.css)
+O celular vem primeiro, com uma coluna só e etapas numeradas pela posição. A etapa atual tem borda escura; as prontas ganham um ✓ verde, desenhado em CSS. Uma barra mostra "N de 3 etapas prontas".
+1. **E-mail e WhatsApp:** cada canal mostra o destino mascarado, "Enviar código" e um campo de 6 números (one-time-code). Quando o sexto número entra, o código é confirmado sozinho; o reenvio só libera depois de 60 s.
+2. **Dados e endereço:**
+   - CPF com máscara, e a opção "Também trabalho com CNPJ" abre CNPJ e razão social. O endereço vai numa grade de 6 colunas.
+   - Depois de salvo, vira um resumo com "Alterar dados".
+3. **Documentos:**
+   - Um cartão por documento exigido, com "Tirar foto" (câmera traseira) e "Escolher arquivo".
+   - Mostra o nome, o tamanho e "Ver o que enviei".
+   - Um documento recusado fica em rosa, com o motivo.
+4. **Enviar:** a lista do que falta e o botão "Entrar na lista de espera".
+
+**Estados da tela:**
+- **Correção:** um aviso rosa com o motivo no topo, e o botão vira "Enviar de novo".
+- **Na fila:** a posição em número grande ("3º na fila"), três passos (enviado, conferência, perfil no ar) e os dados travados.
+- **Aprovada:** link para o painel.
+
+**Indicações:** o código, os links para profissionais e para famílias (copiar ou enviar no WhatsApp), três contagens e as pessoas indicadas com a etapa. Uma nota diz que as regras de recompensa ainda estão sendo definidas.
+
+### Administração (admin.html, admin.js)
+- **Fila:** à esquerda, em ordem de envio, com posição, nome, cidade, quem indicou e há quanto tempo.
+- **Ficha:** à direita, com contatos (confirmado ou não), CPF e CNPJ completos, endereço e os documentos atuais com "Abrir documento", "Aprovar" e "Recusar" (pede o motivo).
+- **Envios anteriores:** ficam num details.
+- **Decisão:** "Aprovar perfil" só libera com todos os documentos aprovados; "Pedir correção" pede o motivo.
+- **No celular:** a fila vem antes da ficha.
+
 ## Do's and Don'ts
 
 ### Do:

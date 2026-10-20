@@ -291,3 +291,23 @@ O usuário preferiu a tabela à lista em frases, mas com mais respiro e com filt
   - regras do bônus de indicação;
   - se indicar faz a pessoa subir na fila;
   - se a profissional aprovada pode indicar famílias também (hoje pode).
+
+## Telas de verificação, lista de espera, indicações e administração — 20/10/2026
+Pedido da sessão do backend, em nome do usuário, sobre a API do commit fb524cc.
+- **verificacao.html, verificacao.js e verificacao.css** (profissional):
+  - confirmação de e-mail e WhatsApp por código;
+  - CPF, CNPJ opcional com razão social, e endereço;
+  - documentos, com foto pela câmera ou arquivo de até 10 MB;
+  - envio para a lista de espera, posição na fila, correção pedida e aprovada;
+  - indicações com código, links, contagens e pessoas indicadas.
+- **admin.html e admin.js** (equipe): fila e ficha, aprovar ou recusar cada documento com motivo, aprovar o perfil e pedir correção.
+- **Modo de cada tela:** com a API, usam as rotas /api/profissionais/eu/verificacao, /api/eu/verificacoes, /api/indicacoes/eu e /api/admin/*. Sem a API, rodam o mesmo fluxo com dados de exemplo em memória. Na verificação, ?exemplo=espera e ?exemplo=correcao mostram esses estados.
+- **entrar.html:** a profissional que cria a conta vai para verificacao.html. O texto de voltar só diz "pedido" quando volta para o resumo.
+- **Links de cadastro:** "Quero me cadastrar" (área profissional, rodapés e ganhos) agora abre entrar.html?perfil=pro&modo=criar, no lugar do cadastro.html antigo. O rodapé da área profissional deixou de apontar para login.html.
+- **Testado com a API em PORT=4174:**
+  - a equipe recusou o RG da Joana e pediu correção;
+  - a Joana viu o aviso e o motivo, reenviou uma imagem e voltou para a fila (1º);
+  - uma conta nova foi criada com ?indicacao=ANA-DEMO e caiu na verificação;
+  - o código errado deu erro, e o código do log confirmou o e-mail.
+- **Dados de teste:** a conta de teste (teste.verificacao@exemplo.test) ficou no banco local api/.data. O seed não a apaga.
+- **Não commitado.** O checkout está no branch backend-contas-avaliacoes.
