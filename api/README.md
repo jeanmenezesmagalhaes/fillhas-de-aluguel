@@ -11,7 +11,7 @@ npm run seed     # contas e pedidos de demonstração (só fora de produção)
 npm run dev      # http://127.0.0.1:4175 (a 4173 fica para o servidor estático do protótipo)
 ```
 
-Sem `DATABASE_URL`, o banco é um Postgres embutido (PGlite) gravado em `api/.data/pglite`. Para um Postgres de verdade, defina `DATABASE_URL=postgres://…` (ver `.env.example`). As migrations rodam sozinhas ao iniciar.
+Sem `DATABASE_URL`, o banco é um Postgres embutido (PGlite) gravado em `api/.data/pglite`. O PGlite só aceita um processo por vez: **pare a API antes de rodar `npm run seed`** (ou os scripts `admin` e `aprovar`) e suba de novo depois. Com os dois rodando juntos, a API continua vendo os dados antigos. Para um Postgres de verdade, defina `DATABASE_URL=postgres://…` (ver `.env.example`). As migrations rodam sozinhas ao iniciar.
 
 - `npm test`: testes (banco em memória, relógio controlado)
 - `npm run typecheck`
@@ -56,6 +56,13 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
   - O bônus em si (valor, quando paga, limites) ainda não existe.
 - **Mensagens:** a interface `Mensageiro` (`src/mensagens.ts`) envia e-mail e WhatsApp. Fora de produção, a mensagem só vai para o log do servidor. Em produção sem provedor, o envio responde 503.
 - **Arquivos:** a interface `Armazenamento` (`src/armazenamento.ts`). Em desenvolvimento, os arquivos ficam em disco (`api/.data/arquivos`). Em produção, precisa de um bucket privado (S3 ou R2).
+- **Tarefas e mínimo de horas:**
+  - A profissional escolhe as tarefas que faz, cada uma com o próprio mínimo de 1 a 12 horas.
+  - As tarefas fixas são `consulta` (Consulta ou exame), `banco` (Banco ou cartório), `mercado` (Mercado e farmácia) e `passeio` (Passeio). Ela também pode criar atividades `personalizada`, com nome próprio. Até 20 tarefas, sem repetir tipo fixo nem nome.
+  - `aceitaOutras` libera "Outra tarefa · a combinar", com mínimo de 1 h.
+  - A lista só pode ficar vazia se ela aceitar outras.
+  - `horasMinimas` passa a ser o menor mínimo da lista.
+  - No pedido, `tipoTarefa` (mais `nomeTarefa`, se for personalizada) aplica o mínimo daquela tarefa. Sem `tipoTarefa`, ou com o perfil sem lista, vale `horasMinimas`.
 - **Pedido de serviço:** o valor da hora fica congelado no pedido e respeita o mínimo de horas da profissional. Pode trazer `local` e `observacoes` (recado para a profissional). Situações: `solicitado`, `proposta_alterada`, `confirmado`, `recusado`, `cancelado`, `realizado`.
 - **Proposta de outro horário:** a profissional propõe outro início ou outra duração, com recado; o pedido fica em `proposta_alterada` até a família aceitar (o novo horário passa a valer e o pedido é confirmado) ou recusar (o pedido se encerra).
 - **Lista de serviços:** cada item traz `papel` (de quem pergunta), `minhaNota`, `podeAvaliar` e, nos pedidos recebidos pela profissional, `notaFamilia`.
@@ -78,7 +85,7 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET | `/api/eu` | conta da sessão |
 | GET, POST | `/api/pessoas` | família: pessoas acompanhadas |
 | DELETE | `/api/pessoas/:id` | família |
-| PATCH | `/api/profissionais/eu` | profissional: valor da hora, mínimo, veículo, bairros, apresentação |
+| PATCH | `/api/profissionais/eu` | profissional: valor da hora, mínimo, veículo, bairros, apresentação, `tarefas` e `aceitaOutras` |
 | POST | `/api/eu/verificacoes` | pede código por `email` ou `whatsapp` |
 | POST | `/api/eu/verificacoes/confirmar` | confirma o código |
 | GET | `/api/profissionais/eu/verificacao` | profissional: o que falta, documentos, posição na fila |

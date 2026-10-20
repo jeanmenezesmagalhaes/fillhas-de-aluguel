@@ -9,6 +9,7 @@ import { avaliacoes, pessoasAcompanhadas, profissionais, servicos, usuarios } fr
 import { conflito, ErroApi, naoEncontrado, violouUnico } from '../erros.js';
 import * as v from '../validacao.js';
 import { marcarPrimeiroServico } from './indicacoes.js';
+import { mensagemAbaixoDoMinimo, NOME_TAREFA, TIPOS_FIXOS, tarefasDe } from '../tarefas.js';
 
 type Situacao = (typeof servicos.$inferSelect)['situacao'];
 type Papel = 'contratante' | 'profissional';
@@ -20,6 +21,10 @@ const textoCurto = (max: number) => z.string().trim().max(max, `Use no máximo $
 const pedido = z.object({
   profissional: z.string({ error: 'Escolha a profissional.' }).min(1).max(80),
   tarefa: z.string({ error: 'Conte qual é a tarefa.' }).trim().min(2, 'Conte qual é a tarefa.').max(200),
+  // tarefa da lista da profissional; 'outra' é a combinar, se ela aceitar
+  tipoTarefa: z.enum([...TIPOS_FIXOS, 'personalizada', 'outra'], { error: 'Escolha a tarefa.' }).optional(),
+  // nome da atividade personalizada, como está no perfil dela
+  nomeTarefa: z.string().trim().max(60).optional(),
   local: textoCurto(200),
   observacoes: textoCurto(1000),
   inicio: inicioFuturo,
@@ -43,6 +48,7 @@ const minha = alias(avaliacoes, 'minha');
 const colunasServico = {
   id: servicos.id,
   tarefa: servicos.tarefa,
+  tipoTarefa: servicos.tipoTarefa,
   local: servicos.local,
   observacoes: servicos.observacoes,
   inicio: servicos.inicio,
@@ -119,15 +125,40 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
         situacao: profissionais.situacao,
         valor: profissionais.valorHoraCentavos,
         horasMinimas: profissionais.horasMinimas,
+        aceitaOutras: profissionais.aceitaOutras,
       })
       .from(profissionais)
       .where(eq(profissionais.slug, dados.profissional));
     if (!p || p.situacao !== 'aprovado' || !p.valor) throw naoEncontrado('Profissional não encontrada.');
     if (p.usuarioId === u.id) throw new ErroApi(422, 'proprio_perfil', 'Você não pode contratar o seu próprio perfil.');
-    if (dados.horas < p.horasMinimas) {
-      throw new ErroApi(422, 'abaixo_do_minimo', `Esta profissional atende a partir de ${p.horasMinimas} horas.`, {
-        horas: `O mínimo é de ${p.horasMinimas} horas.`,
-      });
+    // com a tarefa escolhida, vale o mínimo dela; sem tarefa (ou perfil sem lista), o mínimo geral
+    const lista = dados.tipoTarefa ? await tarefasDe(ctx.db, p.usuarioId) : [];
+    let minimo = { nome: '', horas: p.horasMinimas };
+    if (dados.tipoTarefa && (lista.length || p.aceitaOutras)) {
+      if (dados.tipoTarefa === 'outra') {
+        if (!p.aceitaOutras) {
+          throw new ErroApi(422, 'tarefa_nao_oferecida', 'Esta profissional não aceita outras tarefas a combinar.', { tipoTarefa: 'Escolha uma das tarefas do perfil.' });
+        }
+        minimo = { nome: '', horas: 1 };
+      } else {
+        const t = lista.find((x) =>
+          x.tipo === dados.tipoTarefa &&
+          (x.tipo !== 'personalizada' || x.nome.toLocaleLowerCase('pt-BR') === (dados.nomeTarefa ?? '').toLocaleLowerCase('pt-BR')),
+        );
+        if (!t) {
+          throw new ErroApi(422, 'tarefa_nao_oferecida', 'Esta profissional não faz esta tarefa.', { tipoTarefa: 'Escolha uma das tarefas do perfil.' });
+        }
+        minimo = { nome: t.tipo === 'personalizada' ? t.nome : NOME_TAREFA[t.tipo], horas: t.minimoHoras };
+      }
+    }
+    if (dados.horas < minimo.horas) {
+      const plural = minimo.horas === 1 ? 'hora' : 'horas';
+      throw new ErroApi(
+        422,
+        'abaixo_do_minimo',
+        minimo.nome ? mensagemAbaixoDoMinimo(minimo.nome, minimo.horas) : `Esta profissional atende a partir de ${minimo.horas} ${plural}.`,
+        { horas: `O mínimo é de ${minimo.horas} ${plural}.` },
+      );
     }
     const inicio = new Date(dados.inicio);
     if (inicio <= ctx.agora()) {
@@ -147,6 +178,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
         profissionalId: p.usuarioId,
         pessoaAcompanhadaId: dados.pessoaAcompanhadaId,
         tarefa: dados.tarefa,
+        tipoTarefa: dados.tipoTarefa ?? null,
         local: dados.local || null,
         observacoes: dados.observacoes || null,
         inicio,

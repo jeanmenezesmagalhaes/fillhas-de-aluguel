@@ -88,6 +88,8 @@ export const profissionais = pgTable(
     valorHoraCentavos: integer('valor_hora_centavos'),
     horasMinimas: smallint('horas_minimas').notNull().default(1),
     veiculoIncluso: boolean('veiculo_incluso').notNull().default(false),
+    // aceita pedidos de tarefas fora da lista dela ("Outra tarefa · a combinar"), com mínimo de 1 h
+    aceitaOutras: boolean('aceita_outras').notNull().default(false),
     situacao: situacaoProfissional('situacao').notNull().default('rascunho'),
     revisadoEm: date('revisado_em', { mode: 'string' }),
     proximaRevisao: date('proxima_revisao', { mode: 'string' }),
@@ -164,6 +166,8 @@ export const servicos = pgTable(
       onDelete: 'set null',
     }),
     tarefa: text('tarefa').notNull(),
+    // tipo da tarefa na lista da profissional, quando o pedido veio por ela
+    tipoTarefa: text('tipo_tarefa'),
     // onde: endereço de saída ou do compromisso, como a família escreveu
     local: text('local'),
     // recado da família para a profissional
@@ -336,5 +340,30 @@ export const qualificacoes = pgTable(
     check('qualificacao_recusada_tem_motivo', sql`${t.situacao} <> 'recusado' or ${t.motivoRecusa} is not null`),
     check('qualificacao_carga_horaria', sql`${t.cargaHorariaHoras} is null or ${t.cargaHorariaHoras} between 1 and 5000`),
     check('qualificacao_ano', sql`${t.anoConclusao} is null or ${t.anoConclusao} between 1950 and 2100`),
+  ],
+);
+
+export const tipoTarefa = pgEnum('tipo_tarefa', ['consulta', 'banco', 'mercado', 'passeio', 'personalizada']);
+
+// Tarefas que a profissional faz, cada uma com o próprio mínimo de horas. As fixas não se
+// repetem; as personalizadas têm nome próprio, também sem repetir.
+export const tarefasProfissional = pgTable(
+  'tarefas_profissional',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    profissionalId: uuid('profissional_id')
+      .notNull()
+      .references(() => profissionais.usuarioId, { onDelete: 'cascade' }),
+    tipo: tipoTarefa('tipo').notNull(),
+    nome: text('nome'),
+    minimoHoras: smallint('minimo_horas').notNull(),
+    ordem: smallint('ordem').notNull().default(0),
+  },
+  (t) => [
+    uniqueIndex('tarefa_fixa_unica').on(t.profissionalId, t.tipo).where(sql`${t.tipo} <> 'personalizada'`),
+    uniqueIndex('tarefa_personalizada_unica').on(t.profissionalId, sql`lower(${t.nome})`).where(sql`${t.tipo} = 'personalizada'`),
+    check('tarefa_minimo_faixa', sql`${t.minimoHoras} between 1 and 12`),
+    check('tarefa_nome_personalizada', sql`(${t.tipo} = 'personalizada') = (${t.nome} is not null)`),
+    index('tarefas_por_tipo').on(t.tipo),
   ],
 );

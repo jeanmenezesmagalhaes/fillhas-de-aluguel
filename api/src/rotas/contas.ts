@@ -16,6 +16,7 @@ import { contratantes, pessoasAcompanhadas, profissionais, usuarios } from '../d
 import { conflito, ErroApi, violouUnico } from '../erros.js';
 import * as v from '../validacao.js';
 import { codigoIndicacao, registrarIndicacao } from './indicacoes.js';
+import { tarefasDe } from '../tarefas.js';
 
 const pessoa = z.object({
   nome: v.nome,
@@ -104,6 +105,7 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
         valorHoraCentavos: profissionais.valorHoraCentavos,
         horasMinimas: profissionais.horasMinimas,
         veiculoIncluso: profissionais.veiculoIncluso,
+        aceitaOutras: profissionais.aceitaOutras,
       },
     })
     .from(usuarios)
@@ -124,7 +126,7 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
     emailVerificado: !!linha.emailVerificado,
     celularVerificado: !!linha.celularVerificado,
     papeis,
-    profissional: linha.profissional,
+    profissional: linha.profissional ? { ...linha.profissional, tarefas: await tarefasDe(db, linha.id) } : null,
   };
 }
 

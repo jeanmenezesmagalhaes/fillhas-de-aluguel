@@ -8,7 +8,7 @@ import { inArray, or, sql } from 'drizzle-orm';
 import { armazenamentoEmDisco } from '../armazenamento.js';
 import { gerarHashSenha } from '../auth.js';
 import { abrirBanco } from '../db/index.js';
-import { avaliacoes, contratantes, documentos, indicacoes, pessoasAcompanhadas, profissionais, qualificacoes, servicos, usuarios } from '../db/schema.js';
+import { avaliacoes, contratantes, documentos, indicacoes, pessoasAcompanhadas, profissionais, qualificacoes, servicos, tarefasProfissional, usuarios } from '../db/schema.js';
 
 if (process.env.NODE_ENV === 'production') {
   console.error('O seed só roda fora de produção.');
@@ -60,8 +60,9 @@ await banco.db.transaction(async (tx) => {
     bairros: ['Cambuí', 'Taquaral'],
     apresentacao: 'Acompanho pessoas idosas em consultas, exames, banco e compras há 6 anos.',
     valorHoraCentavos: 7000,
-    horasMinimas: 2,
+    horasMinimas: 1,
     veiculoIncluso: true,
+    aceitaOutras: true,
     situacao: 'aprovado',
     revisadoEm: dia(em(-19, 12)),
     proximaRevisao: dia(em(11, 12)),
@@ -125,6 +126,19 @@ await banco.db.transaction(async (tx) => {
   await tx.insert(qualificacoes).values([
     { profissionalId: ana, titulo: 'Cuidador de idosos', instituicao: 'Senac Campinas', cargaHorariaHoras: 160, anoConclusao: 2019, ...(await pdf('certificado-ana.pdf')), situacao: 'aprovado', enviadoEm: em(-20, 10), revisadoEm: em(-19, 12) },
     { profissionalId: ana, titulo: 'Primeiros socorros', instituicao: 'Cruz Vermelha Brasileira', cargaHorariaHoras: 16, anoConclusao: 2024, ...(await pdf('primeiros-socorros.pdf')), situacao: 'aprovado', enviadoEm: em(-20, 10), revisadoEm: em(-19, 12) },
+  ]);
+
+  // tarefas de cada uma, com o mínimo de horas (o mínimo geral é o menor deles)
+  await tx.insert(tarefasProfissional).values([
+    { profissionalId: ana, tipo: 'consulta', minimoHoras: 2, ordem: 0 },
+    { profissionalId: ana, tipo: 'banco', minimoHoras: 2, ordem: 1 },
+    { profissionalId: ana, tipo: 'mercado', minimoHoras: 1, ordem: 2 },
+    { profissionalId: ana, tipo: 'passeio', minimoHoras: 2, ordem: 3 },
+    { profissionalId: claudia, tipo: 'mercado', minimoHoras: 1, ordem: 0 },
+    { profissionalId: claudia, tipo: 'passeio', minimoHoras: 1, ordem: 1 },
+    { profissionalId: claudia, tipo: 'personalizada', nome: 'Companhia em casa', minimoHoras: 2, ordem: 2 },
+    { profissionalId: joana, tipo: 'consulta', minimoHoras: 2, ordem: 0 },
+    { profissionalId: joana, tipo: 'banco', minimoHoras: 2, ordem: 1 },
   ]);
 
   await conta('Equipe Minha Companhia', EMAILS[5]!, '19944440000', { admin: true });

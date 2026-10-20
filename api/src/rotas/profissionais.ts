@@ -10,6 +10,8 @@ import * as v from '../validacao.js';
 import { dadosDaConta } from './contas.js';
 import { qualificacoesPublicas } from './qualificacoes.js';
 import { documentosAtuais } from './verificacao.js';
+import { listaDeTarefas, salvarTarefas, tarefasDe } from '../tarefas.js';
+import type { Db } from '../db/index.js';
 
 const perfil = z
   .object({
@@ -18,6 +20,9 @@ const perfil = z
     valorHoraCentavos: v.valorHoraCentavos,
     horasMinimas: z.number().int().min(1, 'O mínimo é 1 hora.').max(12, 'O mínimo pode ser de até 12 horas.'),
     veiculoIncluso: z.boolean(),
+    // tarefas que ela faz, cada uma com o mínimo de horas; trocam a lista inteira
+    tarefas: listaDeTarefas,
+    aceitaOutras: z.boolean(),
   })
   .partial()
   .strict();
@@ -51,12 +56,28 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
         }
       }
     }
-    if (Object.keys(dados).length) {
-      await ctx.db
-        .update(profissionais)
-        .set({ ...dados, atualizadoEm: ctx.agora() })
-        .where(eq(profissionais.usuarioId, u.id));
+    const { tarefas, ...campos } = dados;
+    if (tarefas !== undefined || campos.aceitaOutras !== undefined) {
+      const [atual] = await ctx.db.select({ aceitaOutras: profissionais.aceitaOutras }).from(profissionais).where(eq(profissionais.usuarioId, u.id));
+      const lista = tarefas ?? (await tarefasDe(ctx.db, u.id));
+      const aceitaOutras = campos.aceitaOutras ?? atual!.aceitaOutras;
+      if (!lista.length && !aceitaOutras) {
+        throw new ErroApi(422, 'sem_tarefas', 'Escolha ao menos uma tarefa ou aceite outras a combinar.', {
+          tarefas: 'Escolha ao menos uma tarefa ou aceite outras a combinar.',
+        });
+      }
+      // o mínimo geral passa a ser o menor mínimo entre as tarefas dela
+      if (tarefas) campos.horasMinimas = tarefas.length ? Math.min(...tarefas.map((t) => t.minimoHoras)) : 1;
     }
+    await ctx.db.transaction(async (tx) => {
+      if (tarefas) await salvarTarefas(tx as unknown as Db, u.id, tarefas);
+      if (Object.keys(campos).length) {
+        await tx
+          .update(profissionais)
+          .set({ ...campos, atualizadoEm: ctx.agora() })
+          .where(eq(profissionais.usuarioId, u.id));
+      }
+    });
     return { usuario: await dadosDaConta(ctx.db, u.id) };
   });
 
@@ -75,6 +96,7 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
         valorHoraCentavos: profissionais.valorHoraCentavos,
         horasMinimas: profissionais.horasMinimas,
         veiculoIncluso: profissionais.veiculoIncluso,
+        aceitaOutras: profissionais.aceitaOutras,
         situacao: profissionais.situacao,
         revisadoEm: profissionais.revisadoEm,
         proximaRevisao: profissionais.proximaRevisao,
@@ -89,6 +111,7 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
       profissional: {
         ...publico,
         nota: { media: notas.media, total: notas.total },
+        tarefas: await tarefasDe(ctx.db, usuarioId),
         // só cursos com o comprovante aprovado pela administração
         qualificacoes: await qualificacoesPublicas(ctx.db, usuarioId),
       },
