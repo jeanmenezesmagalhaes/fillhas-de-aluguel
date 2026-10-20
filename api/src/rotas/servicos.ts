@@ -8,6 +8,7 @@ import type { Contexto } from '../contexto.js';
 import { avaliacoes, pessoasAcompanhadas, profissionais, servicos, usuarios } from '../db/schema.js';
 import { conflito, ErroApi, naoEncontrado, violouUnico } from '../erros.js';
 import * as v from '../validacao.js';
+import { marcarPrimeiroServico } from './indicacoes.js';
 
 type Situacao = (typeof servicos.$inferSelect)['situacao'];
 type Papel = 'contratante' | 'profissional';
@@ -193,6 +194,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
     op: {
       validar?: (s: Awaited<ReturnType<typeof servicoDaParte>>, corpo: unknown) => void | Promise<void>;
       campos?: (agora: Date, corpo: unknown) => PgUpdateSetSource<typeof servicos>;
+      depois?: (s: Awaited<ReturnType<typeof servicoDaParte>>, agora: Date) => Promise<void>;
     } = {},
   ) =>
     app.post(`/api/servicos/:id/${rota}`, async (req) => {
@@ -208,6 +210,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
         .where(and(eq(servicos.id, id), inArray(servicos.situacao, de)))
         .returning({ id: servicos.id });
       if (!mudou.length) throw conflito('situacao_mudou', 'Este serviço mudou de situação. Atualize a página.');
+      await op.depois?.(s, agora);
       return { servico: await servicoCompleto(ctx, u, id) };
     });
 
@@ -246,6 +249,8 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
       if (s.inicio > ctx.agora()) throw new ErroApi(422, 'ainda_nao_comecou', 'O serviço só pode ser concluído depois do horário de início.');
     },
     campos: (agora) => ({ realizadoEm: agora }),
+    // etapa das indicações: primeiro serviço feito da família e da profissional
+    depois: (s, agora) => marcarPrimeiroServico(ctx.db, [s.contratanteId, s.profissionalId], agora),
   });
 
   // avaliação de um serviço realizado: cada parte avalia a outra uma vez

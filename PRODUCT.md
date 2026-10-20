@@ -37,6 +37,12 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
 - Botões, filtros e campos do produto são representações inativas, exceto na listagem (busca.html), que o usuário pediu pronta para o consumidor: busca, filtros e ordenação funcionam na tela e ficam na URL. Exceções propostas em 20/10/2026: o orçamento por horas calcula na tela (horas sem teto, mínimo e desconto) e o filtro por tarefa da home mostra e esconde perfis; nada é enviado. Links de revisão (navegação entre amostras) ficam separados dos controles do produto.
 - **Conta da família (decidido em 20/10/2026):** só quem tem conta envia pedido. No resumo, quem não entrou vê "Entrar para enviar" e "Criar conta", e entrar.html leva de volta ao pedido.
 - **Backend (iniciado em 20/10/2026, a pedido do usuário):** `api/` tem contas, login com sessão em cookie, pedidos de serviço e avaliações. entrar.html cria a conta da família ou da profissional (?perfil=pro&modo=criar) e entra pela API; o localStorage "mc-conta"/"mc-pro" continua só para as outras telas mostrarem o nome. Senha com no mínimo 8 caracteres.
+- **Verificação da profissional e lista de espera (pedido do usuário em 20/10/2026):**
+  - Para começar a atender, a profissional confirma e-mail e WhatsApp, informa CPF (ou CPF e CNPJ) e endereço, e envia documento com foto e comprovante de endereço (mais o cartão CNPJ, se tiver CNPJ).
+  - Depois entra numa lista de espera até a aprovação da plataforma.
+  - O documento com foto foi acrescentado por nós, para comprovar quem ela é; a confirmar com o usuário.
+  - O backend está pronto; as telas ainda não.
+- **Indicações (pedido do usuário em 20/10/2026):** enquanto espera, a profissional pode indicar outras profissionais e famílias pelo próprio código ou link. O bônus está **indefinido**: nunca mostrar valor ou regra como decididos.
 - **Avaliação nos dois sentidos (decidido em 20/10/2026):** por serviço realizado, a família avalia a profissional e a profissional avalia a família (1 a 5 e comentário). Às cegas: nenhuma vê a nota da outra até as duas avaliarem ou passarem 14 dias; depois do prazo não se avalia. A nota da profissional é pública; a da família só a vê a profissional que recebeu um pedido dela.
 - **Telas de gestão (20/10/2026):**
   - **painel.html**, para a profissional: pedidos novos (aceitar, propor mudança, recusar), próximos atendimentos, o mês por semana e o perfil.

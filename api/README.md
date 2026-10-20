@@ -16,7 +16,8 @@ Sem `DATABASE_URL`, o banco é um Postgres embutido (PGlite) gravado em `api/.da
 - `npm test`: testes (banco em memória, relógio controlado)
 - `npm run typecheck`
 - `npm run db:gerar`: gera uma migration nova em `drizzle/` depois de mudar `src/db/schema.ts`
-- `npm run aprovar -- <slug>`: aprova um perfil profissional enquanto não existe painel administrativo
+- `npm run admin -- <email>`: dá acesso de administração a uma conta
+- `npm run aprovar -- <slug>`: atalho de desenvolvimento que aprova um perfil sem passar pelos documentos
 
 ## Stack
 
@@ -28,7 +29,26 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
 - **Sessão:** cookie `mc_sessao` httpOnly, SameSite=Lax (Secure em produção), válido por 30 dias. O banco guarda só o hash SHA-256 do token. Pedidos que mudam algo vindos de outra origem são recusados.
 - **Login:** a mesma mensagem e o mesmo tempo de resposta para senha errada e e-mail sem conta. Cadastro e login aceitam 10 tentativas por minuto por IP.
 - **Senha:** no mínimo 8 caracteres.
-- **Profissional:** começa em `rascunho`. O valor da hora é definido depois, no mínimo R$ 70 (7000 centavos, conferido também no banco). Vai para `em_analise` só com o valor definido. O portfólio público só aparece quando o perfil está `aprovado`.
+- **Profissional:** começa em `rascunho`. O valor da hora é definido depois, no mínimo R$ 70 (7000 centavos, conferido também no banco). O portfólio público só aparece quando o perfil está `aprovado`.
+- **Verificação e lista de espera:**
+  - Para entrar na lista de espera (`em_analise`), a profissional precisa de:
+    - e-mail e WhatsApp confirmados por código de 6 dígitos (vale 15 minutos, 5 tentativas, um reenvio por minuto);
+    - CPF com dígitos conferidos e único na plataforma;
+    - endereço residencial;
+    - documento com foto (RG ou CNH) e comprovante de endereço.
+  - O CNPJ é opcional. Com ele, pedimos razão social e cartão CNPJ.
+  - Arquivos aceitos: PDF, JPG, PNG ou HEIC até 10 MB, com o tipo conferido pelos primeiros bytes. Eles ficam fora da pasta pública: só a própria profissional e a administração baixam.
+  - Na fila, os dados ficam travados. A administração aprova cada documento, ou recusa com motivo, e depois aprova o perfil (com revisão marcada para um mês depois) ou devolve para correção com motivo.
+  - A posição na fila segue a data de envio.
+  - Nas respostas da profissional, CPF e CNPJ vão mascarados. Só a ficha da administração mostra completos.
+- **Indicações:**
+  - Toda conta tem um código (ex.: `ANA-7K2P`) e links de cadastro para profissional e para família.
+  - Quem se cadastra com o código fica ligado a quem indicou.
+  - Ficam registradas três etapas, que o bônus pode usar quando for definido: cadastro, aprovação (para profissionais) e primeiro serviço feito.
+  - Quem indicou vê só o primeiro nome com a inicial de cada pessoa indicada e a etapa em que ela está.
+  - O bônus em si (valor, quando paga, limites) ainda não existe.
+- **Mensagens:** a interface `Mensageiro` (`src/mensagens.ts`) envia e-mail e WhatsApp. Fora de produção, a mensagem só vai para o log do servidor. Em produção sem provedor, o envio responde 503.
+- **Arquivos:** a interface `Armazenamento` (`src/armazenamento.ts`). Em desenvolvimento, os arquivos ficam em disco (`api/.data/arquivos`). Em produção, precisa de um bucket privado (S3 ou R2).
 - **Pedido de serviço:** o valor da hora fica congelado no pedido e respeita o mínimo de horas da profissional. Pode trazer `local` e `observacoes` (recado para a profissional). Situações: `solicitado`, `proposta_alterada`, `confirmado`, `recusado`, `cancelado`, `realizado`.
 - **Proposta de outro horário:** a profissional propõe outro início ou outra duração, com recado; o pedido fica em `proposta_alterada` até a família aceitar (o novo horário passa a valer e o pedido é confirmado) ou recusar (o pedido se encerra).
 - **Lista de serviços:** cada item traz `papel` (de quem pergunta), `minhaNota`, `podeAvaliar` e, nos pedidos recebidos pela profissional, `notaFamilia`.
@@ -52,7 +72,20 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET, POST | `/api/pessoas` | família: pessoas acompanhadas |
 | DELETE | `/api/pessoas/:id` | família |
 | PATCH | `/api/profissionais/eu` | profissional: valor da hora, mínimo, veículo, bairros, apresentação |
-| POST | `/api/profissionais/eu/analise` | profissional: envia o perfil para análise |
+| POST | `/api/eu/verificacoes` | pede código por `email` ou `whatsapp` |
+| POST | `/api/eu/verificacoes/confirmar` | confirma o código |
+| GET | `/api/profissionais/eu/verificacao` | profissional: o que falta, documentos, posição na fila |
+| PUT | `/api/profissionais/eu/dados-fiscais` | profissional: CPF, CNPJ, razão social e endereço |
+| POST | `/api/profissionais/eu/documentos` | profissional: envia um arquivo (multipart: `tipo` e `arquivo`) |
+| GET | `/api/profissionais/eu/documentos/:id/arquivo` | profissional: baixa o que enviou |
+| POST | `/api/profissionais/eu/analise` | profissional: entra na lista de espera |
+| GET | `/api/indicacoes/eu` | código, links, resumo e pessoas indicadas |
+| GET | `/api/indicacoes/:codigo` | público: de quem é o código ("Ana O.") |
+| GET | `/api/admin/fila` | administração: lista de espera em ordem |
+| GET | `/api/admin/profissionais/:id` | administração: ficha completa e histórico de documentos |
+| GET | `/api/admin/documentos/:id/arquivo` | administração: baixa o documento |
+| POST | `/api/admin/documentos/:id/aprovar` · `recusar` | administração (`recusar` pede `motivo`) |
+| POST | `/api/admin/profissionais/:id/aprovar` · `correcao` | administração (`correcao` pede `motivo`) |
 | GET | `/api/profissionais/:slug` | público: portfólio aprovado, com a nota |
 | GET | `/api/profissionais/:slug/avaliacoes` | público |
 | GET | `/api/contratantes/:id/avaliacoes` | profissional que recebeu pedido da família |
@@ -65,4 +98,4 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 
 ## Ainda não existe
 
-Verificação de e-mail com envio real, recuperação de senha, upload de documentos, painel administrativo (a aprovação usa o script), pagamentos, a busca pela API (busca.html continua com dados fixos) e o envio do pedido pelo resumo.html. Uma conta ainda não pode ter os dois papéis pelas rotas, embora o banco permita.
+Provedor real de e-mail e WhatsApp, bucket de arquivos em produção, recuperação de senha, telas de verificação, de indicações e de administração, revisão mensal automática dos documentos, regras do bônus de indicação, pagamentos, a busca pela API (busca.html continua com dados fixos) e o envio do pedido pelo resumo.html. Uma conta ainda não pode ter os dois papéis pelas rotas, embora o banco permita.

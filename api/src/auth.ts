@@ -107,3 +107,9 @@ export function exigirProfissional(req: FastifyRequest): UsuarioSessao {
   if (!u.profissional) throw new ErroApi(403, 'so_profissional', 'Esta ação é da área profissional.');
   return u;
 }
+
+export function exigirAdmin(req: FastifyRequest): UsuarioSessao {
+  const u = exigirUsuario(req);
+  if (!u.admin) throw new ErroApi(403, 'so_admin', 'Esta ação é da administração.');
+  return u;
+}

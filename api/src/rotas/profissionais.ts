@@ -36,28 +36,6 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
     return { usuario: await dadosDaConta(ctx.db, u.id) };
   });
 
-  // pronta para a administração revisar perfil e documentos
-  app.post('/api/profissionais/eu/analise', async (req) => {
-    const u = exigirProfissional(req);
-    const [p] = await ctx.db
-      .select({ situacao: profissionais.situacao, valor: profissionais.valorHoraCentavos })
-      .from(profissionais)
-      .where(eq(profissionais.usuarioId, u.id));
-    if (!p!.valor) {
-      throw new ErroApi(422, 'falta_valor_hora', 'Informe o valor da sua hora antes de enviar para análise.', {
-        valorHoraCentavos: 'Informe o valor da sua hora.',
-      });
-    }
-    if (p!.situacao !== 'rascunho' && p!.situacao !== 'correcao') {
-      throw new ErroApi(409, 'ja_enviado', 'Seu perfil já foi enviado para análise.');
-    }
-    await ctx.db
-      .update(profissionais)
-      .set({ situacao: 'em_analise', atualizadoEm: ctx.agora() })
-      .where(eq(profissionais.usuarioId, u.id));
-    return { usuario: await dadosDaConta(ctx.db, u.id) };
-  });
-
   // portfólio público: só perfis aprovados (a própria profissional vê o seu em qualquer situação)
   app.get('/api/profissionais/:slug', async (req) => {
     const { slug } = slugParam.parse(req.params);

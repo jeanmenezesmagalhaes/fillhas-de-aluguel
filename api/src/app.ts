@@ -1,15 +1,21 @@
 import { fileURLToPath } from 'node:url';
 import cookie from '@fastify/cookie';
 import rateLimit from '@fastify/rate-limit';
+import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import Fastify, { type FastifyServerOptions } from 'fastify';
+import { armazenamentoEmMemoria, type Armazenamento } from './armazenamento.js';
 import { carregarUsuario } from './auth.js';
 import type { Contexto } from './contexto.js';
 import type { Db } from './db/index.js';
 import { ErroApi, registrarTratamentoDeErros } from './erros.js';
+import { mensageiroIndisponivel, mensageiroNoLog, type Mensageiro } from './mensagens.js';
+import { rotasAdmin } from './rotas/admin.js';
 import { rotasContas } from './rotas/contas.js';
+import { rotasIndicacoes } from './rotas/indicacoes.js';
 import { rotasProfissionais } from './rotas/profissionais.js';
 import { rotasServicos } from './rotas/servicos.js';
+import { rotasVerificacao, TAMANHO_MAXIMO_ARQUIVO } from './rotas/verificacao.js';
 
 export interface OpcoesApp {
   db: Db;
@@ -20,6 +26,10 @@ export interface OpcoesApp {
   limiteTentativas?: number;
   // pasta das telas estáticas; false para servir só a API
   site?: string | false;
+  // envio de e-mail e WhatsApp; sem provedor, só registra no log (fora de produção)
+  mensageiro?: Mensageiro;
+  // onde guardar os documentos; sem informar, fica na memória (só para testes)
+  armazenamento?: Armazenamento;
 }
 
 const raizDoSite = fileURLToPath(new URL('../../', import.meta.url));
@@ -28,12 +38,20 @@ const raizDoSite = fileURLToPath(new URL('../../', import.meta.url));
 const arquivoDoSite = /^\/(?:[\w-]+\.(?:html|css|js|svg)|(?:assets|fonts)\/[\w.-]+\.(?:webp|jpg|png|svg|woff2|json))?$/;
 
 export async function criarApp(op: OpcoesApp) {
-  const ctx: Contexto = { db: op.db, agora: op.agora ?? (() => new Date()), producao: op.producao ?? false };
-  const app = Fastify({ logger: op.logger ?? false, trustProxy: ctx.producao, bodyLimit: 64 * 1024 });
+  const producao = op.producao ?? false;
+  const app = Fastify({ logger: op.logger ?? false, trustProxy: producao, bodyLimit: 64 * 1024 });
+  const ctx: Contexto = {
+    db: op.db,
+    agora: op.agora ?? (() => new Date()),
+    producao,
+    mensageiro: op.mensageiro ?? (producao ? mensageiroIndisponivel : mensageiroNoLog(app.log)),
+    armazenamento: op.armazenamento ?? armazenamentoEmMemoria(),
+  };
 
   registrarTratamentoDeErros(app);
   await app.register(cookie);
   await app.register(rateLimit, { global: false });
+  await app.register(multipart, { limits: { fileSize: TAMANHO_MAXIMO_ARQUIVO, files: 1, fields: 5 } });
 
   app.decorateRequest('usuario', null);
   app.addHook('onRequest', async (req) => {
@@ -53,6 +71,9 @@ export async function criarApp(op: OpcoesApp) {
   rotasContas(app, ctx, limite);
   rotasProfissionais(app, ctx);
   rotasServicos(app, ctx);
+  rotasVerificacao(app, ctx, limite);
+  rotasIndicacoes(app, ctx, limite);
+  rotasAdmin(app, ctx);
 
   app.get('/api/saude', async () => ({ ok: true }));
 

@@ -273,3 +273,21 @@ O usuário preferiu a tabela à lista em frases, mas com mais respiro e com filt
 - **Texto saindo da caixa:** era um white-space: nowrap da primeira célula. O detalhe agora são duas caixas brancas lado a lado ("A conta" e "O caminho do dinheiro"), uma embaixo da outra no celular.
 - **Linha do tempo mais curta:** "Você aceitou o pedido.", "A família pagou R$ X por Pix.", "Atendimento feito: 9h às 11h." e "Caiu R$ X no seu Pix." ou "R$ X vai cair no seu Pix.".
 - **"Em cima da hora" saiu da tela.** No lugar entrou "Cancelado com menos de 24 h de antecedência" (no resumo, "você recebe metade do valor"). No detalhe e nos depósitos ficou "cancelado com menos de 24 h".
+
+## Verificação da profissional, lista de espera e indicações (backend) — 20/10/2026
+- **Pedido do usuário:** para atender, a profissional manda os documentos que comprovam quem ela é: comprovante de endereço, CPF ou CNPJ para receber, WhatsApp e e-mail. Depois espera a aprovação, e enquanto espera pode indicar outras pessoas (bônus a definir). A tela de cadastro fica para depois, com a sessão Impeccable.
+- **Feito na API (migration `0002_verificacao_documentos_indicacoes.sql`):**
+  - código de 6 dígitos para confirmar e-mail e WhatsApp;
+  - CPF e CNPJ com dígitos conferidos, CPF único, e endereço;
+  - upload de documentos (RG ou CNH, comprovante, cartão CNPJ), com tipo conferido pelo conteúdo e limite de 10 MB;
+  - checklist do que falta, entrada na fila com posição, dados travados durante a análise;
+  - administração: fila, ficha completa, aprovar ou recusar documento com motivo, aprovar perfil ou pedir correção;
+  - indicações com código, links e as etapas cadastro → aprovação → primeiro serviço.
+- **Ainda sem provedor:** e-mail e WhatsApp só aparecem no log do servidor, e os arquivos ficam em `api/.data/arquivos`. Para produção faltam provedor de mensagens e bucket privado.
+- **Seed:** Joana Prado na fila, com dois documentos e indicada pela Ana (código ANA-DEMO). Conta de administração equipe@demo.minhacompanhia.test.
+- **Testes:** 34 passando (`cd api && npm test`).
+- **A decidir com o cliente:**
+  - se o documento com foto entra mesmo;
+  - regras do bônus de indicação;
+  - se indicar faz a pessoa subir na fila;
+  - se a profissional aprovada pode indicar famílias também (hoje pode).

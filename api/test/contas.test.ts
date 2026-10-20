@@ -61,15 +61,6 @@ describe('cadastro da profissional', () => {
     expect(ok.corpo.usuario.profissional).toMatchObject({ valorHoraCentavos: 7000, horasMinimas: 2 });
   });
 
-  it('só vai para análise com o valor da hora definido', async () => {
-    const c = cliente(amb.app);
-    await c.post('/api/profissionais', profissional());
-    expect((await c.post('/api/profissionais/eu/analise')).status).toBe(422);
-    await c.patch('/api/profissionais/eu', { valorHoraCentavos: 8000 });
-    const r = await c.post('/api/profissionais/eu/analise');
-    expect(r.corpo.usuario.profissional.situacao).toBe('em_analise');
-  });
-
   it('perfil fora do ar não aparece para o público', async () => {
     const c = cliente(amb.app);
     const r = await c.post('/api/profissionais', profissional({ nome: 'Vera Nunes' }));

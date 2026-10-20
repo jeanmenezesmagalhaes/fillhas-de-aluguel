@@ -145,7 +145,7 @@
 
       const url = criar ? (pro ? '/api/profissionais' : '/api/contas') : '/api/sessoes';
       const corpo = criar
-        ? { nome: form.nome.value.trim(), email, celular: form.celular.value, senha: form.senha.value, aceitaTermos: true, ...(pro ? { cidade: form.cidade.value.trim(), uf: form.uf.value.trim() } : {}) }
+        ? { nome: form.nome.value.trim(), email, celular: form.celular.value, senha: form.senha.value, aceitaTermos: true, codigoIndicacao: params.get('indicacao') || undefined, ...(pro ? { cidade: form.cidade.value.trim(), uf: form.uf.value.trim() } : {}) }
         : { email, senha: form.senha.value };
       enviar.disabled = true;
       try {
