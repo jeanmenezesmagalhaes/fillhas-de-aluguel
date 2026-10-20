@@ -29,6 +29,13 @@
       "when": 1792536125780,
       "tag": "0003_cnh_e_qualificacoes",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792536779650,
+      "tag": "0004_revisor_sem_trava",
+      "breakpoints": true
     }
   ]
 }

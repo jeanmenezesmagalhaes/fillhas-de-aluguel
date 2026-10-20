@@ -108,7 +108,7 @@ export const profissionais = pgTable(
     enviadoAnaliseEm: quando('enviado_analise_em'),
     motivoCorrecao: text('motivo_correcao'),
     aprovadoEm: quando('aprovado_em'),
-    aprovadoPor: uuid('aprovado_por').references(() => usuarios.id),
+    aprovadoPor: uuid('aprovado_por').references(() => usuarios.id, { onDelete: 'set null' }),
     criadoEm: quando('criado_em').notNull().defaultNow(),
     atualizadoEm: quando('atualizado_em').notNull().defaultNow(),
   },
@@ -274,7 +274,7 @@ export const documentos = pgTable(
     motivoRecusa: text('motivo_recusa'),
     enviadoEm: quando('enviado_em').notNull().defaultNow(),
     revisadoEm: quando('revisado_em'),
-    revisadoPor: uuid('revisado_por').references(() => usuarios.id),
+    revisadoPor: uuid('revisado_por').references(() => usuarios.id, { onDelete: 'set null' }),
   },
   (t) => [
     index('documentos_por_profissional').on(t.profissionalId, t.tipo),
@@ -328,7 +328,7 @@ export const qualificacoes = pgTable(
     motivoRecusa: text('motivo_recusa'),
     enviadoEm: quando('enviado_em').notNull().defaultNow(),
     revisadoEm: quando('revisado_em'),
-    revisadoPor: uuid('revisado_por').references(() => usuarios.id),
+    revisadoPor: uuid('revisado_por').references(() => usuarios.id, { onDelete: 'set null' }),
   },
   (t) => [
     index('qualificacoes_por_profissional').on(t.profissionalId, t.situacao),

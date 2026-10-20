@@ -1,4 +1,6 @@
+import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { documentos, qualificacoes, usuarios } from '../src/db/schema.js';
 import {
   ambiente,
   cliente,
@@ -353,5 +355,25 @@ describe('cursos e treinamentos', () => {
     expect((await pro.c.get(`/api/profissionais/eu/qualificacoes/${q.id}/arquivo`)).status).toBe(200);
     expect((await pro.c.delete(`/api/profissionais/eu/qualificacoes/${q.id}`)).status).toBe(204);
     expect((await pro.c.get(`/api/profissionais/eu/qualificacoes/${q.id}/arquivo`)).status).toBe(404);
+  });
+});
+
+describe('conta da administração apagada', () => {
+  it('não trava: o histórico fica, sem o nome de quem revisou', async () => {
+    const outraAdmin = cliente(amb.app);
+    const conta = (await outraAdmin.post('/api/contas', familia())).corpo.usuario;
+    await tornarAdmin(amb, conta.id);
+    const p = await profissionalCompleta();
+    await p.c.post('/api/profissionais/eu/analise');
+    const doc = (await admin.get(`/api/admin/profissionais/${p.u.id}`)).corpo.profissional.documentos[0];
+    await outraAdmin.post(`/api/admin/documentos/${doc.id}/aprovar`);
+    const curso = (await p.c.enviarArquivo('/api/profissionais/eu/qualificacoes', { titulo: 'Cuidador de idosos', instituicao: 'Senac' }, { nome: 'c.pdf', dados: PDF })).corpo.qualificacao;
+    await outraAdmin.post(`/api/admin/qualificacoes/${curso.id}/aprovar`);
+
+    await amb.banco.db.delete(usuarios).where(eq(usuarios.id, conta.id));
+    const [d] = await amb.banco.db.select().from(documentos).where(eq(documentos.id, doc.id));
+    const [q] = await amb.banco.db.select().from(qualificacoes).where(eq(qualificacoes.id, curso.id));
+    expect(d).toMatchObject({ situacao: 'aprovado', revisadoPor: null });
+    expect(q).toMatchObject({ situacao: 'aprovado', revisadoPor: null });
   });
 });
