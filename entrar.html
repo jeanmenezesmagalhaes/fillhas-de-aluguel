@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Entrar · Minha companhia</title>
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="resumo.css?v=6">
+</head>
+<body>
+
+<header class="topo" data-topo>
+  <div class="topo-dentro">
+    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a></nav>
+  </div>
+</header>
+<main class="tela tela-entrar">
+  <a class="voltar" href="resumo.html" data-voltar><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg><span data-voltar-texto>Voltar</span></a>
+  <section class="cartao cartao-entrar" aria-labelledby="t-entrar">
+    <h1 id="t-entrar" data-titulo>Entre para enviar o pedido</h1>
+    <p class="achado" data-sub>Use sua conta da Minha companhia. Se for a primeira vez, crie uma em um minuto.</p>
+
+    <div class="modos" role="group" aria-label="Entrar ou criar conta">
+      <button type="button" class="modo" data-modo="entrar" aria-pressed="true">Entrar</button>
+      <button type="button" class="modo" data-modo="criar" aria-pressed="false">Criar conta</button>
+    </div>
+
+    <form class="form-entrar" novalidate data-form>
+      <div class="campo" data-so="criar" hidden>
+        <label for="nome">Seu nome</label>
+        <input id="nome" name="nome" type="text" autocomplete="name">
+        <p class="campo-erro" data-erro="nome" hidden></p>
+      </div>
+      <div class="campo">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="email" inputmode="email">
+        <p class="campo-erro" data-erro="email" hidden></p>
+      </div>
+      <div class="campo" data-so="criar" hidden>
+        <label for="celular">Celular com WhatsApp</label>
+        <input id="celular" name="celular" type="tel" autocomplete="tel" inputmode="tel" placeholder="(19) 99999-0000">
+        <p class="campo-erro" data-erro="celular" hidden></p>
+      </div>
+      <div class="campo" data-so="criar-pro" hidden>
+        <label for="cidade">Cidade onde você atende</label>
+        <input id="cidade" name="cidade" type="text" autocomplete="address-level2" placeholder="Campinas">
+        <p class="campo-erro" data-erro="cidade" hidden></p>
+      </div>
+      <div class="campo" data-so="criar-pro" hidden>
+        <label for="uf">Estado (sigla)</label>
+        <input id="uf" name="uf" type="text" autocomplete="address-level1" maxlength="2" autocapitalize="characters" placeholder="SP">
+        <p class="campo-erro" data-erro="uf" hidden></p>
+      </div>
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input id="senha" name="senha" type="password" autocomplete="current-password" minlength="8">
+        <p class="campo-ajuda" data-so="criar" hidden>Pelo menos 8 caracteres.</p>
+        <p class="campo-erro" data-erro="senha" hidden></p>
+      </div>
+      <p class="campo-ajuda" data-so="criar" hidden>Ao criar a conta, você aceita os termos de uso e a política de privacidade da Minha companhia.</p>
+      <p class="campo-erro" data-erro-geral role="alert" hidden></p>
+      <button class="btn btn-primario btn-largo" type="submit" data-enviar>Entrar</button>
+    </form>
+    <p class="entrar-pro">É profissional? <a href="profissional.html">Acesse a área profissional</a></p>
+  </section>
+</main>
+
+<script>
+  // menu no celular
+  (() => {
+    const topo = document.querySelector('[data-topo]');
+    const botao = topo.querySelector('.menu-botao');
+    botao.addEventListener('click', () => botao.setAttribute('aria-expanded', String(topo.classList.toggle('menu-aberto'))));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { topo.classList.remove('menu-aberto'); botao.setAttribute('aria-expanded', 'false'); } });
+  })();
+  // conta da família: entrar ou criar, e voltar para o pedido
+  (() => {
+    const params = new URLSearchParams(location.search);
+    // só volta para uma página deste site
+    const v = params.get('volta') || '';
+    const volta = /^[a-z0-9-]+\.html(\?[^#]*)?$/i.test(v) ? v : '';
+    const form = document.querySelector('[data-form]');
+    const botoes = document.querySelectorAll('[data-modo]');
+    const voltar = document.querySelector('[data-voltar]');
+    if (volta) { voltar.href = volta; document.querySelector('[data-voltar-texto]').textContent = 'Voltar ao pedido'; }
+    else { voltar.href = 'index.html'; document.querySelector('[data-voltar-texto]').textContent = 'Início'; document.querySelector('[data-titulo]').textContent = 'Entre na sua conta'; document.querySelector('[data-sub]').textContent = 'Acompanhe seus pedidos e as respostas das profissionais.'; }
+    // ?perfil=pro: a mesma tela, para a profissional entrar no painel ou criar a conta dela
+    const pro = params.get('perfil') === 'pro';
+    const chave = pro ? 'mc-pro' : 'mc-conta';
+    const destino = volta || (pro ? 'painel.html' : 'pedidos.html');
+    if (pro) {
+      document.querySelector('.entrar-pro').innerHTML = 'É da família? <a href="entrar.html">Entre na conta da família</a>';
+      if (!volta) { voltar.href = 'profissional.html'; document.querySelector('[data-voltar-texto]').textContent = 'Área profissional'; }
+    }
+    let modo = params.get('modo') === 'criar' ? 'criar' : 'entrar';
+    const geral = form.querySelector('[data-erro-geral]');
+    const aplica = () => {
+      botoes.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === modo)));
+      form.querySelectorAll('[data-so="criar"]').forEach((el) => { el.hidden = modo !== 'criar'; });
+      form.querySelectorAll('[data-so="criar-pro"]').forEach((el) => { el.hidden = !(pro && modo === 'criar'); });
+      form.senha.autocomplete = modo === 'criar' ? 'new-password' : 'current-password';
+      form.querySelector('[data-enviar]').textContent = modo === 'criar' ? (volta ? 'Criar conta e voltar ao pedido' : 'Criar conta') : (volta && !pro ? 'Entrar e voltar ao pedido' : 'Entrar');
+      form.querySelectorAll('[data-erro]').forEach((p) => { p.hidden = true; });
+      geral.hidden = true;
+      if (volta && !pro) document.querySelector('[data-titulo]').textContent = modo === 'criar' ? 'Crie sua conta para enviar o pedido' : 'Entre para enviar o pedido';
+      if (pro) {
+        document.querySelector('[data-titulo]').textContent = modo === 'criar' ? 'Crie sua conta profissional' : 'Entre na área profissional';
+        document.querySelector('[data-sub]').textContent = modo === 'criar' ? 'Depois você completa o portfólio, define o valor da sua hora e envia os documentos.' : 'Veja seus pedidos, sua agenda e quanto já recebeu no mês.';
+      }
+    };
+    botoes.forEach((b) => b.addEventListener('click', () => { modo = b.dataset.modo; aplica(); }));
+    aplica();
+
+    const erro = (campo, msg) => { const p = form.querySelector(`[data-erro="${campo}"]`); p.textContent = msg; p.hidden = !msg; form[campo].setAttribute('aria-invalid', String(!!msg)); if (msg) form[campo].setAttribute('aria-describedby', p.id = `erro-${campo}`); else form[campo].removeAttribute('aria-describedby'); return !msg; };
+    const avisa = (msg) => { geral.textContent = msg; geral.hidden = !msg; };
+    const lembra = (nome, email) => { try { localStorage.setItem(chave, JSON.stringify({ nome, email })); } catch (_) { /* sem armazenamento: segue sem lembrar */ } };
+    const enviar = form.querySelector('[data-enviar]');
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      avisa('');
+      const criar = modo === 'criar';
+      const email = form.email.value.trim();
+      let ok = erro('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? '' : 'Digite um e-mail válido, como nome@exemplo.com.');
+      ok = erro('senha', criar ? (form.senha.value.length >= 8 ? '' : 'A senha precisa ter pelo menos 8 caracteres.') : (form.senha.value ? '' : 'Digite sua senha.')) && ok;
+      if (criar) {
+        ok = erro('nome', form.nome.value.trim().length >= 2 ? '' : 'Digite seu nome.') && ok;
+        ok = erro('celular', form.celular.value.replace(/\D/g, '').length >= 10 ? '' : 'Digite o celular com DDD.') && ok;
+        if (pro) {
+          ok = erro('cidade', form.cidade.value.trim().length >= 2 ? '' : 'Informe a cidade onde você atende.') && ok;
+          ok = erro('uf', /^[a-z]{2}$/i.test(form.uf.value.trim()) ? '' : 'Use a sigla do estado, como SP.') && ok;
+        }
+      }
+      if (!ok) { form.querySelector('[aria-invalid="true"]').focus(); return; }
+
+      // aberta direto do arquivo, sem a API: a tela segue só lembrando o nome no navegador
+      if (!/^https?:$/.test(location.protocol)) {
+        lembra(criar ? form.nome.value.trim() : email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), email);
+        location.href = destino;
+        return;
+      }
+
+      const url = criar ? (pro ? '/api/profissionais' : '/api/contas') : '/api/sessoes';
+      const corpo = criar
+        ? { nome: form.nome.value.trim(), email, celular: form.celular.value, senha: form.senha.value, aceitaTermos: true, ...(pro ? { cidade: form.cidade.value.trim(), uf: form.uf.value.trim() } : {}) }
+        : { email, senha: form.senha.value };
+      enviar.disabled = true;
+      try {
+        const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(corpo) });
+        const dados = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          const e = dados.erro || {};
+          let foco = null;
+          for (const [campo, msg] of Object.entries(e.campos || {})) {
+            if (form.querySelector(`[data-erro="${campo}"]`) && !form[campo].closest('[hidden]')) { erro(campo, msg); foco = foco || form[campo]; }
+          }
+          if (!foco) avisa(e.mensagem || 'Não foi possível continuar. Tente de novo.');
+          (foco || form.email).focus();
+          return;
+        }
+        const u = dados.usuario;
+        if (pro && !u.papeis.includes('profissional')) {
+          await fetch('/api/sessoes/atual', { method: 'DELETE', credentials: 'same-origin' });
+          avisa('Esta é uma conta da família. Para a área profissional, crie uma conta profissional.');
+          return;
+        }
+        lembra(u.nome, u.email);
+        location.href = destino;
+      } catch (_) {
+        avisa('Não conseguimos conectar. Confira sua internet e tente de novo.');
+      } finally {
+        enviar.disabled = false;
+      }
+    });
+  })();
+</script>
+</body>
+</html>

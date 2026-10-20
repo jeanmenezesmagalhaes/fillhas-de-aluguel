@@ -1,0 +1,316 @@
+import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { alias, type PgUpdateSetSource } from 'drizzle-orm/pg-core';
+import type { FastifyInstance } from 'fastify';
+import { z } from 'zod';
+import { exigirContratante, exigirUsuario, type UsuarioSessao } from '../auth.js';
+import { avaliacaoRevelada, notaRecebida, PRAZO_AVALIACAO_MS, type Sentido } from '../avaliacoes.js';
+import type { Contexto } from '../contexto.js';
+import { avaliacoes, pessoasAcompanhadas, profissionais, servicos, usuarios } from '../db/schema.js';
+import { conflito, ErroApi, naoEncontrado, violouUnico } from '../erros.js';
+import * as v from '../validacao.js';
+
+type Situacao = (typeof servicos.$inferSelect)['situacao'];
+type Papel = 'contratante' | 'profissional';
+
+const inicioFuturo = z.iso.datetime({ offset: true, error: 'Informe data e horário de início.' });
+const horas = z.number({ error: 'Informe quantas horas.' }).int('Use horas inteiras.').min(1, 'O mínimo é 1 hora.').max(24);
+const textoCurto = (max: number) => z.string().trim().max(max, `Use no máximo ${max} caracteres.`).optional();
+
+const pedido = z.object({
+  profissional: z.string({ error: 'Escolha a profissional.' }).min(1).max(80),
+  tarefa: z.string({ error: 'Conte qual é a tarefa.' }).trim().min(2, 'Conte qual é a tarefa.').max(200),
+  local: textoCurto(200),
+  observacoes: textoCurto(1000),
+  inicio: inicioFuturo,
+  horas,
+  pessoaAcompanhadaId: v.uuid.optional(),
+});
+
+const proposta = z.object({ inicio: inicioFuturo, horas, recado: textoCurto(500) });
+
+const avaliacao = z.object({
+  nota: z.number({ error: 'Escolha uma nota de 1 a 5.' }).int().min(1, 'Escolha uma nota de 1 a 5.').max(5, 'Escolha uma nota de 1 a 5.'),
+  comentario: z.string().trim().max(1000, 'Use no máximo 1000 caracteres.').optional(),
+});
+
+const idParam = z.object({ id: v.uuid });
+
+const familia = alias(usuarios, 'familia');
+const pro = alias(usuarios, 'pro');
+const minha = alias(avaliacoes, 'minha');
+
+const colunasServico = {
+  id: servicos.id,
+  tarefa: servicos.tarefa,
+  local: servicos.local,
+  observacoes: servicos.observacoes,
+  inicio: servicos.inicio,
+  horas: servicos.horas,
+  valorHoraCentavos: servicos.valorHoraCentavos,
+  totalCentavos: sql<number>`(${servicos.horas} * ${servicos.valorHoraCentavos})::int`,
+  situacao: servicos.situacao,
+  proposta: { inicio: servicos.propostaInicio, horas: servicos.propostaHoras, recado: servicos.propostaRecado },
+  realizadoEm: servicos.realizadoEm,
+  contratanteId: servicos.contratanteId,
+  contratante: { id: familia.id, nome: familia.nome },
+  profissional: { id: pro.id, nome: pro.nome, slug: profissionais.slug, veiculoIncluso: profissionais.veiculoIncluso },
+  pessoaAcompanhada: { id: pessoasAcompanhadas.id, nome: pessoasAcompanhadas.nome, dataNascimento: pessoasAcompanhadas.dataNascimento },
+  minhaNota: minha.nota,
+};
+
+type LinhaServico = Awaited<ReturnType<ReturnType<typeof consultaServicos>['where']>>[number];
+
+// `minhaNota` é a avaliação que quem pergunta deu ao serviço, se já deu.
+function consultaServicos(ctx: Contexto, usuarioId: string) {
+  return ctx.db
+    .select(colunasServico)
+    .from(servicos)
+    .innerJoin(familia, eq(familia.id, servicos.contratanteId))
+    .innerJoin(pro, eq(pro.id, servicos.profissionalId))
+    .innerJoin(profissionais, eq(profissionais.usuarioId, servicos.profissionalId))
+    .leftJoin(pessoasAcompanhadas, eq(pessoasAcompanhadas.id, servicos.pessoaAcompanhadaId))
+    .leftJoin(minha, and(eq(minha.servicoId, servicos.id), eq(minha.autorId, usuarioId)));
+}
+
+function paraResposta(ctx: Contexto, usuarioId: string, s: LinhaServico) {
+  const { contratanteId, proposta: p, ...resto } = s;
+  const prazo = s.realizadoEm ? s.realizadoEm.getTime() + PRAZO_AVALIACAO_MS : 0;
+  return {
+    ...resto,
+    papel: (contratanteId === usuarioId ? 'contratante' : 'profissional') as Papel,
+    proposta: s.situacao === 'proposta_alterada' ? p : null,
+    podeAvaliar: s.situacao === 'realizado' && s.minhaNota == null && ctx.agora().getTime() <= prazo,
+  };
+}
+
+async function servicoCompleto(ctx: Contexto, u: UsuarioSessao, id: string) {
+  const [s] = await consultaServicos(ctx, u.id).where(eq(servicos.id, id));
+  return paraResposta(ctx, u.id, s!);
+}
+
+// O serviço só existe para as duas partes; para qualquer outra pessoa, ele não existe.
+async function servicoDaParte(ctx: Contexto, u: UsuarioSessao, id: string) {
+  const [s] = await ctx.db
+    .select({
+      id: servicos.id,
+      contratanteId: servicos.contratanteId,
+      profissionalId: servicos.profissionalId,
+      situacao: servicos.situacao,
+      inicio: servicos.inicio,
+      realizadoEm: servicos.realizadoEm,
+    })
+    .from(servicos)
+    .where(and(eq(servicos.id, id), or(eq(servicos.contratanteId, u.id), eq(servicos.profissionalId, u.id))));
+  if (!s) throw naoEncontrado('Serviço não encontrado.');
+  return { ...s, papel: (s.contratanteId === u.id ? 'contratante' : 'profissional') as Papel };
+}
+
+const soDa = (quem: Papel) =>
+  new ErroApi(403, 'outra_parte', quem === 'profissional' ? 'Quem responde ao pedido é a profissional.' : 'Esta ação é da família.');
+
+export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
+  app.post('/api/servicos', async (req, reply) => {
+    const u = exigirContratante(req);
+    const dados = pedido.parse(req.body);
+    const [p] = await ctx.db
+      .select({
+        usuarioId: profissionais.usuarioId,
+        situacao: profissionais.situacao,
+        valor: profissionais.valorHoraCentavos,
+        horasMinimas: profissionais.horasMinimas,
+      })
+      .from(profissionais)
+      .where(eq(profissionais.slug, dados.profissional));
+    if (!p || p.situacao !== 'aprovado' || !p.valor) throw naoEncontrado('Profissional não encontrada.');
+    if (p.usuarioId === u.id) throw new ErroApi(422, 'proprio_perfil', 'Você não pode contratar o seu próprio perfil.');
+    if (dados.horas < p.horasMinimas) {
+      throw new ErroApi(422, 'abaixo_do_minimo', `Esta profissional atende a partir de ${p.horasMinimas} horas.`, {
+        horas: `O mínimo é de ${p.horasMinimas} horas.`,
+      });
+    }
+    const inicio = new Date(dados.inicio);
+    if (inicio <= ctx.agora()) {
+      throw new ErroApi(422, 'inicio_no_passado', 'Escolha um horário a partir de agora.', { inicio: 'Escolha um horário futuro.' });
+    }
+    if (dados.pessoaAcompanhadaId) {
+      const [dela] = await ctx.db
+        .select({ id: pessoasAcompanhadas.id })
+        .from(pessoasAcompanhadas)
+        .where(and(eq(pessoasAcompanhadas.id, dados.pessoaAcompanhadaId), eq(pessoasAcompanhadas.contratanteId, u.id)));
+      if (!dela) throw new ErroApi(422, 'pessoa_invalida', 'Escolha uma das pessoas da sua conta.', { pessoaAcompanhadaId: 'Pessoa não encontrada.' });
+    }
+    const [novo] = await ctx.db
+      .insert(servicos)
+      .values({
+        contratanteId: u.id,
+        profissionalId: p.usuarioId,
+        pessoaAcompanhadaId: dados.pessoaAcompanhadaId,
+        tarefa: dados.tarefa,
+        local: dados.local || null,
+        observacoes: dados.observacoes || null,
+        inicio,
+        horas: dados.horas,
+        valorHoraCentavos: p.valor,
+      })
+      .returning({ id: servicos.id });
+    return reply.status(201).send({ servico: await servicoCompleto(ctx, u, novo!.id) });
+  });
+
+  // pedidos da família e pedidos recebidos pela profissional, do mais recente ao mais antigo.
+  // Nos pedidos recebidos vem também a nota da família, para a profissional decidir.
+  app.get('/api/servicos', async (req) => {
+    const u = exigirUsuario(req);
+    const linhas = await consultaServicos(ctx, u.id)
+      .where(or(eq(servicos.contratanteId, u.id), eq(servicos.profissionalId, u.id)))
+      .orderBy(desc(servicos.inicio))
+      .limit(200);
+    const lista = linhas.map((s) => paraResposta(ctx, u.id, s));
+    const familias = [...new Set(lista.filter((s) => s.papel === 'profissional').map((s) => s.contratante.id))];
+    const notas = new Map(
+      await Promise.all(
+        familias.map(async (id) => [id, await notaRecebida(ctx.db, id, 'profissional_avalia_familia', ctx.agora())] as const),
+      ),
+    );
+    return {
+      servicos: lista.map((s) => (s.papel === 'profissional' ? { ...s, notaFamilia: notas.get(s.contratante.id) } : s)),
+    };
+  });
+
+  app.get('/api/servicos/:id', async (req) => {
+    const u = exigirUsuario(req);
+    const { id } = idParam.parse(req.params);
+    const s = await servicoDaParte(ctx, u, id);
+    return { servico: await servicoCompleto(ctx, u, s.id) };
+  });
+
+  // Mudança de situação numa só instrução: só muda se ainda estiver numa situação de origem,
+  // então dois cliques ao mesmo tempo não aceitam e recusam o mesmo pedido.
+  const transicao = (
+    rota: string,
+    quem: Papel | 'qualquer',
+    de: Situacao[],
+    para: Situacao,
+    op: {
+      validar?: (s: Awaited<ReturnType<typeof servicoDaParte>>, corpo: unknown) => void | Promise<void>;
+      campos?: (agora: Date, corpo: unknown) => PgUpdateSetSource<typeof servicos>;
+    } = {},
+  ) =>
+    app.post(`/api/servicos/:id/${rota}`, async (req) => {
+      const u = exigirUsuario(req);
+      const { id } = idParam.parse(req.params);
+      const s = await servicoDaParte(ctx, u, id);
+      if (quem !== 'qualquer' && s.papel !== quem) throw soDa(quem);
+      await op.validar?.(s, req.body);
+      const agora = ctx.agora();
+      const mudou = await ctx.db
+        .update(servicos)
+        .set({ situacao: para, atualizadoEm: agora, ...op.campos?.(agora, req.body) })
+        .where(and(eq(servicos.id, id), inArray(servicos.situacao, de)))
+        .returning({ id: servicos.id });
+      if (!mudou.length) throw conflito('situacao_mudou', 'Este serviço mudou de situação. Atualize a página.');
+      return { servico: await servicoCompleto(ctx, u, id) };
+    });
+
+  const antesDoInicio = (s: { inicio: Date }) => {
+    if (s.inicio <= ctx.agora()) throw new ErroApi(422, 'ja_comecou', 'O horário do serviço já começou; ele não pode mais mudar.');
+  };
+
+  transicao('aceitar', 'profissional', ['solicitado'], 'confirmado');
+  transicao('recusar', 'profissional', ['solicitado'], 'recusado');
+  // a profissional propõe outro horário ou outra duração; o pedido espera o novo aceite da família
+  transicao('propor', 'profissional', ['solicitado'], 'proposta_alterada', {
+    validar: (s, corpo) => {
+      antesDoInicio(s);
+      const p = proposta.parse(corpo);
+      if (new Date(p.inicio) <= ctx.agora()) {
+        throw new ErroApi(422, 'inicio_no_passado', 'Proponha um horário a partir de agora.', { inicio: 'Escolha um horário futuro.' });
+      }
+    },
+    campos: (_agora, corpo) => {
+      const p = proposta.parse(corpo);
+      return { propostaInicio: new Date(p.inicio), propostaHoras: p.horas, propostaRecado: p.recado || null };
+    },
+  });
+  transicao('aceitar-proposta', 'contratante', ['proposta_alterada'], 'confirmado', {
+    campos: () => ({
+      inicio: sql`${servicos.propostaInicio}`,
+      horas: sql`${servicos.propostaHoras}`,
+      propostaInicio: null,
+      propostaHoras: null,
+    }),
+  });
+  transicao('recusar-proposta', 'contratante', ['proposta_alterada'], 'recusado');
+  transicao('cancelar', 'qualquer', ['solicitado', 'proposta_alterada', 'confirmado'], 'cancelado', { validar: antesDoInicio });
+  transicao('concluir', 'profissional', ['confirmado'], 'realizado', {
+    validar: (s) => {
+      if (s.inicio > ctx.agora()) throw new ErroApi(422, 'ainda_nao_comecou', 'O serviço só pode ser concluído depois do horário de início.');
+    },
+    campos: (agora) => ({ realizadoEm: agora }),
+  });
+
+  // avaliação de um serviço realizado: cada parte avalia a outra uma vez
+  app.post('/api/servicos/:id/avaliacoes', async (req, reply) => {
+    const u = exigirUsuario(req);
+    const { id } = idParam.parse(req.params);
+    const dados = avaliacao.parse(req.body);
+    const s = await servicoDaParte(ctx, u, id);
+    if (s.situacao !== 'realizado' || !s.realizadoEm) {
+      throw new ErroApi(422, 'servico_nao_realizado', 'Só dá para avaliar depois que o serviço for realizado.');
+    }
+    if (ctx.agora().getTime() > s.realizadoEm.getTime() + PRAZO_AVALIACAO_MS) {
+      throw new ErroApi(422, 'prazo_encerrado', 'O prazo de 14 dias para avaliar este serviço terminou.');
+    }
+    const sentido: Sentido = s.papel === 'contratante' ? 'familia_avalia_profissional' : 'profissional_avalia_familia';
+    try {
+      const [a] = await ctx.db
+        .insert(avaliacoes)
+        .values({
+          servicoId: s.id,
+          autorId: u.id,
+          avaliadoId: s.papel === 'contratante' ? s.profissionalId : s.contratanteId,
+          sentido,
+          nota: dados.nota,
+          comentario: dados.comentario || null,
+        })
+        .returning({ id: avaliacoes.id, nota: avaliacoes.nota, comentario: avaliacoes.comentario, sentido: avaliacoes.sentido, criadoEm: avaliacoes.criadoEm });
+      return reply.status(201).send({ avaliacao: a });
+    } catch (err) {
+      if (violouUnico(err, 'avaliacao_unica_por_sentido')) throw conflito('ja_avaliado', 'Você já avaliou este serviço.');
+      throw err;
+    }
+  });
+
+  // as duas avaliações do serviço, do ponto de vista de quem pergunta: a minha sempre;
+  // a da outra parte só depois de revelada
+  app.get('/api/servicos/:id/avaliacoes', async (req) => {
+    const u = exigirUsuario(req);
+    const { id } = idParam.parse(req.params);
+    const s = await servicoDaParte(ctx, u, id);
+    const agora = ctx.agora();
+    const linhas = await ctx.db
+      .select({
+        id: avaliacoes.id,
+        autorId: avaliacoes.autorId,
+        sentido: avaliacoes.sentido,
+        nota: avaliacoes.nota,
+        comentario: avaliacoes.comentario,
+        criadoEm: avaliacoes.criadoEm,
+        revelada: sql<boolean>`${avaliacaoRevelada(agora)}`,
+      })
+      .from(avaliacoes)
+      .innerJoin(servicos, eq(servicos.id, avaliacoes.servicoId))
+      .where(eq(avaliacoes.servicoId, s.id));
+    const daPessoa = linhas.find((a) => a.autorId === u.id);
+    const daOutra = linhas.find((a) => a.autorId !== u.id);
+    const limpa = ({ autorId, revelada, ...a }: (typeof linhas)[number]) => a;
+    const fimDoPrazo = s.realizadoEm ? new Date(s.realizadoEm.getTime() + PRAZO_AVALIACAO_MS) : null;
+    return {
+      minha: daPessoa ? limpa(daPessoa) : null,
+      // `recebida` fica nula enquanto escondida; `outraParteAvaliou` diz só que existe
+      recebida: daOutra?.revelada ? limpa(daOutra) : null,
+      outraParteAvaliou: !!daOutra,
+      podeAvaliar: s.situacao === 'realizado' && !daPessoa && !!fimDoPrazo && agora <= fimDoPrazo,
+      prazoAte: fimDoPrazo,
+    };
+  });
+}
