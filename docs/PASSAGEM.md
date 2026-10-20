@@ -14,3 +14,6 @@ Usuário validar mapa e aparência das três amostras. Depois continuar neste pr
 
 ## Continuação — ajustes do usuário
 Busca por cidade agora usa input de busca em vez de select. Painel de valores adicionado em valores.html; mínimo R$70/h e exemplo de erro para valor inferior. Tela 11 parcialmente entregue (valores); cadastro, regiões e disponibilidade continuam pendentes. Portfólio e resumo atualizados. Controles continuam inativos conforme contrato. Próximo passo: validar ajustes e continuar telas pendentes sem reiniciar.
+
+## Ajustes — acesso e pagamento da cuidadora
+A visão da cuidadora não exibe a taxa cobrada ao cliente. valores.html mostra somente R$315 em serviços (4×70 + 20 + 15). O resumo do cliente mantém R$330 com a taxa ilustrativa. Acrescentadas login.html, cadastro.html e pagamento.html, todas estáticas. Pagamento solicitado pelo usuário amplia o mapa visual; valor, finalidade, periodicidade, método e relação com publicação aguardam definição. Não foi criado plano, assinatura ou cobrança real. Próximo passo: validar as novas telas e esclarecer as condições comerciais.

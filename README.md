@@ -27,3 +27,6 @@ Ver `docs/CONTRATO.txt`, `docs/MAPA-DE-TELAS.md` e `docs/PASSAGEM.md`.
 
 ## Ajuste solicitado em 20/10/2026
 Cidade representada por campo de busca textual. Painel estático para configurar valor/hora (mínimo R$ 70), deslocamento e adicional. Exemplo de validação abaixo do mínimo incluído. Valor canônico atualizado para R$70/h e total de 4h para R$330.
+
+## Ajustes — acesso e pagamento da cuidadora
+A visão da cuidadora não exibe a taxa cobrada ao cliente. valores.html mostra somente R$315 em serviços (4×70 + 20 + 15). O resumo do cliente mantém R$330 com a taxa ilustrativa. Acrescentadas login.html, cadastro.html e pagamento.html, todas estáticas. Pagamento solicitado pelo usuário amplia o mapa visual; valor, finalidade, periodicidade, método e relação com publicação aguardam definição. Não foi criado plano, assinatura ou cobrança real. Próximo passo: validar as novas telas e esclarecer as condições comerciais.
