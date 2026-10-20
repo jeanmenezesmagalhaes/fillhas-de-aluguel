@@ -96,6 +96,7 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET | `/api/indicacoes/:codigo` | público: de quem é o código ("Ana O.") |
 | GET | `/api/admin/fila` | administração: lista de espera em ordem |
 | GET | `/api/admin/profissionais/:id` | administração: ficha completa e histórico de documentos |
+| GET | `/api/admin/documentos` | administração: documentos esperando análise; `avulso` marca os de quem está fora da fila (ex.: a CNH de uma aprovada) |
 | GET | `/api/admin/documentos/:id/arquivo` | administração: baixa o documento |
 | POST | `/api/admin/documentos/:id/aprovar` · `recusar` | administração (`recusar` pede `motivo`) |
 | POST | `/api/admin/profissionais/:id/aprovar` · `correcao` | administração (`correcao` pede `motivo`) |

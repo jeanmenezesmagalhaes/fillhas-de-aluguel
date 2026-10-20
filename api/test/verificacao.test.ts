@@ -302,6 +302,12 @@ describe('CNH de quem atende com veículo', () => {
     const cnh = await p.c.enviarArquivo('/api/profissionais/eu/documentos', { tipo: 'cnh' }, { nome: 'cnh.png', dados: PNG });
     expect(cnh.status).toBe(201);
     expect((await p.c.patch('/api/profissionais/eu', { veiculoIncluso: true })).corpo.erro.campos.veiculoIncluso).toContain('em análise');
+    // a CNH de quem já foi aprovada aparece na lista de documentos da administração
+    const pendentes = (await admin.get('/api/admin/documentos')).corpo.documentos;
+    expect(pendentes.find((d: { id: string }) => d.id === cnh.corpo.documento.id)).toMatchObject({
+      tipo: 'cnh', avulso: true, profissional: { id: p.u.id, situacao: 'aprovado', veiculoIncluso: false },
+    });
+    expect((await p.c.get('/api/admin/documentos')).status).toBe(403);
     await admin.post(`/api/admin/documentos/${cnh.corpo.documento.id}/aprovar`);
     const depois = await p.c.patch('/api/profissionais/eu', { veiculoIncluso: true });
     expect(depois.corpo.usuario.profissional.veiculoIncluso).toBe(true);

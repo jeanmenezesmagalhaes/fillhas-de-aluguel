@@ -112,6 +112,31 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
     };
   });
 
+  // documentos esperando análise. Os de quem está na fila também aparecem na ficha; os
+  // `avulso` são de quem já está fora da fila (por exemplo, a CNH de uma aprovada que
+  // quer passar a oferecer veículo) e só aparecem aqui.
+  app.get('/api/admin/documentos', async (req) => {
+    exigirAdmin(req);
+    const linhas = await ctx.db
+      .select({
+        id: documentos.id,
+        tipo: documentos.tipo,
+        nomeOriginal: documentos.nomeOriginal,
+        tipoArquivo: documentos.tipoArquivo,
+        tamanho: documentos.tamanho,
+        enviadoEm: documentos.enviadoEm,
+        profissional: { id: profissionais.usuarioId, nome: usuarios.nome, situacao: profissionais.situacao, veiculoIncluso: profissionais.veiculoIncluso },
+      })
+      .from(documentos)
+      .innerJoin(profissionais, eq(profissionais.usuarioId, documentos.profissionalId))
+      .innerJoin(usuarios, eq(usuarios.id, documentos.profissionalId))
+      .where(eq(documentos.situacao, 'enviado'))
+      .orderBy(asc(documentos.enviadoEm));
+    return {
+      documentos: linhas.map((d) => ({ ...d, rotulo: ROTULO_DOCUMENTO[d.tipo], avulso: d.profissional.situacao !== 'em_analise' })),
+    };
+  });
+
   app.get('/api/admin/documentos/:id/arquivo', async (req, reply) => {
     exigirAdmin(req);
     const { id } = idParam.parse(req.params);
