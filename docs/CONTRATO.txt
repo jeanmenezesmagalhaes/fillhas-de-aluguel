@@ -1,0 +1,120 @@
+Criar somente as telas de uma plataforma web de cuidadores de idosos, para validar apresentação, conteúdo e sequência de contratação.
+Não desenvolver o sistema funcional nesta etapa.
+Nome provisório: Filha de Aluguel. O nome poderá mudar e não deve bloquear o trabalho.
+Um conjunto de telas estáticas, com dados fictícios coerentes, organizado na ordem dos fluxos.
+As telas devem:
+- Representar a experiência no celular e no computador.
+- Ter aparência consistente, textos legíveis e navegação visual clara.
+- Mostrar campos, botões, valores e mensagens como apareceriam no produto.
+- Identificar os dados como demonstrativos.
+- Permitir revisar o fluxo sem realizar ações reais.
+Botões, filtros e formulários serão apenas representações visuais, sem funcionamento.
+1. Página inicial e busca
+   - Busca por cidade e serviço.
+   - Explicação breve do funcionamento.
+   - Entrada para cadastro do cuidador.
+2. Resultados da busca
+   - Filtros por cidade, serviço e carro próprio.
+   - Cartões com foto, nome, região, preço de referência, avaliação e verificação.
+   - Exemplo de busca sem resultados.
+   - Cidades representadas como dinâmicas, conforme a cobertura dos profissionais.
+3. Portfólio público do cuidador
+   - Foto, apresentação, experiência e qualificações.
+   - Serviços e regiões atendidas.
+   - Disponibilidade geral.
+   - Carro próprio.
+   - Valor por hora, deslocamento e adicionais.
+   - Verificações com datas e avaliações.
+   - Botões de WhatsApp, contratação e compartilhamento.
+   - Apresentação adequada para divulgar o link como portfólio.
+4. Acesso ou criação de conta do cliente
+   - Representação dos campos necessários.
+   - Identificação de quem contrata e de quem receberá o cuidado.
+5. Solicitação de atendimento
+   - Serviço, data, horário e duração mínima de uma hora.
+   - Endereço.
+   - Serviços adicionais.
+   - Observações.
+6. Revisão da contratação
+   - Horas × valor por hora.
+   - Deslocamento.
+   - Adicionais.
+   - Taxa da plataforma.
+   - Total.
+   - Resumo do serviço antes da confirmação.
+7. Solicitação enviada
+   - Mensagem indicando que aguarda confirmação do cuidador.
+   - Próximos passos descritos de forma simples.
+8. Proposta alterada
+   - Exemplo de mudança de serviço ou valor.
+   - Comparação clara com a solicitação anterior.
+   - Representação do novo aceite do cliente.
+9. Contratação confirmada
+   - Resumo final do combinado.
+   - Indicação dos avisos por e-mail.
+10. Área do cliente e detalhe da contratação
+    - Solicitações e contratações.
+    - Exemplos de situações: aguardando, confirmada, recusada e realizada.
+    - Acesso visual à avaliação e denúncia.
+11. Cadastro e edição do portfólio
+    - Dados profissionais.
+    - Regiões, serviços e disponibilidade.
+    - Carro próprio, preço, deslocamento e adicionais.
+12. Documentos e verificação
+    - Representação do envio de documentos.
+    - Exemplos: em análise, aprovado, correção necessária e revisão vencida.
+    - Data da revisão mensal.
+13. Solicitações recebidas
+    - Lista e detalhe do pedido.
+    - Representação das opções de aceitar, recusar ou propor alteração.
+14. Avaliação
+    - Nota e comentário vinculados a uma contratação.
+    - Exemplo de resposta do cuidador.
+15. Denúncia
+    - Motivo, descrição e confirmação de recebimento.
+16. Painel administrativo
+    - Visão geral.
+    - Perfis e documentos para análise.
+    - Revisões mensais pendentes.
+    - Denúncias e moderação.
+    - Exemplo de métricas: visitas, cliques no WhatsApp e contratações.
+- Busca → resultados → portfólio → contato pelo WhatsApp.
+- Portfólio → identificação → solicitação → resumo → aguardando aceite → confirmação.
+- Solicitação → alteração do cuidador → novo aceite do cliente.
+- Cadastro do cuidador → documentos → aprovação → portfólio publicado.
+- Contratação realizada → avaliação.
+- Denúncia → análise administrativa.
+O contato pelo WhatsApp será apenas ilustrado. Nenhuma mensagem será enviada.
+Não implementar:
+- Autenticação.
+- Banco de dados.
+- Upload real de documentos.
+- Integração com WhatsApp ou tracking.
+- Pagamentos ou cobranças.
+- Amazon SES ou envio de e-mails.
+- Chat.
+- Funcionalidades administrativas.
+- Contratações reais.
+- Publicação como serviço operacional.
+Os valores serão ilustrativos. O modelo de recebimento da taxa continuará pendente e não será apresentado como decidido.
+Organizar as telas e sua sequência, indicando o objetivo de cada uma.
+Aceite: o usuário valida que os fluxos e informações necessários estão contemplados.
+Apresentar a página de busca, o portfólio e o resumo de contratação como amostra da aparência proposta.
+Aceite: o usuário valida estilo, legibilidade, organização e tom dos textos.
+Aplicar a direção aprovada ao restante do protótipo, com versões para celular e computador.
+Aceite: todos os fluxos listados estão visualmente representados.
+Corrigir inconsistências e ajustar as telas a partir do retorno do usuário.
+Aceite: o usuário aprova o protótipo como referência para um futuro planejamento técnico.
+- Os dois agentes seguem este mesmo escopo.
+- Um continua o trabalho do outro, sem reiniciar o projeto.
+- Cada passagem registra telas concluídas, decisões, pendências e próximo passo.
+- Dados, valores e personagens fictícios permanecem consistentes entre as telas.
+- Nenhum agente transforma o protótipo em sistema funcional sem nova autorização.
+- Escolhas técnicas de implementação ficam para depois da validação visual.
+Esta etapa termina quando o usuário consegue entender e avaliar, pelas telas:
+- Como encontra e escolhe um cuidador.
+- Como o cuidador apresenta seu trabalho.
+- Como acontece a solicitação e o aceite.
+- Como os valores são apresentados.
+- Como aparecem verificações, avaliações e denúncias.
+O próximo contrato será o de implementação, elaborado somente após a aprovação do protótipo.
