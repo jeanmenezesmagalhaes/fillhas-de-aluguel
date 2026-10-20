@@ -6,6 +6,7 @@ Protótipo estático privado. Nome provisório nas telas: **Filha de Aluguel**.
 - `index.html`: página inicial e busca.
 - `portfolio.html`: portfólio público de Ana Oliveira.
 - `resumo.html`: revisão da solicitação.
+- `valores.html`: painel do cuidador com valor mínimo de R$ 70/h.
 - `mapa.html`: mapa das 16 telas e fluxos.
 
 Abra `index.html` no navegador. Não há instalação, dependências, JavaScript, backend ou coleta de dados. Para visualização local opcional: `python3 -m http.server 4173 --bind 127.0.0.1`.
@@ -23,3 +24,6 @@ Não publicar como serviço operacional. Não implementar autenticação, banco,
 A taxa de R$ 15 é somente exemplo. O modelo de recebimento permanece pendente.
 
 Ver `docs/CONTRATO.txt`, `docs/MAPA-DE-TELAS.md` e `docs/PASSAGEM.md`.
+
+## Ajuste solicitado em 20/10/2026
+Cidade representada por campo de busca textual. Painel estático para configurar valor/hora (mínimo R$ 70), deslocamento e adicional. Exemplo de validação abaixo do mínimo incluído. Valor canônico atualizado para R$70/h e total de 4h para R$330.

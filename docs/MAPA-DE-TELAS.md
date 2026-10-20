@@ -10,7 +10,7 @@
 8. **Proposta alterada** — Comparar proposta anterior e nova; representar novo aceite. Estado: Planejada.
 9. **Contratação confirmada** — Mostrar combinado final e avisos por e-mail. Estado: Planejada.
 10. **Área do cliente e detalhe** — Exibir aguardando, confirmada, recusada e realizada. Estado: Planejada.
-11. **Cadastro e edição do portfólio** — Representar dados profissionais, serviços e valores. Estado: Planejada.
+11. **Cadastro e edição do portfólio** — Representar dados profissionais, serviços e valores. Estado: Parcial — painel de valores pronto em valores.html; mínimo R$70/h.
 12. **Documentos e verificação** — Exibir em análise, aprovado, correção e revisão vencida. Estado: Planejada.
 13. **Solicitações recebidas** — Representar detalhe, aceite, recusa e alteração. Estado: Planejada.
 14. **Avaliação** — Mostrar nota, comentário e resposta vinculados ao atendimento. Estado: Planejada.
