@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Painel · Área profissional · Minha companhia</title>
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="resumo.css?v=6">
+<link rel="stylesheet" href="gestao.css?v=11">
+</head>
+<body class="pagina-gestao">
+
+<header class="topo" data-topo>
+  <div class="topo-dentro">
+    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
+    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="painel.html" aria-current="page">Painel</a><a href="ganhos.html">Ganhos</a><a href="#agenda">Agenda</a><a href="valores.html">Valores</a><a href="portfolio.html">Meu perfil público</a><span class="topo-conta"><span data-nome-conta>Ana Oliveira</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+  </div>
+</header>
+
+<main class="tela gestao" data-gestao="pro">
+  <div class="titulo">
+    <div>
+      <h1>Painel</h1>
+      <p class="achado" data-achado aria-live="polite">2 pedidos esperam sua resposta. O de Rafael Souza vence hoje, às 20h.</p>
+    </div>
+  </div>
+
+  <div class="gestao-grade">
+    <div class="gestao-principal">
+      <section class="cartao" aria-labelledby="t-novos">
+        <div class="cartao-cab"><h2 id="t-novos">Pedidos novos</h2><span class="meta num" data-conta-novos>2 pedidos</span></div>
+        <ul class="pedidos" data-novos>
+          <li class="pn" data-pedido="rafael" data-dia="2026-10-30" data-inicio="14" data-horas="2" data-valor="140" data-familia="Rafael Souza" data-tarefa="Banco · Agência Centro" data-bairro="Centro">
+            <div class="pn-cab"><p class="pn-quem"><strong>Rafael Souza</strong> para Dirce, 82 anos</p><span class="pill pill-aviso">Responda até hoje, 20h</span></div>
+            <p class="pn-tarefa">Banco · Agência Centro</p>
+            <p class="pn-quando num">Sex, 30/10 · 14h às 16h · sem veículo</p>
+            <div class="pn-pe">
+              <p class="pn-valor num"><span>2 h × R$ 70</span><strong>R$ 140</strong></p>
+              <div class="pn-acoes"><button class="btn btn-primario" type="button" data-aceitar>Aceitar</button><button class="btn btn-secundario" type="button" data-propor>Propor mudança</button><button class="link pn-recusar" type="button" data-recusar>Recusar</button></div>
+            </div>
+          </li>
+          <li class="pn" data-pedido="mariana" data-dia="2026-10-28" data-inicio="9" data-horas="4" data-valor="240" data-familia="Mariana Costa" data-tarefa="Consulta médica · Clínica Viva Mais" data-bairro="Centro">
+            <div class="pn-cab"><p class="pn-quem"><strong>Mariana Costa</strong> para Helena, 78 anos</p><span class="pill">Responda até amanhã, 18h</span></div>
+            <p class="pn-tarefa">Consulta médica · Clínica Viva Mais, Centro</p>
+            <p class="pn-quando num">Qua, 28/10 · 9h às 13h · com veículo</p>
+            <p class="pn-recado">“Helena caminha devagar. Levar os exames anteriores, na pasta azul da sala.”</p>
+            <div class="pn-pe">
+              <p class="pn-valor num"><span>4 h × R$ 60</span><strong>R$ 240</strong></p>
+              <div class="pn-acoes"><button class="btn btn-primario" type="button" data-aceitar>Aceitar</button><button class="btn btn-secundario" type="button" data-propor>Propor mudança</button><button class="link pn-recusar" type="button" data-recusar>Recusar</button></div>
+            </div>
+          </li>
+        </ul>
+        <p class="vazio" data-sem-novos hidden>Nenhum pedido esperando resposta. Quando chegar um, ele aparece aqui e no seu e-mail.</p>
+      </section>
+
+      <section class="cartao" id="agenda" aria-labelledby="t-agenda">
+        <div class="cartao-cab"><h2 id="t-agenda">Próximos atendimentos</h2><span class="meta num" data-conta-agenda></span></div>
+        <ul class="agenda num" data-agenda></ul>
+        <p class="vazio" data-sem-agenda hidden>Nenhum atendimento confirmado.</p>
+      </section>
+
+      <section class="cartao" aria-labelledby="t-feitos" data-sec-feitos hidden>
+        <div class="cartao-cab"><h2 id="t-feitos">Feitos recentemente</h2><span class="meta">avalie em até 14 dias</span></div>
+        <ul class="agenda num" data-feitos></ul>
+        <p class="ajuda-texto">A família só vê a sua nota depois de avaliar também, ou quando o prazo acaba. O mesmo vale para a nota que ela dá a você.</p>
+      </section>
+    </div>
+
+    <div class="gestao-lado">
+      <section class="cartao" aria-labelledby="t-mes">
+        <div class="cartao-cab"><h2 id="t-mes" data-mes>Outubro</h2><span class="meta">antes da taxa da plataforma</span></div>
+        <p class="kpi num" data-feito>R$ 940</p>
+        <p class="kpi-sub num" data-feito-sub>em 14 horas, 5 atendimentos feitos</p>
+        <ul class="semanas num" data-semanas aria-label="Valor por semana"></ul>
+        <p class="legenda"><span><i class="l-feito"></i>Feito</span><span><i class="l-conf"></i>Confirmado</span></p>
+        <p class="kpi-nota num" data-conf>Com os confirmados, R$ 1.290 no mês.</p>
+        <a class="ajustar" href="ganhos.html">Ver extrato e depósitos</a>
+      </section>
+
+      <section class="cartao" aria-labelledby="t-perfil">
+        <div class="cartao-cab"><h2 id="t-perfil">Seu perfil</h2><span class="pill pill-ok" data-situacao>No ar</span></div>
+        <dl class="linhas linhas-curtas">
+          <div><dt>Nota</dt><dd class="num" data-nota>4,9 <small>12 avaliações</small></dd></div>
+          <div><dt>Valor da hora</dt><dd class="num" data-valor>R$ 70 <small>R$ 60 a partir de 4 h · mínimo de 2 h</small></dd></div>
+          <div><dt>Documentos</dt><dd class="num" data-docs>Revisados em 01/10 <small>Próxima revisão em 01/11/2026</small></dd></div>
+        </dl>
+        <div class="perfil-link">
+          <p class="num" data-link>minhacompanhia.com.br/ana-oliveira</p>
+          <button class="btn btn-secundario" type="button" data-copiar>Copiar link</button>
+        </div>
+        <a class="ajustar" href="valores.html">Editar valores e agenda</a>
+      </section>
+    </div>
+  </div>
+</main>
+
+<main class="tela gestao-fora" data-fora hidden>
+  <section class="cartao cartao-entrar">
+    <h1>Entre na área profissional</h1>
+    <p class="achado">Veja seus pedidos, sua agenda e quanto já recebeu no mês.</p>
+    <a class="btn btn-primario btn-largo" href="entrar.html?perfil=pro&amp;volta=painel.html">Entrar</a>
+    <p class="entrar-pro">Ainda não tem cadastro? <a href="entrar.html?perfil=pro&amp;modo=criar&amp;volta=painel.html">Quero me cadastrar</a></p>
+  </section>
+</main>
+
+<script src="gestao.js"></script>
+<script>
+  // menu no celular
+  (() => {
+    const topo = document.querySelector('[data-topo]');
+    const botao = topo.querySelector('.menu-botao');
+    botao.addEventListener('click', () => botao.setAttribute('aria-expanded', String(topo.classList.toggle('menu-aberto'))));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { topo.classList.remove('menu-aberto'); botao.setAttribute('aria-expanded', 'false'); } });
+  })();
+
+  // demonstração: painel com dados fixos, só quando a tela abre como arquivo
+  (() => {
+    if (window.mc && mc.comApi) return;
+    const le = () => { try { return JSON.parse(localStorage.getItem('mc-pro')); } catch (_) { return null; } };
+    const conta = le();
+    if (!conta) { document.querySelector('[data-gestao]').remove(); document.querySelector('[data-fora]').hidden = false; document.querySelector('.topo-conta').hidden = true; return; }
+    document.querySelector('[data-fora]').remove();
+    document.querySelector('[data-nome-conta]').textContent = conta.nome;
+    document.querySelector('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional.html'; });
+
+    const brl = (v) => `R$ ${v.toLocaleString('pt-BR')}`;
+    const SEM = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const dt = (iso) => new Date(`${iso}T12:00:00`);
+    const curta = (iso) => { const d = dt(iso); return `${SEM[d.getDay()]}, ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`; };
+    // atendimentos de outubro: feitos (até hoje, 20/10) e confirmados
+    const atend = [
+      { dia: '2026-10-02', inicio: 9, horas: 3, valor: 210, familia: 'Lúcia Prado', tarefa: 'Exame de sangue', bairro: 'Cambuí', feito: true },
+      { dia: '2026-10-07', inicio: 10, horas: 2, valor: 140, familia: 'Beatriz Melo', tarefa: 'Mercado e farmácia', bairro: 'Taquaral', feito: true },
+      { dia: '2026-10-09', inicio: 8, horas: 4, valor: 240, familia: 'Rafael Souza', tarefa: 'Consulta médica', bairro: 'Centro', feito: true },
+      { dia: '2026-10-14', inicio: 10, horas: 2, valor: 140, familia: 'Mariana Costa', tarefa: 'Banco', bairro: 'Cambuí', feito: true },
+      { dia: '2026-10-16', inicio: 14, horas: 3, valor: 210, familia: 'Lúcia Prado', tarefa: 'Passeio no Taquaral', bairro: 'Cambuí', feito: true },
+      { dia: '2026-10-22', inicio: 8, horas: 3, valor: 210, familia: 'Lúcia Prado', tarefa: 'Exame de imagem', bairro: 'Cambuí', feito: false },
+      { dia: '2026-10-26', inicio: 10, horas: 2, valor: 140, familia: 'Beatriz Melo', tarefa: 'Mercado e farmácia', bairro: 'Taquaral', feito: false },
+    ];
+    const semanas = [['2026-09-28', '28/09 a 04/10'], ['2026-10-05', '05 a 11/10'], ['2026-10-12', '12 a 18/10'], ['2026-10-19', '19 a 25/10'], ['2026-10-26', '26/10 a 01/11']];
+
+    const desenha = () => {
+      const feitos = atend.filter((a) => a.feito);
+      const conf = atend.filter((a) => !a.feito).sort((a, b) => a.dia.localeCompare(b.dia) || a.inicio - b.inicio);
+      const somaF = feitos.reduce((s, a) => s + a.valor, 0);
+      const horasF = feitos.reduce((s, a) => s + a.horas, 0);
+      const noMes = (a) => a.dia.startsWith('2026-10');
+      const somaConf = conf.filter(noMes).reduce((s, a) => s + a.valor, 0);
+      document.querySelector('[data-feito]').textContent = brl(somaF);
+      document.querySelector('[data-feito-sub]').textContent = `em ${horasF} horas, ${feitos.length} atendimentos feitos`;
+      document.querySelector('[data-conf]').textContent = `Com os confirmados, ${brl(somaF + somaConf)} no mês.`;
+
+      // semana a semana: barra do feito em verde, do confirmado em cinza, na mesma escala
+      const porSemana = semanas.map(([ini, rotulo], i) => {
+        const fim = semanas[i + 1] ? semanas[i + 1][0] : '2026-11-02';
+        const dentro = atend.filter((a) => a.dia >= ini && a.dia < fim);
+        return { rotulo, f: dentro.filter((a) => a.feito).reduce((s, a) => s + a.valor, 0), c: dentro.filter((a) => !a.feito).reduce((s, a) => s + a.valor, 0) };
+      });
+      const maior = Math.max(1, ...porSemana.map((s) => s.f + s.c));
+      document.querySelector('[data-semanas]').innerHTML = porSemana.map((s) => `<li><span class="s-rot">${s.rotulo}</span><span class="s-barra"><i class="b-feito" style="width:${(s.f / maior) * 100}%"></i><i class="b-conf" style="width:${(s.c / maior) * 100}%"></i></span><span class="s-val">${s.f + s.c ? brl(s.f + s.c) : '<span class="traco">—</span>'}</span></li>`).join('');
+
+      const lista = document.querySelector('[data-agenda]');
+      lista.innerHTML = conf.map((a) => `<li${a.novo ? ' class="agenda-nova"' : ''}><span class="ag-dia">${curta(a.dia)}</span><span class="ag-hora">${a.inicio}h às ${a.inicio + a.horas}h</span><span class="ag-oque"><strong>${a.tarefa}</strong><small>${a.familia} · ${a.bairro}</small></span><span class="ag-valor">${brl(a.valor)}</span></li>`).join('');
+      document.querySelector('[data-sem-agenda]').hidden = conf.length > 0;
+      document.querySelector('[data-conta-agenda]').textContent = `${conf.length} ${conf.length === 1 ? 'confirmado' : 'confirmados'}`;
+
+      const novos = [...document.querySelectorAll('[data-novos] .pn:not(.resolvido)')];
+      document.querySelector('[data-conta-novos]').textContent = `${novos.length} ${novos.length === 1 ? 'pedido' : 'pedidos'}`;
+      document.querySelector('[data-sem-novos]').hidden = document.querySelectorAll('[data-novos] .pn').length > 0;
+      document.querySelector('[data-achado]').textContent = novos.length
+        ? `${novos.length === 1 ? '1 pedido espera' : `${novos.length} pedidos esperam`} sua resposta.${novos.some((n) => n.dataset.pedido === 'rafael') ? ' O de Rafael Souza vence hoje, às 20h.' : ''}`
+        : `Tudo respondido${document.querySelector('.pn.proposto') ? ', e uma proposta espera a família' : ''}. Próximo atendimento: ${conf[0] ? `${curta(conf[0].dia)}, ${conf[0].inicio}h` : 'nenhum marcado'}.`;
+    };
+
+    const resolve = (li, html, tipo) => {
+      li.classList.add('resolvido'); if (tipo) li.classList.add(tipo);
+      li.querySelector('.pn-pe').hidden = true;
+      const proposta = li.querySelector('.pn-proposta'); if (proposta) proposta.hidden = true;
+      li.insertAdjacentHTML('beforeend', `<p class="pn-status" role="status">${html}</p>`);
+      desenha();
+    };
+    document.querySelectorAll('[data-novos] .pn').forEach((li) => {
+      const d = li.dataset;
+      li.querySelector('[data-aceitar]').addEventListener('click', () => {
+        atend.push({ dia: d.dia, inicio: Number(d.inicio), horas: Number(d.horas), valor: Number(d.valor), familia: d.familia, tarefa: d.tarefa.split(' · ')[0], bairro: d.bairro, feito: false, novo: true });
+        resolve(li, `<strong>Aceito.</strong> ${d.familia} recebe a confirmação por e-mail, e o atendimento entrou na sua agenda.`);
+      });
+      li.querySelector('[data-recusar]').addEventListener('click', (ev) => {
+        const b = ev.currentTarget;
+        if (b.dataset.confirmar) { resolve(li, `<strong>Recusado.</strong> ${d.familia} recebe o aviso e pode escolher outra profissional.`); return; }
+        b.dataset.confirmar = '1'; b.textContent = 'Confirmar recusa';
+      });
+      li.querySelector('[data-propor]').addEventListener('click', () => {
+        let f = li.querySelector('.pn-proposta');
+        if (!f) {
+          const ini = Number(d.inicio); const h = Number(d.horas);
+          const opcoes = (de, ate, sel, suf) => Array.from({ length: ate - de + 1 }, (_, i) => de + i).map((v) => `<option value="${v}"${v === sel ? ' selected' : ''}>${v}${suf}</option>`).join('');
+          li.querySelector('.pn-pe').insertAdjacentHTML('afterend', `<form class="pn-proposta"><p class="pn-proposta-tit">O que você propõe para ${d.familia}?</p><div class="pn-campos"><label>Início<select name="inicio">${opcoes(8, 17, ini, 'h')}</select></label><label>Horas<select name="horas">${opcoes(2, 8, h, ' h')}</select></label></div><label class="pn-msg">Recado (opcional)<textarea name="msg" rows="2" placeholder="Ex.: Consigo a partir das 10h."></textarea></label><div class="pn-acoes"><button class="btn btn-primario" type="submit">Enviar proposta</button><button class="link" type="button" data-cancelar>Cancelar</button></div></form>`);
+          f = li.querySelector('.pn-proposta');
+          f.querySelector('[data-cancelar]').addEventListener('click', () => { f.hidden = true; li.querySelector('.pn-pe').hidden = false; });
+          f.addEventListener('submit', (ev) => {
+            ev.preventDefault();
+            const i2 = Number(f.inicio.value); const h2 = Number(f.horas.value);
+            resolve(li, `<strong>Proposta enviada:</strong> das ${i2}h às ${i2 + h2}h (${h2} h). Aguardando a resposta de ${d.familia}.`, 'proposto');
+          });
+        }
+        f.hidden = false; li.querySelector('.pn-pe').hidden = true; f.inicio.focus();
+      });
+    });
+    document.querySelector('[data-copiar]').addEventListener('click', async (ev) => {
+      const b = ev.currentTarget;
+      try { await navigator.clipboard.writeText(`https://${document.querySelector('[data-link]').textContent}`); b.textContent = 'Link copiado'; } catch (_) { b.textContent = 'Copie o link acima'; }
+      setTimeout(() => { b.textContent = 'Copiar link'; }, 2400);
+    });
+    desenha();
+  })();
+  // painel da profissional pela API: pedidos novos, agenda, feitos para avaliar, o mês e o perfil
+  (async () => {
+    if (!window.mc || !mc.comApi) return;
+    const eu = await mc.entrar('profissional');
+    if (!eu) return;
+    const { esc, dia, faixa, brl, primeiro } = mc;
+    const $ = (s) => document.querySelector(s);
+    $('[data-nome-conta]').textContent = eu.nome;
+    $('[data-sair]').addEventListener('click', () => mc.sair('mc-pro', 'profissional.html'));
+    const achado = $('[data-achado]');
+    const MES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const SITUACAO = { aprovado: ['No ar', 'pill-ok'], em_analise: ['Em análise', ''], rascunho: ['Rascunho', ''], correcao: ['Correção pedida', 'pill-aviso'], vencido: ['Revisão vencida', 'pill-aviso'] };
+    const PRAZO = 14 * 86400000;
+    let aviso = '';
+
+    const paraQuem = (s) => {
+      if (!s.pessoaAcompanhada) return '';
+      const i = mc.idade(s.pessoaAcompanhada.dataNascimento);
+      return ` para ${esc(primeiro(s.pessoaAcompanhada.nome))}${i ? `, ${i} anos` : ''}`;
+    };
+    const notaFamilia = (n) => (n && n.total
+      ? `Nota da família: ${n.media.toLocaleString('pt-BR', { minimumFractionDigits: 1 })} em ${mc.plural(n.total, 'avaliação', 'avaliações')}`
+      : 'Família ainda sem avaliações');
+    const linhaNovo = (s) => `<li class="pn" data-id="${s.id}">
+        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.contratante.nome)}</strong>${paraQuem(s)}</p><span class="pill">Novo pedido</span></div>
+        <p class="pn-tarefa">${esc(s.tarefa)}${s.local ? ` · ${esc(s.local)}` : ''}</p>
+        <p class="pn-quando num">${dia(s.inicio)} · ${faixa(s.inicio, s.horas)} · ${s.profissional.veiculoIncluso ? 'com veículo' : 'sem veículo'}</p>
+        <p class="pn-tarefa num">${notaFamilia(s.notaFamilia)}</p>
+        ${s.observacoes ? `<p class="pn-recado">“${esc(s.observacoes)}”</p>` : ''}
+        <div class="pn-pe">
+          <p class="pn-valor num"><span>${s.horas} h × ${brl(s.valorHoraCentavos)}</span><strong>${brl(s.totalCentavos)}</strong></p>
+          <div class="pn-acoes"><button class="btn btn-primario" type="button" data-acao="aceitar">Aceitar</button><button class="btn btn-secundario" type="button" data-propor>Propor mudança</button><button class="link pn-recusar" type="button" data-acao="recusar">Recusar</button></div>
+        </div>
+      </li>`;
+    const linhaProposta = (s) => `<li class="pn resolvido proposto" data-id="${s.id}">
+        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.contratante.nome)}</strong>${paraQuem(s)}</p></div>
+        <p class="pn-tarefa">${esc(s.tarefa)}${s.local ? ` · ${esc(s.local)}` : ''}</p>
+        <p class="pn-status" role="status"><strong>Proposta enviada:</strong> ${dia(s.proposta.inicio).toLowerCase()}, das ${faixa(s.proposta.inicio, s.proposta.horas)} (${s.proposta.horas} h). Aguardando a resposta de ${esc(primeiro(s.contratante.nome))}.</p>
+      </li>`;
+    const linhaAgenda = (s, fim) => `<li data-id="${s.id}"><span class="ag-dia">${dia(s.inicio)}</span><span class="ag-hora">${faixa(s.inicio, s.horas)}</span><span class="ag-oque"><strong>${esc(s.tarefa)}</strong><small>${esc(s.contratante.nome)}${s.local ? ` · ${esc(s.local)}` : ''}</small></span>${fim}</li>`;
+
+    // semanas de segunda a domingo que tocam o mês, com o feito e o confirmado de cada uma
+    const semanasDoMes = (ano, mes, feitos, conf) => {
+      const p2 = (n) => String(n).padStart(2, '0');
+      const ini = new Date(ano, mes, 1);
+      ini.setDate(ini.getDate() - ((ini.getDay() + 6) % 7));
+      const semanas = [];
+      const fimDoMes = new Date(ano, mes + 1, 1);
+      for (let a = ini; a < fimDoMes; a = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 7)) {
+        const b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6);
+        const rotulo = a.getMonth() === b.getMonth() ? `${p2(a.getDate())} a ${p2(b.getDate())}/${p2(b.getMonth() + 1)}` : `${p2(a.getDate())}/${p2(a.getMonth() + 1)} a ${p2(b.getDate())}/${p2(b.getMonth() + 1)}`;
+        const dentro = (s) => { const d = new Date(s.inicio); return d >= a && d < new Date(b.getFullYear(), b.getMonth(), b.getDate() + 1); };
+        semanas.push({ rotulo, f: feitos.filter(dentro).reduce((t, s) => t + s.totalCentavos, 0), c: conf.filter(dentro).reduce((t, s) => t + s.totalCentavos, 0) });
+      }
+      return semanas;
+    };
+
+    const desenhaMes = (lista) => {
+      const hoje = new Date();
+      const doMes = (s) => { const d = new Date(s.inicio); return d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth(); };
+      const feitos = lista.filter((s) => s.situacao === 'realizado' && doMes(s));
+      const conf = lista.filter((s) => s.situacao === 'confirmado' && doMes(s));
+      const soma = (l) => l.reduce((t, s) => t + s.totalCentavos, 0);
+      $('[data-mes]').textContent = MES[hoje.getMonth()];
+      $('[data-feito]').textContent = brl(soma(feitos));
+      $('[data-feito-sub]').textContent = `em ${mc.plural(feitos.reduce((t, s) => t + s.horas, 0), 'hora', 'horas')}, ${mc.plural(feitos.length, 'atendimento feito', 'atendimentos feitos')}`;
+      $('[data-conf]').textContent = `Com os confirmados, ${brl(soma(feitos) + soma(conf))} no mês.`;
+      const semanas = semanasDoMes(hoje.getFullYear(), hoje.getMonth(), feitos, conf);
+      const maior = Math.max(1, ...semanas.map((s) => s.f + s.c));
+      $('[data-semanas]').innerHTML = semanas.map((s) => `<li><span class="s-rot">${s.rotulo}</span><span class="s-barra"><i class="b-feito" style="width:${(s.f / maior) * 100}%"></i><i class="b-conf" style="width:${(s.c / maior) * 100}%"></i></span><span class="s-val">${s.f + s.c ? brl(s.f + s.c) : '<span class="traco">—</span>'}</span></li>`).join('');
+    };
+
+    const desenhaPerfil = (p) => {
+      const [rotulo, classe] = SITUACAO[p.situacao] || [p.situacao, ''];
+      const pill = $('[data-situacao]');
+      pill.textContent = rotulo;
+      pill.className = `pill ${classe}`.trim();
+      $('[data-nota]').innerHTML = p.nota.total
+        ? `${p.nota.media.toLocaleString('pt-BR', { minimumFractionDigits: 1 })} <small>${mc.plural(p.nota.total, 'avaliação', 'avaliações')}</small>`
+        : 'Sem avaliações <small>Aparecem depois dos primeiros atendimentos</small>';
+      $('[data-valor]').innerHTML = p.valorHoraCentavos
+        ? `${brl(p.valorHoraCentavos)} <small>mínimo de ${mc.plural(p.horasMinimas, 'hora', 'horas')} · ${p.veiculoIncluso ? 'veículo incluso' : 'sem veículo'}</small>`
+        : 'A definir <small>Defina o valor para enviar o perfil para análise</small>';
+      $('[data-docs]').innerHTML = p.revisadoEm
+        ? `Revisados em ${mc.dataCurta(p.revisadoEm).dm} <small>${p.proximaRevisao ? `Próxima revisão em ${mc.dataCurta(p.proximaRevisao).dma}` : ''}</small>`
+        : 'Ainda não revisados';
+      $('[data-link]').textContent = `minhacompanhia.com.br/${p.slug}`;
+    };
+
+    const desenha = (lista, perfil) => {
+      const agora = Date.now();
+      const novos = lista.filter((s) => s.situacao === 'solicitado').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+      const propostas = lista.filter((s) => s.situacao === 'proposta_alterada');
+      const conf = lista.filter((s) => s.situacao === 'confirmado').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+      const feitos = lista.filter((s) => s.situacao === 'realizado' && agora - new Date(s.realizadoEm) <= PRAZO);
+
+      $('[data-novos]').innerHTML = [...novos.map(linhaNovo), ...propostas.map(linhaProposta)].join('');
+      $('[data-sem-novos]').hidden = novos.length + propostas.length > 0;
+      $('[data-conta-novos]').textContent = mc.plural(novos.length, 'pedido', 'pedidos');
+
+      $('[data-agenda]').innerHTML = conf.map((s) => linhaAgenda(s, new Date(s.inicio) <= agora
+        ? '<span class="ag-acao"><button class="btn btn-secundario" type="button" data-acao="concluir">Marcar como feito</button></span>'
+        : `<span class="ag-valor">${brl(s.totalCentavos)}</span>`)).join('');
+      $('[data-sem-agenda]').hidden = conf.length > 0;
+      $('[data-conta-agenda]').textContent = mc.plural(conf.length, 'confirmado', 'confirmados');
+
+      $('[data-sec-feitos]').hidden = feitos.length === 0;
+      $('[data-feitos]').innerHTML = feitos.map((s) => linhaAgenda(s, s.minhaNota
+        ? `<span class="ag-acao ag-nota">${mc.estrelas(s.minhaNota)}</span>`
+        : s.podeAvaliar ? '<span class="ag-acao"><button class="btn btn-secundario" type="button" data-avaliar>Avaliar família</button></span>' : '<span class="ag-acao traco">Prazo encerrado</span>')).join('');
+
+      desenhaMes(lista);
+      if (perfil) desenhaPerfil(perfil);
+
+      const proximo = conf.find((s) => new Date(s.inicio) > agora);
+      achado.textContent = aviso || (novos.length
+        ? `${novos.length === 1 ? '1 pedido espera' : `${novos.length} pedidos esperam`} sua resposta.`
+        : `Tudo respondido${propostas.length ? `, e ${propostas.length === 1 ? 'uma proposta espera' : `${propostas.length} propostas esperam`} a família` : ''}. Próximo atendimento: ${proximo ? `${dia(proximo.inicio).toLowerCase()}, ${mc.hora(proximo.inicio)}` : 'nenhum marcado'}.`);
+      aviso = '';
+      liga(lista);
+    };
+
+    const carrega = async () => {
+      const [{ servicos }, perfil] = await Promise.all([
+        mc.api('GET', '/api/servicos'),
+        eu.profissional ? mc.api('GET', `/api/profissionais/${encodeURIComponent(eu.profissional.slug)}`).then((r) => r.profissional) : null,
+      ]);
+      desenha(servicos.filter((s) => s.papel === 'profissional'), perfil);
+    };
+    const agir = async (s, acao, corpo) => {
+      try {
+        await mc.api('POST', `/api/servicos/${s.id}/${acao}`, corpo);
+        const quem = primeiro(s.contratante.nome);
+        aviso = acao === 'aceitar' ? `Pedido de ${quem} aceito. O atendimento entrou na sua agenda.`
+          : acao === 'recusar' ? `Pedido de ${quem} recusado. A família pode escolher outra profissional.`
+          : acao === 'propor' ? `Proposta enviada. Aguardando a resposta de ${quem}.`
+          : `Atendimento com ${quem} marcado como feito. Avalie a família em até 14 dias.`;
+      } catch (e) {
+        aviso = e.message;
+      }
+      await carrega();
+    };
+
+    // proposta: outro dia, outro início ou outra duração, com recado opcional
+    const abrirProposta = (li, s) => {
+      let f = li.querySelector('.pn-proposta');
+      if (!f) {
+        const ini = new Date(s.inicio);
+        const p2 = (n) => String(n).padStart(2, '0');
+        const opcoes = (de, ate, sel, suf) => Array.from({ length: ate - de + 1 }, (_, i) => de + i).map((v) => `<option value="${v}"${v === sel ? ' selected' : ''}>${v}${suf}</option>`).join('');
+        li.querySelector('.pn-pe').insertAdjacentHTML('afterend', `<form class="pn-proposta"><p class="pn-proposta-tit">O que você propõe para ${esc(primeiro(s.contratante.nome))}?</p><div class="pn-campos"><label>Dia<input type="date" name="dia" value="${ini.getFullYear()}-${p2(ini.getMonth() + 1)}-${p2(ini.getDate())}"></label><label>Início<select name="inicio">${opcoes(6, 20, ini.getHours(), 'h')}</select></label><label>Horas<select name="horas">${opcoes(1, 10, s.horas, ' h')}</select></label></div><label class="pn-msg">Recado (opcional)<textarea name="msg" rows="2" maxlength="500" placeholder="Ex.: Consigo a partir das 10h."></textarea></label><p class="campo-erro" data-erro-proposta role="alert" hidden></p><div class="pn-acoes"><button class="btn btn-primario" type="submit">Enviar proposta</button><button class="link" type="button" data-fechar>Cancelar</button></div></form>`);
+        f = li.querySelector('.pn-proposta');
+        f.querySelector('[data-fechar]').addEventListener('click', () => { f.hidden = true; li.querySelector('.pn-pe').hidden = false; });
+        f.addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          const [a, m, d] = f.dia.value.split('-').map(Number);
+          const inicio = new Date(a, m - 1, d, Number(f.inicio.value));
+          if (!a || Number.isNaN(inicio.getTime())) { const p = f.querySelector('[data-erro-proposta]'); p.textContent = 'Escolha o dia.'; p.hidden = false; return; }
+          agir(s, 'propor', { inicio: inicio.toISOString(), horas: Number(f.horas.value), recado: f.msg.value.trim() || undefined });
+        });
+      }
+      f.hidden = false;
+      li.querySelector('.pn-pe').hidden = true;
+      f.dia.focus();
+    };
+
+    function liga(lista) {
+      const porId = new Map(lista.map((s) => [s.id, s]));
+      document.querySelectorAll('[data-gestao] [data-id]').forEach((li) => {
+        const s = porId.get(li.dataset.id);
+        li.querySelectorAll('[data-acao]').forEach((b) => {
+          const acao = b.dataset.acao;
+          if (acao === 'recusar') mc.doisToques(b, 'Confirmar recusa', () => agir(s, acao));
+          else b.addEventListener('click', () => { b.disabled = true; agir(s, acao); });
+        });
+        const propor = li.querySelector('[data-propor]');
+        if (propor) propor.addEventListener('click', () => abrirProposta(li, s));
+        const avaliar = li.querySelector('[data-avaliar]');
+        if (avaliar) avaliar.addEventListener('click', () => mc.abrirAvaliacao(li, s.id, `Como foi atender ${primeiro(s.contratante.nome)}?`, 'Combinados, pontualidade, respeito. Outras profissionais vão ler.', () => {
+          aviso = 'Avaliação enviada. As notas ficam visíveis quando as duas partes avaliarem, ou em até 14 dias.';
+          carrega();
+        }));
+      });
+    }
+
+    document.querySelector('[data-copiar]').addEventListener('click', async (ev) => {
+      const b = ev.currentTarget;
+      try { await navigator.clipboard.writeText(`https://${$('[data-link]').textContent}`); b.textContent = 'Link copiado'; } catch (_) { b.textContent = 'Copie o link acima'; }
+      setTimeout(() => { b.textContent = 'Copiar link'; }, 2400);
+    });
+
+    try { await carrega(); } catch (e) { achado.textContent = e.message; }
+    $('[data-gestao]').hidden = false;
+  })();
+</script>
+</body>
+</html>

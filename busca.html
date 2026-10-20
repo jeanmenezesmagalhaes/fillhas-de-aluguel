@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Encontrar profissional · Minha companhia</title>
+<meta name="description" content="Compare profissionais verificadas para acompanhar sua mãe ou seu pai em consultas, banco, mercado e passeios, em todo o Brasil.">
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="busca.css">
+<script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__fa)document.documentElement.classList.remove('js')},2500)</script>
+</head>
+<body class="pagina-busca">
+<a class="pular" href="#resultados">Pular para os resultados</a>
+
+<header class="site-topo" data-topo>
+  <div class="site-barra">
+    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
+    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca.html" aria-current="page">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="botao-linha" href="profissional.html">Área profissional</a></nav>
+  </div>
+  <form class="busca-fixa" role="search" aria-label="Busca rápida" action="busca.html" method="get" data-busca>
+    <label class="vh" for="cidade-fixa">Cidade</label><input id="cidade-fixa" name="cidade" type="search" placeholder="Sua cidade" list="cidades" autocomplete="address-level2">
+    <label class="vh" for="tarefa-fixa">Tarefa</label><select id="tarefa-fixa" name="tarefa"><option value="">Qualquer tarefa</option><option value="consulta">Consulta ou exame</option><option value="banco">Banco ou cartório</option><option value="mercado">Mercado e farmácia</option><option value="passeio">Passeio</option></select>
+    <label class="vh" for="data-fixa">Dia do acompanhamento</label><input id="data-fixa" name="data" type="date">
+    <button class="botao" type="submit">Buscar</button>
+  </form>
+</header>
+
+<form class="busca busca-home busca-topo" role="search" aria-label="Busca" action="busca.html" method="get" data-busca>
+  <div><label for="cidade">Cidade</label><input id="cidade" name="cidade" type="search" placeholder="Digite a cidade" list="cidades" autocomplete="address-level2"></div>
+  <div><label for="tarefa">Tarefa</label><select id="tarefa" name="tarefa"><option value="">Qualquer tarefa</option><option value="consulta">Consulta ou exame</option><option value="banco">Banco ou cartório</option><option value="mercado">Mercado e farmácia</option><option value="passeio">Passeio</option></select></div>
+  <div><label for="data">Dia do acompanhamento</label><input id="data" name="data" type="date"></div>
+  <button class="botao" type="submit">Buscar</button>
+</form>
+<datalist id="cidades"><option value="Belo Horizonte">Belo Horizonte, MG</option><option value="Brasília">Brasília, DF</option><option value="Campinas">Campinas, SP</option><option value="Curitiba">Curitiba, PR</option><option value="Porto Alegre">Porto Alegre, RS</option><option value="Recife">Recife, PE</option><option value="Rio de Janeiro">Rio de Janeiro, RJ</option><option value="Salvador">Salvador, BA</option><option value="São Paulo">São Paulo, SP</option></datalist>
+
+<main class="busca-tela" id="resultados">
+  <div class="res-cab">
+    <div>
+      <h1 data-titulo>Profissionais em todo o Brasil</h1>
+      <p class="res-achado num"><span data-achado aria-live="polite">23 profissionais verificadas em 9 cidades, de R$ 65 a R$ 95 por hora.</span> <button class="trocar-dia so-js" type="button" data-trocar-dia hidden>Trocar o dia</button></p>
+    </div>
+    <div class="res-acoes">
+      <button class="filtros-abrir so-js" type="button" aria-controls="filtros" aria-expanded="false" data-abrir-filtros><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M6 11h10M9 16h4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Filtros<span class="filtros-qtd num" data-qtd-filtros hidden></span></button>
+      <div class="res-ordem">
+      <label for="ordem">Ordenar por</label>
+      <select id="ordem" name="ordem" form="filtros">
+        <option value="relevancia">Mais relevante</option>
+        <option value="menor">Menor valor</option>
+        <option value="maior">Maior valor</option>
+      </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="pede-dia so-js" data-pede-dia hidden>
+    <p><strong>Para qual dia?</strong> Escolha o dia do acompanhamento para ver só quem está livre.</p>
+    <div class="dias" role="group" aria-label="Dia do acompanhamento" data-dias></div>
+  </div>
+
+  <div class="res-corpo">
+    <form class="filtros" id="filtros" aria-labelledby="t-filtros" action="busca.html" method="get" data-filtros>
+      <div class="filtros-cab">
+        <h2 id="t-filtros">Filtros</h2>
+        <button class="filtros-fechar so-js" type="button" data-fechar-filtros><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16" fill="none" stroke="currentColor" stroke-width="2.4"/></svg><span class="vh">Fechar filtros</span></button>
+      </div>
+      <div class="filtros-campos">
+        <div class="filtro-grupo">
+          <label class="filtro-titulo" for="bairro">Bairro da sua mãe</label>
+          <select id="bairro" name="bairro" disabled>
+              <option value="">Escolha a cidade antes</option>
+          </select>
+        </div>
+        <fieldset class="filtro-grupo">
+          <legend class="filtro-titulo">Valor da hora</legend>
+          <p class="faixa-texto num" data-faixa-texto>De R$ 65 a R$ 95</p>
+          <div class="faixa-barras" aria-hidden="true" data-faixa-barras><span class="dentro" style="--h:0.12" data-degrau="65"></span><span class="dentro" style="--h:1.00" data-degrau="70"></span><span class="dentro" style="--h:0.62" data-degrau="75"></span><span class="dentro" style="--h:0.38" data-degrau="80"></span><span class="dentro" style="--h:0.38" data-degrau="85"></span><span class="dentro" style="--h:0.25" data-degrau="90"></span><span class="dentro" style="--h:0.12" data-degrau="95"></span></div>
+          <div class="faixa-trilho" data-faixa style="--a:0;--b:1">
+            <input type="range" name="vmin" min="65" max="95" step="5" value="65" aria-label="Valor mínimo da hora" aria-valuetext="R$ 65">
+            <input type="range" name="vmax" min="65" max="95" step="5" value="95" aria-label="Valor máximo da hora" aria-valuetext="R$ 95">
+          </div>
+          <div class="faixa-limites num" aria-hidden="true"><span>R$ 65</span><span>R$ 95</span></div>
+          <p class="filtro-ajuda num" data-faixa-conta>23 profissionais nessa faixa</p>
+        </fieldset>
+        <fieldset class="filtro-grupo">
+          <legend class="filtro-titulo">Prefere mulher ou homem?</legend>
+          <div class="ops">
+            <label class="op"><input type="radio" name="genero" value="" checked><span>Tanto faz</span><span class="op-conta num" data-conta="genero:">23</span></label>
+            <label class="op"><input type="radio" name="genero" value="f"><span>Mulher</span><span class="op-conta num" data-conta="genero:f">19</span></label>
+            <label class="op"><input type="radio" name="genero" value="m"><span>Homem</span><span class="op-conta num" data-conta="genero:m">4</span></label>
+          </div>
+        </fieldset>
+        <div class="filtro-grupo">
+          <p class="filtro-titulo">Transporte</p>
+          <label class="op op-caixa"><input type="checkbox" name="veiculo" value="sim"><span>Com veículo incluso</span><span class="op-conta num" data-conta="veiculo:sim">13</span></label>
+          <p class="filtro-ajuda">A profissional busca em casa e leva de carro, sem custo à parte.</p>
+        </div>
+      </div>
+      <div class="filtros-pe">
+        <button class="filtros-limpar" type="reset" data-limpar>Limpar filtros</button>
+        <button class="botao escuro filtros-ver so-js" type="button" data-fechar-filtros data-ver>Ver 23 profissionais</button>
+        <noscript><button class="botao escuro" type="submit">Aplicar filtros</button></noscript>
+      </div>
+    </form>
+
+    <section class="res-lista" aria-labelledby="t-lista">
+      <h2 class="vh" id="t-lista">Resultados</h2>
+      <fieldset class="turnos">
+        <legend class="vh">Turno</legend>
+          <label class="turno"><input type="radio" name="turno" value="" form="filtros" checked><span class="turno-rot">Qualquer turno</span><span class="turno-conta num" data-conta="turno:">23 profissionais</span></label>
+          <label class="turno"><input type="radio" name="turno" value="m" form="filtros"><span class="turno-rot">Manhã<span class="turno-hora">, 7h às 12h</span></span><span class="turno-conta num" data-conta="turno:m">19 profissionais</span></label>
+          <label class="turno"><input type="radio" name="turno" value="t" form="filtros"><span class="turno-rot">Tarde<span class="turno-hora">, 12h às 18h</span></span><span class="turno-conta num" data-conta="turno:t">19 profissionais</span></label>
+          <label class="turno"><input type="radio" name="turno" value="n" form="filtros"><span class="turno-rot">Noite<span class="turno-hora">, 18h às 22h</span></span><span class="turno-conta num" data-conta="turno:n">5 profissionais</span></label>
+      </fieldset>
+      <ul class="lps" data-lista>
+      <li class="lp" data-id="ana">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Ana Oliveira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#2d5e4b"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#3d332b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Ana Oliveira</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,9</strong> <span aria-hidden="true">(12)</span><span class="vh"> de 5, 12 avaliações</span></p></div>
+          <p class="lp-bairro">Cambuí e Taquaral · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 70</strong> por hora</p>
+          <a class="botao escuro lp-acao" href="portfolio.html">Ver perfil<span class="vh"> de Ana Oliveira</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="claudia">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Cláudia Ramos"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#8d5a3b"/><circle cx="40" cy="30" r="13" fill="#1f1a17"/><circle cx="52" cy="20" r="14" fill="#1f1a17"/><circle cx="66" cy="20" r="14" fill="#1f1a17"/><circle cx="79" cy="30" r="13" fill="#1f1a17"/><circle cx="36" cy="44" r="10" fill="#1f1a17"/><circle cx="84" cy="44" r="10" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Cláudia Ramos</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,8</strong> <span aria-hidden="true">(7)</span><span class="vh"> de 5, 7 avaliações</span></p></div>
+          <p class="lp-bairro">Taquaral · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sáb, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 1 hora</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 65</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Cláudia Ramos</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="marta">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Marta Ferreira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f2c94c"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#e0b08f"/><path d="M30 62Q24 12 60 12t30 50h-9q2-24-21-27-23 3-21 27z" fill="#b9b4ad"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Marta Ferreira</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>5,0</strong> <span aria-hidden="true">(4)</span><span class="vh"> de 5, 4 avaliações</span></p></div>
+          <p class="lp-bairro">Centro e Bosque · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 3 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 75</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Marta Ferreira</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="joana">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Joana Prado"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#24503f"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#a86f4c"/><circle cx="60" cy="14" r="11" fill="#2b211b"/><path d="M35 46Q34 22 60 22t25 24q-10-12-25-12T35 46z" fill="#2b211b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Joana Prado</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,7</strong> <span aria-hidden="true">(19)</span><span class="vh"> de 5, 19 avaliações</span></p></div>
+          <p class="lp-bairro">Cambuí · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Ter a sáb, à tarde e à noite</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 70</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Joana Prado</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="roberto">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Roberto Lima"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#10251e"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#b07a55"/><path d="M35 42Q34 16 60 16t25 26q-6-12-25-12T35 42z" fill="#2a2420"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Roberto Lima</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,9</strong> <span aria-hidden="true">(22)</span><span class="vh"> de 5, 22 avaliações</span></p></div>
+          <p class="lp-bairro">Barão Geraldo · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 80</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Roberto Lima</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="luciana">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Luciana Alves"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f2c94c"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#d9a27e"/><path d="M32 74Q22 10 60 10t28 64h-8q4-38-20-42-24 4-20 42z" fill="#6b4a2f"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Luciana Alves</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,8</strong> <span aria-hidden="true">(31)</span><span class="vh"> de 5, 31 avaliações</span></p></div>
+          <p class="lp-bairro">Nova Campinas e Cambuí · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 3 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 85</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Luciana Alves</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="patricia">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Patrícia Gomes"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#2d5e4b"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#f0c8a8"/><path d="M30 66Q24 12 60 12t30 54h-8q0-14-4-22-14-8-36-6-4 10-4 28z" fill="#c9973f"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Patrícia Gomes</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,6</strong> <span aria-hidden="true">(9)</span><span class="vh"> de 5, 9 avaliações</span></p></div>
+          <p class="lp-bairro">Castelo e Guanabara · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Todos os dias, de manhã</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 72</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Patrícia Gomes</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="sonia">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Sônia Martins"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M30 62Q24 12 60 12t30 50h-9q2-24-21-27-23 3-21 27z" fill="#e4e0da"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Sônia Martins</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>5,0</strong> <span aria-hidden="true">(15)</span><span class="vh"> de 5, 15 avaliações</span></p></div>
+          <p class="lp-bairro">Sousas · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg, ter, qui e sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 4 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 90</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Sônia Martins</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="paulo">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Paulo Mendes"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#24503f"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#7a4b30"/><path d="M36 54q-4-18 6-28l4 5q-6 9-4 23z" fill="#1f1a17"/><path d="M84 54q4-18-6-28l-4 5q6 9 4 23z" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Paulo Mendes</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,5</strong> <span aria-hidden="true">(6)</span><span class="vh"> de 5, 6 avaliações</span></p></div>
+          <p class="lp-bairro">Centro e Guanabara · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sáb, à tarde e à noite</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 1 hora</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 70</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Paulo Mendes</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="renata">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Renata Dias"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#10251e"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#e0b08f"/><path d="M32 74Q22 10 60 10t28 64h-8q4-38-20-42-24 4-20 42z" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Renata Dias</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,9</strong> <span aria-hidden="true">(27)</span><span class="vh"> de 5, 27 avaliações</span></p></div>
+          <p class="lp-bairro">Taquaral e Barão Geraldo · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã, à tarde e à noite</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 78</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Renata Dias</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="vera">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Vera Nunes"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f2c94c"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#8d5a3b"/><path d="M35 42Q34 16 60 16t25 26q-6-12-25-12T35 42z" fill="#cfcac3"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Vera Nunes</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,7</strong> <span aria-hidden="true">(12)</span><span class="vh"> de 5, 12 avaliações</span></p></div>
+          <p class="lp-bairro">Bosque e Centro · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Qua a dom, à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 74</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Vera Nunes</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="elaine">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Elaine Rocha"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#a86f4c"/><path d="M30 66Q24 12 60 12t30 54h-8q0-14-4-22-14-8-36-6-4 10-4 28z" fill="#2b211b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Elaine Rocha</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,8</strong> <span aria-hidden="true">(18)</span><span class="vh"> de 5, 18 avaliações</span></p></div>
+          <p class="lp-bairro">Castelo · Campinas, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg, qua, sex e sáb, de manhã e à noite</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 82</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Elaine Rocha</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="fernanda">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Fernanda Lopes"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#e0b08f"/><path d="M32 74Q22 10 60 10t28 64h-8q4-38-20-42-24 4-20 42z" fill="#3d332b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Fernanda Lopes</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,9</strong> <span aria-hidden="true">(34)</span><span class="vh"> de 5, 34 avaliações</span></p></div>
+          <p class="lp-bairro">Pinheiros e Vila Madalena · São Paulo, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 90</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Fernanda Lopes</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="carlos">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Carlos Henrique Souza"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#10251e"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M35 42Q34 16 60 16t25 26q-6-12-25-12T35 42z" fill="#b9b4ad"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Carlos Henrique Souza</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,8</strong> <span aria-hidden="true">(21)</span><span class="vh"> de 5, 21 avaliações</span></p></div>
+          <p class="lp-bairro">Moema e Vila Mariana · São Paulo, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sáb, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 3 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 95</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Carlos Henrique Souza</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="juliana">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Juliana Freitas"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#2d5e4b"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#8d5a3b"/><circle cx="40" cy="30" r="13" fill="#1f1a17"/><circle cx="52" cy="20" r="14" fill="#1f1a17"/><circle cx="66" cy="20" r="14" fill="#1f1a17"/><circle cx="79" cy="30" r="13" fill="#1f1a17"/><circle cx="36" cy="44" r="10" fill="#1f1a17"/><circle cx="84" cy="44" r="10" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Juliana Freitas</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,7</strong> <span aria-hidden="true">(16)</span><span class="vh"> de 5, 16 avaliações</span></p></div>
+          <p class="lp-bairro">Tatuapé e Mooca · São Paulo, SP</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Ter a sáb, à tarde e à noite</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 80</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Juliana Freitas</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="adriana">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Adriana Matos"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f2c94c"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#a86f4c"/><path d="M30 66Q24 12 60 12t30 54h-8q0-14-4-22-14-8-36-6-4 10-4 28z" fill="#2b211b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Adriana Matos</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,9</strong> <span aria-hidden="true">(28)</span><span class="vh"> de 5, 28 avaliações</span></p></div>
+          <p class="lp-bairro">Copacabana e Botafogo · Rio de Janeiro, RJ</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 85</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Adriana Matos</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="marcia">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Márcia Pinto"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#24503f"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#d9a27e"/><path d="M30 62Q24 12 60 12t30 50h-9q2-24-21-27-23 3-21 27z" fill="#cfcac3"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Márcia Pinto</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,6</strong> <span aria-hidden="true">(11)</span><span class="vh"> de 5, 11 avaliações</span></p></div>
+          <p class="lp-bairro">Tijuca · Rio de Janeiro, RJ</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sáb, de manhã</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 75</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Márcia Pinto</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="cristina">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Cristina Barbosa"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#f0c8a8"/><circle cx="60" cy="14" r="11" fill="#6b4a2f"/><path d="M35 46Q34 22 60 22t25 24q-10-12-25-12T35 46z" fill="#6b4a2f"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Cristina Barbosa</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,8</strong> <span aria-hidden="true">(19)</span><span class="vh"> de 5, 19 avaliações</span></p></div>
+          <p class="lp-bairro">Savassi e Funcionários · Belo Horizonte, MG</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 78</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Cristina Barbosa</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="simone">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Simone Ribeiro"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#10251e"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#f0c8a8"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#c9973f"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Simone Ribeiro</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,9</strong> <span aria-hidden="true">(13)</span><span class="vh"> de 5, 13 avaliações</span></p></div>
+          <p class="lp-bairro">Batel e Água Verde · Curitiba, PR</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 76</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Simone Ribeiro</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="lucia">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Lúcia Fernandes"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f2c94c"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#e0b08f"/><path d="M35 42Q34 16 60 16t25 26q-6-12-25-12T35 42z" fill="#e4e0da"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Lúcia Fernandes</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,7</strong> <span aria-hidden="true">(9)</span><span class="vh"> de 5, 9 avaliações</span></p></div>
+          <p class="lp-bairro">Moinhos de Vento e Petrópolis · Porto Alegre, RS</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 74</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Lúcia Fernandes</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="jose">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de José Carlos Araújo"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#2d5e4b"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#7a4b30"/><path d="M35 42Q34 16 60 16t25 26q-6-12-25-12T35 42z" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>José Carlos Araújo</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,8</strong> <span aria-hidden="true">(14)</span><span class="vh"> de 5, 14 avaliações</span></p></div>
+          <p class="lp-bairro">Boa Viagem · Recife, PE</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sáb, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 70</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de José Carlos Araújo</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="rita">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Rita Santana"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#7a4b30"/><circle cx="40" cy="30" r="13" fill="#1f1a17"/><circle cx="52" cy="20" r="14" fill="#1f1a17"/><circle cx="66" cy="20" r="14" fill="#1f1a17"/><circle cx="79" cy="30" r="13" fill="#1f1a17"/><circle cx="36" cy="44" r="10" fill="#1f1a17"/><circle cx="84" cy="44" r="10" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Rita Santana</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,9</strong> <span aria-hidden="true">(17)</span><span class="vh"> de 5, 17 avaliações</span></p></div>
+          <p class="lp-bairro">Barra e Pituba · Salvador, BA</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sáb, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
+            <li class="lp-veiculo nao"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Sem veículo</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 72</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Rita Santana</span></a>
+        </div>
+      </li>
+      <li class="lp" data-id="tania">
+        <span class="lp-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Tânia Moreira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#24503f"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M32 74Q22 10 60 10t28 64h-8q4-38-20-42-24 4-20 42z" fill="#2b211b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>Tânia Moreira</h3><p class="lp-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>5,0</strong> <span aria-hidden="true">(8)</span><span class="vh"> de 5, 8 avaliações</span></p></div>
+          <p class="lp-bairro">Asa Sul e Asa Norte · Brasília, DF</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>Seg a sex, de manhã e à tarde</span></p>
+          <ul class="lp-fatos">
+            <li class="num"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 3 horas</li>
+            <li class="lp-veiculo sim"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ 88</strong> por hora</p>
+          <a class="botao escuro lp-acao lp-breve" aria-disabled="true">Perfil em breve<span class="vh"> de Tânia Moreira</span></a>
+        </div>
+      </li>
+      </ul>
+      <div class="res-vazio" data-vazio hidden>
+        <p data-vazio-texto>Nenhuma profissional com esses filtros.</p>
+        <button class="botao-linha" type="button" data-limpar-tudo>Limpar filtros</button>
+      </div>
+      <p class="res-nota" data-nota-ordem>Em “Mais relevante”, aparecem primeiro as notas mais altas com mais avaliações.</p>
+    </section>
+  </div>
+</main>
+
+<script type="application/json" id="dados-profissionais">[{"id": "ana", "nome": "Ana Oliveira", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Cambuí", "Taquaral"], "valor": 70, "minimo": 2, "veiculo": true, "nota": 4.9, "avaliacoes": 12, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "banco", "mercado", "passeio"]}, {"id": "claudia", "nome": "Cláudia Ramos", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Taquaral"], "valor": 65, "minimo": 1, "veiculo": false, "nota": 4.8, "avaliacoes": 7, "dias": [1, 2, 3, 4, 5, 6], "turnos": "mt", "tarefas": ["consulta", "mercado", "passeio"]}, {"id": "marta", "nome": "Marta Ferreira", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Centro", "Bosque"], "valor": 75, "minimo": 3, "veiculo": true, "nota": 5.0, "avaliacoes": 4, "dias": [1, 2, 3, 4, 5], "turnos": "m", "tarefas": ["consulta", "banco"]}, {"id": "joana", "nome": "Joana Prado", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Cambuí"], "valor": 70, "minimo": 2, "veiculo": false, "nota": 4.7, "avaliacoes": 19, "dias": [2, 3, 4, 5, 6], "turnos": "tn", "tarefas": ["consulta", "mercado", "passeio"]}, {"id": "roberto", "nome": "Roberto Lima", "genero": "m", "cidade": "Campinas", "uf": "SP", "bairros": ["Barão Geraldo"], "valor": 80, "minimo": 2, "veiculo": true, "nota": 4.9, "avaliacoes": 22, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "banco", "mercado"]}, {"id": "luciana", "nome": "Luciana Alves", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Nova Campinas", "Cambuí"], "valor": 85, "minimo": 3, "veiculo": true, "nota": 4.8, "avaliacoes": 31, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "banco", "mercado", "passeio"]}, {"id": "patricia", "nome": "Patrícia Gomes", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Castelo", "Guanabara"], "valor": 72, "minimo": 2, "veiculo": false, "nota": 4.6, "avaliacoes": 9, "dias": [0, 1, 2, 3, 4, 5, 6], "turnos": "m", "tarefas": ["consulta", "mercado"]}, {"id": "sonia", "nome": "Sônia Martins", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Sousas"], "valor": 90, "minimo": 4, "veiculo": true, "nota": 5.0, "avaliacoes": 15, "dias": [1, 2, 4, 5], "turnos": "mt", "tarefas": ["consulta", "passeio"]}, {"id": "paulo", "nome": "Paulo Mendes", "genero": "m", "cidade": "Campinas", "uf": "SP", "bairros": ["Centro", "Guanabara"], "valor": 70, "minimo": 1, "veiculo": true, "nota": 4.5, "avaliacoes": 6, "dias": [1, 2, 3, 4, 5, 6], "turnos": "tn", "tarefas": ["banco", "mercado"]}, {"id": "renata", "nome": "Renata Dias", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Taquaral", "Barão Geraldo"], "valor": 78, "minimo": 2, "veiculo": false, "nota": 4.9, "avaliacoes": 27, "dias": [1, 2, 3, 4, 5], "turnos": "mtn", "tarefas": ["consulta", "banco", "mercado", "passeio"]}, {"id": "vera", "nome": "Vera Nunes", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Bosque", "Centro"], "valor": 74, "minimo": 2, "veiculo": false, "nota": 4.7, "avaliacoes": 12, "dias": [0, 3, 4, 5, 6], "turnos": "t", "tarefas": ["consulta", "passeio"]}, {"id": "elaine", "nome": "Elaine Rocha", "genero": "f", "cidade": "Campinas", "uf": "SP", "bairros": ["Castelo"], "valor": 82, "minimo": 2, "veiculo": true, "nota": 4.8, "avaliacoes": 18, "dias": [1, 3, 5, 6], "turnos": "mn", "tarefas": ["consulta", "mercado", "passeio"]}, {"id": "fernanda", "nome": "Fernanda Lopes", "genero": "f", "cidade": "São Paulo", "uf": "SP", "bairros": ["Pinheiros", "Vila Madalena"], "valor": 90, "minimo": 2, "veiculo": false, "nota": 4.9, "avaliacoes": 34, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "banco", "mercado", "passeio"]}, {"id": "carlos", "nome": "Carlos Henrique Souza", "genero": "m", "cidade": "São Paulo", "uf": "SP", "bairros": ["Moema", "Vila Mariana"], "valor": 95, "minimo": 3, "veiculo": true, "nota": 4.8, "avaliacoes": 21, "dias": [1, 2, 3, 4, 5, 6], "turnos": "mt", "tarefas": ["consulta", "banco", "mercado"]}, {"id": "juliana", "nome": "Juliana Freitas", "genero": "f", "cidade": "São Paulo", "uf": "SP", "bairros": ["Tatuapé", "Mooca"], "valor": 80, "minimo": 2, "veiculo": false, "nota": 4.7, "avaliacoes": 16, "dias": [2, 3, 4, 5, 6], "turnos": "tn", "tarefas": ["consulta", "mercado", "passeio"]}, {"id": "adriana", "nome": "Adriana Matos", "genero": "f", "cidade": "Rio de Janeiro", "uf": "RJ", "bairros": ["Copacabana", "Botafogo"], "valor": 85, "minimo": 2, "veiculo": false, "nota": 4.9, "avaliacoes": 28, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "banco", "mercado", "passeio"]}, {"id": "marcia", "nome": "Márcia Pinto", "genero": "f", "cidade": "Rio de Janeiro", "uf": "RJ", "bairros": ["Tijuca"], "valor": 75, "minimo": 2, "veiculo": true, "nota": 4.6, "avaliacoes": 11, "dias": [1, 2, 3, 4, 5, 6], "turnos": "m", "tarefas": ["consulta", "banco"]}, {"id": "cristina", "nome": "Cristina Barbosa", "genero": "f", "cidade": "Belo Horizonte", "uf": "MG", "bairros": ["Savassi", "Funcionários"], "valor": 78, "minimo": 2, "veiculo": true, "nota": 4.8, "avaliacoes": 19, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "banco", "mercado", "passeio"]}, {"id": "simone", "nome": "Simone Ribeiro", "genero": "f", "cidade": "Curitiba", "uf": "PR", "bairros": ["Batel", "Água Verde"], "valor": 76, "minimo": 2, "veiculo": false, "nota": 4.9, "avaliacoes": 13, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "mercado", "passeio"]}, {"id": "lucia", "nome": "Lúcia Fernandes", "genero": "f", "cidade": "Porto Alegre", "uf": "RS", "bairros": ["Moinhos de Vento", "Petrópolis"], "valor": 74, "minimo": 2, "veiculo": true, "nota": 4.7, "avaliacoes": 9, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "banco"]}, {"id": "jose", "nome": "José Carlos Araújo", "genero": "m", "cidade": "Recife", "uf": "PE", "bairros": ["Boa Viagem"], "valor": 70, "minimo": 2, "veiculo": true, "nota": 4.8, "avaliacoes": 14, "dias": [1, 2, 3, 4, 5, 6], "turnos": "mt", "tarefas": ["consulta", "banco", "mercado"]}, {"id": "rita", "nome": "Rita Santana", "genero": "f", "cidade": "Salvador", "uf": "BA", "bairros": ["Barra", "Pituba"], "valor": 72, "minimo": 2, "veiculo": false, "nota": 4.9, "avaliacoes": 17, "dias": [1, 2, 3, 4, 5, 6], "turnos": "mt", "tarefas": ["consulta", "mercado", "passeio"]}, {"id": "tania", "nome": "Tânia Moreira", "genero": "f", "cidade": "Brasília", "uf": "DF", "bairros": ["Asa Sul", "Asa Norte"], "valor": 88, "minimo": 3, "veiculo": true, "nota": 5.0, "avaliacoes": 8, "dias": [1, 2, 3, 4, 5], "turnos": "mt", "tarefas": ["consulta", "banco"]}]</script>
+
+<footer class="rodape">
+  <div class="blocos" aria-hidden="true"><span style="height:100%;background:#f28cb1" data-l="m"></span><span style="height:78%;background:#f2c94c" data-l="i"></span><span style="height:92%;background:#dce8e0" data-l="n"></span><span style="height:64%;background:#ffffff" data-l="h"></span><span style="height:86%;background:#f28cb1" data-l="a"></span><span class="espaco"></span><span style="height:72%;background:#f2c94c" data-l="c"></span><span style="height:100%;background:#dce8e0" data-l="o"></span><span style="height:76%;background:#ffffff" data-l="m"></span><span style="height:90%;background:#f28cb1" data-l="p"></span><span style="height:68%;background:#f2c94c" data-l="a"></span><span style="height:76%;background:#dce8e0" data-l="n"></span><span style="height:84%;background:#ffffff" data-l="h"></span><span style="height:100%;background:#f28cb1" data-l="i"></span><span style="height:70%;background:#f2c94c" data-l="a"></span></div>
+  <p class="vh">Minha companhia</p>
+  <div class="rodape-colunas">
+    <div><h2>Famílias</h2><ul><li><a href="busca.html">Encontrar profissional</a></li><li><a href="index.html#como-contratar">Como contratar</a></li><li><a href="index.html#confianca">Por que confiar</a></li><li><a href="pedidos.html">Meus pedidos</a></li></ul></div>
+    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="cadastro.html">Quero me cadastrar</a></li></ul></div>
+    <div class="contato"><h2>Onde atendemos</h2><p>Em todo o Brasil, nas cidades com profissionais cadastradas.</p></div>
+  </div>
+  <div class="rodape-fim"><span>Minha companhia · 2026</span></div>
+</footer>
+<script src="site.js" defer></script>
+</body>
+</html>

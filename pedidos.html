@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Meus pedidos · Minha companhia</title>
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="resumo.css?v=6">
+<link rel="stylesheet" href="gestao.css?v=11">
+</head>
+<body class="pagina-gestao">
+
+<header class="topo" data-topo>
+  <div class="topo-dentro">
+    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="pedidos.html" aria-current="page">Meus pedidos</a><span class="topo-conta"><span data-nome-conta>Mariana Costa</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+  </div>
+</header>
+
+<main class="tela gestao" data-gestao="familia">
+  <div class="titulo">
+    <div>
+      <h1>Meus pedidos</h1>
+      <p class="achado" data-achado aria-live="polite">Cláudia propôs outro horário para o mercado de sábado. Responda para confirmar.</p>
+    </div>
+    <a class="btn btn-primario" href="busca.html">Novo pedido</a>
+  </div>
+
+  <div class="gestao-grade">
+    <div class="gestao-principal">
+      <section class="cartao" aria-labelledby="t-andamento">
+        <div class="cartao-cab"><h2 id="t-andamento">Em andamento</h2><span class="meta num" data-conta-andamento>2 pedidos</span></div>
+        <ul class="pedidos" data-andamento>
+          <li class="pn pn-proposta-recebida" data-pedido="claudia">
+            <div class="pn-cab"><p class="pn-quem"><strong>Mercado e farmácia</strong> com Cláudia Ramos</p><span class="pill pill-aviso">Responda até sex, 30/10</span></div>
+            <p class="pn-tarefa">Para Helena · saída da Rua Maria Monteiro, 120</p>
+            <div class="troca num" aria-label="Horário pedido e horário proposto">
+              <p><span>Você pediu</span><s>Sáb, 31/10 · 9h às 11h</s></p>
+              <p><span>Cláudia propôs</span><strong>Sáb, 31/10 · 10h às 12h</strong></p>
+            </div>
+            <p class="pn-recado">“Às 9h tenho outro atendimento. Às 10h consigo ir com calma.”</p>
+            <div class="pn-pe">
+              <p class="pn-valor num"><span>2 h × R$ 65</span><strong>R$ 130</strong></p>
+              <div class="pn-acoes"><button class="btn btn-primario" type="button" data-aceitar>Aceitar novo horário</button><button class="link pn-recusar" type="button" data-recusar>Recusar</button></div>
+            </div>
+          </li>
+          <li class="pn" data-pedido="ana">
+            <div class="pn-cab"><p class="pn-quem"><strong>Consulta médica</strong> com Ana Oliveira</p><span class="pill">Esperando a resposta de Ana</span></div>
+            <p class="pn-tarefa">Para Helena · Clínica Viva Mais, Centro</p>
+            <p class="pn-quando num">Qua, 28/10 · 9h às 13h · com veículo</p>
+            <div class="pn-pe">
+              <p class="pn-valor num"><span>4 h × R$ 60</span><strong>R$ 240</strong></p>
+              <div class="pn-acoes"><p class="pn-prazo">Ana responde até amanhã, 18h.</p><button class="link pn-recusar" type="button" data-cancelar>Cancelar pedido</button></div>
+            </div>
+          </li>
+        </ul>
+        <p class="vazio" data-sem-andamento hidden>Nenhum pedido esperando resposta.</p>
+      </section>
+
+      <section class="cartao" aria-labelledby="t-proximos">
+        <div class="cartao-cab"><h2 id="t-proximos">Confirmados</h2><span class="meta num" data-conta-proximos>nenhum</span></div>
+        <ul class="agenda num" data-proximos></ul>
+        <p class="vazio" data-sem-proximos>Nenhum atendimento confirmado. Quando a profissional aceitar, ele aparece aqui.</p>
+      </section>
+
+      <section class="cartao" aria-labelledby="t-anteriores">
+        <div class="cartao-cab"><h2 id="t-anteriores">Anteriores</h2></div>
+        <ul class="agenda num" data-anteriores>
+          <li data-avaliar="ana"><span class="ag-dia">Qua, 14/10</span><span class="ag-hora">10h às 12h</span><span class="ag-oque"><strong>Banco</strong><small>Ana Oliveira · R$ 140</small></span><span class="ag-acao"><button class="btn btn-secundario" type="button" data-abrir-avaliacao>Avaliar</button></span></li>
+          <li><span class="ag-dia">Ter, 06/10</span><span class="ag-hora">15h às 17h</span><span class="ag-oque"><strong>Passeio</strong><small>Joana Prado · R$ 140</small></span><span class="ag-acao ag-nota"><span class="estrelas" role="img" aria-label="Você avaliou com 5 de 5"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg></span></span></li>
+        </ul>
+        <p class="vazio" data-sem-anteriores hidden>Os atendimentos feitos aparecem aqui, para você avaliar.</p>
+      </section>
+    </div>
+
+    <div class="gestao-lado">
+      <section class="cartao" aria-labelledby="t-conta">
+        <div class="cartao-cab"><h2 id="t-conta">Sua conta</h2></div>
+        <dl class="linhas linhas-curtas">
+          <div><dt>Nome</dt><dd data-nome>Mariana Costa</dd></div>
+          <div><dt>E-mail</dt><dd data-email>mariana@exemplo.com</dd></div>
+          <div><dt>Quem você acompanha</dt><dd data-pessoas>Helena Costa, 78 anos<small>Rua Maria Monteiro, 120 · Cambuí, Campinas</small></dd></div>
+        </dl>
+      </section>
+      <section class="cartao" aria-labelledby="t-ajuda">
+        <h2 id="t-ajuda">Como funciona a resposta</h2>
+        <p class="ajuda-texto">A profissional aceita, recusa ou propõe outro horário. Nada fica marcado sem o seu aceite e o dela, e cada resposta chega no seu e-mail.</p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<main class="tela gestao-fora" data-fora hidden>
+  <section class="cartao cartao-entrar">
+    <h1>Entre para ver seus pedidos</h1>
+    <p class="achado">Acompanhe as respostas das profissionais e os atendimentos marcados.</p>
+    <a class="btn btn-primario btn-largo" href="entrar.html?volta=pedidos.html">Entrar</a>
+    <p class="entrar-pro">Primeira vez aqui? <a href="entrar.html?modo=criar&amp;volta=pedidos.html">Criar conta</a></p>
+  </section>
+</main>
+
+<script src="gestao.js"></script>
+<script>
+  // menu no celular
+  (() => {
+    const topo = document.querySelector('[data-topo]');
+    const botao = topo.querySelector('.menu-botao');
+    botao.addEventListener('click', () => botao.setAttribute('aria-expanded', String(topo.classList.toggle('menu-aberto'))));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { topo.classList.remove('menu-aberto'); botao.setAttribute('aria-expanded', 'false'); } });
+  })();
+
+  // demonstração: pedidos da família com dados fixos, só quando a tela abre como arquivo
+  (() => {
+    if (window.mc && mc.comApi) return;
+    const le = () => { try { return JSON.parse(localStorage.getItem('mc-conta')); } catch (_) { return null; } };
+    const conta = le();
+    if (!conta) { document.querySelector('[data-gestao]').remove(); document.querySelector('[data-fora]').hidden = false; document.querySelector('.topo-conta').hidden = true; return; }
+    document.querySelector('[data-fora]').remove();
+    ['[data-nome-conta]', '[data-nome]'].forEach((s) => { document.querySelector(s).textContent = conta.nome; });
+    document.querySelector('[data-email]').textContent = conta.email;
+    document.querySelector('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem('mc-conta'); } catch (_) { /* sem armazenamento */ } location.href = 'index.html'; });
+
+    const ESTRELA = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg>';
+    const confirmados = [];
+    const desenha = () => {
+      const abertos = [...document.querySelectorAll('[data-andamento] .pn:not(.resolvido)')];
+      document.querySelector('[data-conta-andamento]').textContent = `${abertos.length} ${abertos.length === 1 ? 'pedido' : 'pedidos'}`;
+      document.querySelector('[data-proximos]').innerHTML = confirmados.map((c) => `<li class="agenda-nova"><span class="ag-dia">${c.dia}</span><span class="ag-hora">${c.hora}</span><span class="ag-oque"><strong>${c.tarefa}</strong><small>${c.quem} · ${c.valor}</small></span></li>`).join('');
+      document.querySelector('[data-sem-proximos]').hidden = confirmados.length > 0;
+      document.querySelector('[data-conta-proximos]').textContent = confirmados.length ? `${confirmados.length} ${confirmados.length === 1 ? 'atendimento' : 'atendimentos'}` : 'nenhum';
+      const proposta = document.querySelector('[data-pedido="claudia"]:not(.resolvido)');
+      const ana = document.querySelector('[data-pedido="ana"]:not(.resolvido)');
+      document.querySelector('[data-achado]').textContent = proposta
+        ? 'Cláudia propôs outro horário para o mercado de sábado. Responda para confirmar.'
+        : ana ? 'Ana ainda vai responder o pedido da consulta de quarta, até amanhã às 18h.' : 'Nenhum pedido esperando resposta.';
+    };
+    const resolve = (li, html) => { li.classList.add('resolvido'); li.querySelector('.pn-pe').hidden = true; li.insertAdjacentHTML('beforeend', `<p class="pn-status" role="status">${html}</p>`); desenha(); };
+
+    const cl = document.querySelector('[data-pedido="claudia"]');
+    cl.querySelector('[data-aceitar]').addEventListener('click', () => {
+      confirmados.push({ dia: 'Sáb, 31/10', hora: '10h às 12h', tarefa: 'Mercado e farmácia', quem: 'Cláudia Ramos', valor: 'R$ 130' });
+      resolve(cl, '<strong>Confirmado:</strong> sábado, 31/10, das 10h às 12h com Cláudia. A confirmação chegou no seu e-mail.');
+    });
+    cl.querySelector('[data-recusar]').addEventListener('click', (ev) => {
+      const b = ev.currentTarget;
+      if (b.dataset.confirmar) { resolve(cl, '<strong>Proposta recusada.</strong> O pedido foi encerrado. <a href="busca.html?tarefa=mercado">Procurar outra profissional</a>'); return; }
+      b.dataset.confirmar = '1'; b.textContent = 'Confirmar recusa';
+    });
+    const an = document.querySelector('[data-pedido="ana"]');
+    an.querySelector('[data-cancelar]').addEventListener('click', (ev) => {
+      const b = ev.currentTarget;
+      if (b.dataset.confirmar) { resolve(an, '<strong>Pedido cancelado.</strong> Ana recebe o aviso por e-mail.'); return; }
+      b.dataset.confirmar = '1'; b.textContent = 'Confirmar cancelamento';
+    });
+
+    // avaliação de um atendimento feito: nota de 1 a 5 e um comentário opcional
+    const linha = document.querySelector('[data-avaliar]');
+    linha.querySelector('[data-abrir-avaliacao]').addEventListener('click', () => {
+      if (linha.nextElementSibling && linha.nextElementSibling.matches('.avaliacao')) return;
+      linha.insertAdjacentHTML('afterend', `<li class="avaliacao"><form data-form-avaliacao><fieldset class="notas"><legend>Como foi o atendimento de Ana?</legend>${[1, 2, 3, 4, 5].map((n) => `<label><input type="radio" name="nota" value="${n}"${n === 5 ? ' checked' : ''}><span class="nota-estrela" aria-hidden="true">${ESTRELA}</span><span class="vh">${n} de 5</span></label>`).join('')}</fieldset><label class="pn-msg">Comentário (opcional)<textarea name="texto" rows="2" placeholder="Conte como foi para outras famílias."></textarea></label><div class="pn-acoes"><button class="btn btn-primario" type="submit">Enviar avaliação</button></div></form></li>`);
+      const f = document.querySelector('[data-form-avaliacao]');
+      f.querySelector('input:checked').focus();
+      f.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const n = Number(f.nota.value);
+        f.closest('li').remove();
+        linha.querySelector('.ag-acao').outerHTML = `<span class="ag-acao ag-nota"><span class="estrelas" role="img" aria-label="Você avaliou com ${n} de 5">${ESTRELA.repeat(n)}${ESTRELA.replace('<svg', '<svg class="apagada"').repeat(5 - n)}</span></span>`;
+      });
+    });
+    desenha();
+  })();
+  // pedidos da família pela API: responder propostas, cancelar, ver confirmados e avaliar
+  (async () => {
+    if (!window.mc || !mc.comApi) return;
+    const eu = await mc.entrar('contratante');
+    if (!eu) return;
+    const { esc, dia, faixa, brl, primeiro } = mc;
+    const $ = (s) => document.querySelector(s);
+    ['[data-nome-conta]', '[data-nome]'].forEach((s) => { $(s).textContent = eu.nome; });
+    $('[data-email]').textContent = eu.email;
+    $('[data-sair]').addEventListener('click', () => mc.sair('mc-conta', 'index.html'));
+    const achado = $('[data-achado]');
+    const veiculo = (s) => (s.profissional.veiculoIncluso ? 'com veículo' : 'sem veículo');
+    const para = (s) => [s.pessoaAcompanhada && `Para ${esc(primeiro(s.pessoaAcompanhada.nome))}`, s.local && esc(s.local)].filter(Boolean).join(' · ');
+    let aviso = '';
+
+    const linhaProposta = (s) => {
+      const p = s.proposta;
+      const quem = esc(primeiro(s.profissional.nome));
+      return `<li class="pn pn-proposta-recebida" data-id="${s.id}">
+        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.tarefa)}</strong> com ${esc(s.profissional.nome)}</p><span class="pill pill-aviso">Responda à proposta</span></div>
+        ${para(s) ? `<p class="pn-tarefa">${para(s)}</p>` : ''}
+        <div class="troca num" aria-label="Horário pedido e horário proposto">
+          <p><span>Você pediu</span><s>${dia(s.inicio)} · ${faixa(s.inicio, s.horas)}</s></p>
+          <p><span>${quem} propôs</span><strong>${dia(p.inicio)} · ${faixa(p.inicio, p.horas)}</strong></p>
+        </div>
+        ${p.recado ? `<p class="pn-recado">“${esc(p.recado)}”</p>` : ''}
+        <div class="pn-pe">
+          <p class="pn-valor num"><span>${p.horas} h × ${brl(s.valorHoraCentavos)}</span><strong>${brl(p.horas * s.valorHoraCentavos)}</strong></p>
+          <div class="pn-acoes"><button class="btn btn-primario" type="button" data-acao="aceitar-proposta">Aceitar novo horário</button><button class="link pn-recusar" type="button" data-acao="recusar-proposta">Recusar</button></div>
+        </div>
+      </li>`;
+    };
+    const linhaEspera = (s) => `<li class="pn" data-id="${s.id}">
+        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.tarefa)}</strong> com ${esc(s.profissional.nome)}</p><span class="pill">Esperando a resposta de ${esc(primeiro(s.profissional.nome))}</span></div>
+        ${para(s) ? `<p class="pn-tarefa">${para(s)}</p>` : ''}
+        <p class="pn-quando num">${dia(s.inicio)} · ${faixa(s.inicio, s.horas)} · ${veiculo(s)}</p>
+        <div class="pn-pe">
+          <p class="pn-valor num"><span>${s.horas} h × ${brl(s.valorHoraCentavos)}</span><strong>${brl(s.totalCentavos)}</strong></p>
+          <div class="pn-acoes"><button class="link pn-recusar" type="button" data-acao="cancelar">Cancelar pedido</button></div>
+        </div>
+      </li>`;
+    const linhaAgenda = (s, acao) => `<li data-id="${s.id}"><span class="ag-dia">${dia(s.inicio)}</span><span class="ag-hora">${faixa(s.inicio, s.horas)}</span><span class="ag-oque"><strong>${esc(s.tarefa)}</strong><small>${esc(s.profissional.nome)} · ${brl(s.totalCentavos)}</small></span>${acao}</li>`;
+    const acaoAnterior = (s) => {
+      if (s.situacao === 'recusado') return '<span class="ag-acao traco">Recusado</span>';
+      if (s.situacao === 'cancelado') return '<span class="ag-acao traco">Cancelado</span>';
+      if (s.minhaNota) return `<span class="ag-acao ag-nota">${mc.estrelas(s.minhaNota)}</span>`;
+      if (s.podeAvaliar) return '<span class="ag-acao"><button class="btn btn-secundario" type="button" data-avaliar>Avaliar</button></span>';
+      return '<span class="ag-acao traco">Sem avaliação</span>';
+    };
+
+    const desenha = (lista, pessoas) => {
+      const agora = Date.now();
+      const propostas = lista.filter((s) => s.situacao === 'proposta_alterada');
+      const esperando = lista.filter((s) => s.situacao === 'solicitado');
+      const andamento = [...propostas, ...esperando];
+      const confirmados = lista.filter((s) => s.situacao === 'confirmado').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+      const anteriores = lista.filter((s) => ['realizado', 'recusado', 'cancelado'].includes(s.situacao));
+
+      $('[data-andamento]').innerHTML = [...propostas.map(linhaProposta), ...esperando.map(linhaEspera)].join('');
+      $('[data-sem-andamento]').hidden = andamento.length > 0;
+      $('[data-conta-andamento]').textContent = mc.plural(andamento.length, 'pedido', 'pedidos');
+
+      $('[data-proximos]').innerHTML = confirmados.map((s) => linhaAgenda(s, new Date(s.inicio) > agora
+        ? '<span class="ag-acao"><button class="link pn-recusar" type="button" data-acao="cancelar">Cancelar</button></span>'
+        : '<span class="ag-acao traco">Em andamento</span>')).join('');
+      $('[data-sem-proximos]').hidden = confirmados.length > 0;
+      $('[data-conta-proximos]').textContent = confirmados.length ? mc.plural(confirmados.length, 'atendimento', 'atendimentos') : 'nenhum';
+
+      $('[data-anteriores]').innerHTML = anteriores.map((s) => linhaAgenda(s, acaoAnterior(s))).join('');
+      $('[data-sem-anteriores]').hidden = anteriores.length > 0;
+
+      $('[data-pessoas]').innerHTML = pessoas.length
+        ? pessoas.map((p) => { const i = mc.idade(p.dataNascimento); return `${esc(p.nome)}${i ? `, ${i} anos` : ''}`; }).join('<br>')
+        : 'Ninguém cadastrado ainda';
+
+      const p = propostas[0];
+      achado.textContent = aviso || (p
+        ? `${primeiro(p.profissional.nome)} propôs outro horário para ${p.tarefa.toLowerCase()}. Responda para confirmar.`
+        : esperando.length === 1 ? `${primeiro(esperando[0].profissional.nome)} ainda vai responder o pedido de ${esperando[0].tarefa.toLowerCase()}.`
+        : esperando.length ? `${esperando.length} pedidos esperam a resposta das profissionais.`
+        : 'Nenhum pedido esperando resposta.');
+      aviso = '';
+      liga(lista);
+    };
+
+    const carrega = async () => {
+      const [{ servicos }, { pessoas }] = await Promise.all([mc.api('GET', '/api/servicos'), mc.api('GET', '/api/pessoas')]);
+      desenha(servicos.filter((s) => s.papel === 'contratante'), pessoas);
+    };
+    const agir = async (s, acao) => {
+      try {
+        const { servico } = await mc.api('POST', `/api/servicos/${s.id}/${acao}`);
+        const quem = primeiro(s.profissional.nome);
+        aviso = acao === 'aceitar-proposta' ? `Confirmado: ${dia(servico.inicio).toLowerCase()}, das ${faixa(servico.inicio, servico.horas)}, com ${quem}.`
+          : acao === 'recusar-proposta' ? `Proposta recusada. O pedido para ${quem} foi encerrado.`
+          : `Pedido cancelado. ${quem} vê o cancelamento no painel.`;
+      } catch (e) {
+        aviso = e.message;
+      }
+      await carrega();
+    };
+
+    function liga(lista) {
+      const porId = new Map(lista.map((s) => [s.id, s]));
+      document.querySelectorAll('[data-gestao] [data-id]').forEach((li) => {
+        const s = porId.get(li.dataset.id);
+        li.querySelectorAll('[data-acao]').forEach((b) => {
+          const acao = b.dataset.acao;
+          if (acao === 'aceitar-proposta') b.addEventListener('click', () => agir(s, acao));
+          else mc.doisToques(b, acao === 'cancelar' ? 'Confirmar cancelamento' : 'Confirmar recusa', () => agir(s, acao));
+        });
+        const avaliar = li.querySelector('[data-avaliar]');
+        if (avaliar) avaliar.addEventListener('click', () => mc.abrirAvaliacao(li, s.id, `Como foi o atendimento de ${primeiro(s.profissional.nome)}?`, 'Conte como foi para outras famílias.', () => {
+          aviso = 'Avaliação enviada. As notas ficam visíveis quando as duas partes avaliarem, ou em até 14 dias.';
+          carrega();
+        }));
+      });
+    }
+
+    try { await carrega(); } catch (e) { achado.textContent = e.message; }
+    $('[data-gestao]').hidden = false;
+  })();
+</script>
+</body>
+</html>

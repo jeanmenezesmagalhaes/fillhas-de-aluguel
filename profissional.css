@@ -1,0 +1,120 @@
+/* Área profissional · página para quem quer trabalhar acompanhando pessoas idosas.
+   Abre com um banner verde-copa e, à direita, a pilha de pastas da marca (rosa, ipê, sálvia, folha);
+   na pasta da frente, o pedido como ele chega para a profissional. */
+
+/* banner: campo verde-copa dentro das margens */
+.pro-banner { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 48px; align-items: center; margin: 24px var(--margin) 0; padding: clamp(48px, 6vw, 96px) clamp(24px, 4vw, 64px); background: var(--copa); color: #fff; overflow: clip; }
+.pro-banner h1 { font-size: clamp(2.75rem, 5.4vw, 5.25rem); line-height: 1.02; letter-spacing: -0.035em; }
+.pro-banner h1 .linha { display: block; }
+.pro-apoio { max-width: 40ch; margin-top: 28px; font-size: var(--step-lead); line-height: 1.4; }
+.pro-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; margin-top: 40px; }
+.pro-entrar { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-weight: 500; text-underline-offset: 5px; }
+.pro-banner :focus-visible { outline-color: #fff; }
+@media (hover: hover) and (pointer: fine) { .pro-entrar:hover { text-decoration-thickness: 2px; } }
+
+/* a pilha de pastas: cada camada é um retângulo com a aba trapezoidal da marca */
+.pro-camadas { position: relative; height: clamp(420px, 38vw, 540px); }
+.camada { position: absolute; display: block; }
+.camada::before { content: ""; position: absolute; bottom: 100%; height: 28px; width: 38%; background: inherit; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%); }
+.c-rosa { top: 28px; left: 0; width: 76%; height: 62%; background: var(--rosa); }
+.c-rosa::before { left: 6%; }
+.c-ipe { top: 92px; left: 8%; width: 76%; height: 62%; background: var(--ipe); }
+.c-ipe::before { left: 34%; }
+.c-salvia { top: 156px; left: 16%; width: 78%; height: 60%; background: var(--salvia); }
+.c-salvia::before { left: 58%; }
+.c-folha { top: 220px; left: 24%; right: 0; bottom: 0; background: var(--folha); }
+.c-folha::before { left: 10%; }
+
+/* o pedido como chega: um fragmento da tela da profissional */
+.pedido { position: absolute; left: 24px; right: 24px; top: 24px; max-width: 360px; padding: 20px 22px; background: var(--papel); color: var(--tinta); }
+.pedido p { font-size: 0.9375rem; }
+.pedido-tipo { color: var(--folha-2); font-weight: 600; }
+.pedido-quem { margin-top: 4px; font-size: 1.375rem !important; font-weight: 700; letter-spacing: -0.01em; }
+.pedido-oque { margin-top: 2px; }
+.pedido-quando { margin-top: 2px; color: var(--tinta-2); }
+.pedido-valor { display: flex; justify-content: space-between; align-items: baseline; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--salvia-2); color: var(--tinta-2); } /* taste-skill-ignore: linha da própria tela da profissional (data-ui) */
+.pedido-valor strong { color: var(--tinta); font-size: 1.375rem; }
+.pedido-botoes { display: flex; gap: 8px; margin-top: 14px; }
+.pedido-botoes span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; font-weight: 500; }
+.pb-aceitar { background: var(--copa); color: #fff; }
+.pb-propor { background: var(--salvia); }
+
+/* calculadora de renda */
+.pro-calc { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 32px 5vw; align-items: start; margin: var(--gap-section) var(--margin) 0; }
+.pro-calc h2, .pro-como h2, .pro-decide h2 { font-size: var(--step-head); line-height: 1.02; letter-spacing: -0.03em; }
+.pro-calc-texto p { max-width: 40ch; margin-top: 24px; font-size: var(--step-lead); line-height: 1.4; }
+.calc { display: grid; gap: 28px; padding: clamp(24px, 3vw, 40px); background: var(--salvia); }
+.calc-campo { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 4px 16px; }
+.calc-campo label { font-weight: 600; }
+.calc-valor { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+.calc-campo input { grid-column: 1 / -1; width: 100%; height: 44px; margin: 0; accent-color: var(--copa); cursor: pointer; }
+.calc-limites { grid-column: 1 / -1; display: flex; justify-content: space-between; color: var(--salvia-texto); font-size: var(--step-small); }
+.calc-total { padding: 24px; background: var(--papel); }
+.calc-total-valor { font-size: var(--step-head); font-weight: 700; line-height: 1; letter-spacing: -0.035em; }
+.calc-nota { margin-top: 12px; color: var(--tinta-2); font-size: var(--step-small); }
+
+/* como funciona: título à esquerda, etapas à direita */
+.pro-como { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 32px 5vw; align-items: start; margin: var(--gap-section) var(--margin) 0; }
+.pro-passos { display: grid; gap: 48px; margin: 0; padding: 0; list-style: none; }
+.pro-passos li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 24px; align-items: start; }
+.pro-passos .etapa { margin: 0; }
+.pro-passos h3 { font-size: var(--step-lead); line-height: 1.2; }
+.pro-passos p { max-width: 46ch; margin-top: 8px; }
+
+/* quem decide: campo ipê com três linhas grandes */
+.pro-decide { margin: calc(var(--gap-section) + var(--tab-h)) var(--margin) 0; padding: clamp(40px, 5vw, 72px) clamp(24px, 4vw, 64px); background: var(--ipe); color: var(--tinta); }
+.pro-lista { display: grid; gap: 32px; margin: 48px 0 0; }
+.pro-lista > div { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1fr); gap: 16px 4vw; align-items: start; }
+
+/* fragmentos da tela de perfil da profissional, um por decisão */
+.frag { display: grid; gap: 10px; padding: 18px 20px; background: var(--papel); font-size: 0.9375rem; }
+.frag-preco p { display: flex; justify-content: space-between; gap: 16px; }
+.frag-preco span { color: var(--tinta-2); }
+.frag-preco strong { font-size: 1.125rem; }
+.fa-dias, .fa-turnos { display: flex; flex-wrap: wrap; gap: 6px; }
+.fa-dias span, .fa-turnos span { display: inline-grid; place-items: center; min-width: 44px; height: 32px; padding: 0 10px; background: var(--salvia); color: var(--salvia-texto); font-weight: 500; }
+.fa-dias .on, .fa-turnos .on { background: var(--copa); color: #fff; }
+.fa-bairros { color: var(--tinta-2); }
+.fl-nome { font-weight: 700; font-size: 1.125rem; }
+.fl-url { color: var(--folha-2); font-weight: 500; overflow-wrap: anywhere; }
+.fl-botoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.fl-botoes span { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; background: var(--salvia); font-weight: 500; }
+.fl-botoes span:last-child { background: var(--copa); color: #fff; }
+.pro-lista dt { font-size: clamp(1.75rem, 1.2rem + 2vw, 3rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; }
+.pro-lista dd { margin: 0; max-width: 46ch; font-size: var(--step-lead); line-height: 1.4; }
+
+.pagina-pro .chamada { margin-left: var(--margin); margin-right: var(--margin); }
+
+/* entrada do banner */
+@media (prefers-reduced-motion: no-preference) {
+  .js .pro-banner h1 .linha { opacity: 0; transform: translateY(28px); animation: sobe 900ms var(--ease-expo) forwards; animation-delay: calc(100ms + var(--i, 0) * 90ms); }
+  .js .pro-apoio { opacity: 0; transform: translateY(12px); animation: sobe 600ms var(--ease-out) 360ms forwards; }
+  .js .pro-acoes { opacity: 0; transform: translateY(12px); animation: sobe 600ms var(--ease-out) 440ms forwards; }
+  .js .camada { opacity: 0; transform: translateY(24px); animation: sobe 800ms var(--ease-expo) forwards; }
+  .js .c-rosa { animation-delay: 200ms; } .js .c-ipe { animation-delay: 280ms; } .js .c-salvia { animation-delay: 360ms; } .js .c-folha { animation-delay: 440ms; }
+}
+
+@media (max-width: 900px) {
+  .pro-banner { grid-template-columns: 1fr; gap: 56px; }
+  .pro-calc, .pro-como { grid-template-columns: 1fr; }
+  .pro-lista > div { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .pro-banner { margin: 16px 0 0; padding: 40px var(--margin) 0; }
+  .pro-banner h1 { font-size: 11vw; }
+  .pro-apoio { font-size: 1.125rem; margin-top: 20px; }
+  .pro-acoes { margin-top: 28px; }
+  .pro-acoes .botao { width: 100%; }
+  .pro-camadas { height: 490px; margin: 0 calc(var(--margin) * -1); }
+  .c-rosa { left: 16px; width: 80%; }
+  .c-ipe { left: 9%; width: 82%; }
+  .c-salvia { left: 18%; width: 80%; }
+  .c-folha { top: 196px; left: 24px; right: 0; }
+  .pedido { left: 16px; right: 16px; top: 16px; }
+  .pro-calc, .pro-como { margin-top: 96px; }
+  .calc-valor { font-size: 1.5rem; }
+  .pro-decide { margin-left: 0; margin-right: 0; padding: 40px var(--margin); }
+  .pro-passos li { grid-template-columns: 52px minmax(0, 1fr); gap: 16px; }
+  .pro-passos .etapa { width: 52px; height: 44px; font-size: 1.5rem; }
+  .pagina-pro .chamada { margin-left: 0; margin-right: 0; }
+}

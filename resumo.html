@@ -7,104 +7,66 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>Revise o pedido · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="resumo.css">
+<link rel="stylesheet" href="resumo.css?v=6">
 </head>
 <body>
-<p class="prototipo">Protótipo para validação: pessoas, documentos e valores fictícios. Nenhum dado é enviado.</p>
 
 <header class="topo" data-topo>
   <div class="topo-dentro">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="index.html#escolher">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="resumo.html" aria-current="page">Meu pedido</a><a class="topo-pro" href="login.html">Área profissional</a></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a></nav>
   </div>
 </header>
-<div class="trilha"><div class="trilha-dentro"><a class="voltar" href="portfolio.html"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>Perfil de Ana</a><span class="topo-objeto">Pedido para Helena Costa</span></div></div>
-
-<main class="tela">
+<main class="tela tela-pedido">
+  <a class="voltar" href="portfolio.html"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>Perfil de Ana</a>
   <div class="titulo">
-    <div>
-      <h1>Revise o pedido</h1>
-      <p class="achado">Total de <strong class="num" data-total>R$ 240,00</strong> por <span data-horas-texto>4 horas</span> com Ana, veículo incluso. O atendimento só vale depois do aceite dela.</p>
-    </div>
-    <div>
-      <div class="acoes">
-        <button class="btn btn-secundario" type="button" disabled>Editar</button>
-        <button class="btn btn-primario" type="button" disabled>Enviar pedido</button>
-      </div>
-      <span class="btn-motivo">Protótipo: o envio não está disponível.</span>
-    </div>
+    <h1>Revise o pedido</h1>
+    <p class="achado">Confira os dados antes de enviar para Ana.</p>
   </div>
 
-  <ol class="etapas" aria-label="Etapas da solicitação">
-    <li class="feita"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5l2.5 2.5L10 3" fill="none" stroke="currentColor" stroke-width="2"/></svg>Identificação<span class="vh"> (concluída)</span></li>
-    <li class="feita"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5l2.5 2.5L10 3" fill="none" stroke="currentColor" stroke-width="2"/></svg>Atendimento<span class="vh"> (concluída)</span></li>
-    <li aria-current="step">Revisão</li>
-    <li>Resposta de Ana</li>
-  </ol>
-
   <div class="grade">
-    <div class="coluna">
-      <section class="cartao" aria-labelledby="t-atend">
-        <div class="cartao-cab"><h2 id="t-atend">Atendimento</h2><span class="meta">Consulta médica</span></div>
-        <div class="pessoa">
-          <span class="retrato"><svg viewBox="0 0 120 120" role="img" aria-label="Retrato ilustrativo da personagem fictícia Ana"><rect width="120" height="120" fill="#e2e8d9"/><path d="M22 120q0-48 38-48t38 48" fill="#376453"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#443c32"/><path d="M51 60q9 8 18 0" fill="none" stroke="#fff" stroke-width="3"/><circle cx="49" cy="47" r="2" fill="#403b32"/><circle cx="69" cy="47" r="2" fill="#403b32"/></svg></span>
-          <span><strong>Com Ana Oliveira</strong><span>Profissional verificada · 6 anos · documentos revisados em 01/10/2026</span></span>
-          <a href="portfolio.html">Ver perfil</a>
-        </div>
-        <dl class="linhas">
-          <div><dt>Tarefa</dt><dd>Consulta médica<small>Clínica Exemplo, Centro · consulta às 10h</small></dd></div>
-          <div><dt>Data</dt><dd>Quarta, 28 de outubro de 2026</dd></div>
-          <div><dt>Horas estimadas</dt><dd class="num"><span data-horas-periodo>4 horas, das 9h às 13h</span><small>O mínimo de Ana é 2 horas</small></dd></div>
-          <div><dt>Quem contrata</dt><dd>Mariana Costa</dd></div>
-          <div><dt>Quem vai junto</dt><dd>Helena Costa, 78 anos</dd></div>
-          <div><dt>Saída e volta</dt><dd>Rua Exemplo, 120<small>Cambuí · Campinas, SP</small></dd></div>
-          <div><dt>Veículo</dt><dd>Incluso<small>Ana busca Helena em casa, leva à clínica e traz de volta.</small></dd></div>
-        </dl>
-        <div class="dia" data-dia aria-label="A visita das 9h às 13h dentro da disponibilidade de Ana, das 8h às 18h">
-          <div class="dia-rotulo"><span>Disponibilidade de Ana na quarta</span><span class="num">8h–18h</span></div>
-          <div class="dia-trilho"><span class="dia-visita" data-visita></span></div>
-          <div class="dia-escala num" aria-hidden="true"><span style="left:0">8h</span><span style="left:10%">9h</span><span style="left:50%" data-fim>13h</span><span style="left:100%">18h</span></div>
-          <p class="dia-legenda"><i></i><span data-legenda-dia>Acompanhamento pedido: 9h às 13h</span></p>
-        </div>
-        <div class="observacao">
-          <h3>Observações da família</h3>
-          <p>Helena caminha devagar e gosta de conversar. Levar os exames anteriores, que estão na pasta azul da sala.</p>
-        </div>
-      </section>
-    </div>
+    <section class="cartao" aria-labelledby="t-pedido">
+      <h2 id="t-pedido" class="vh">Seu pedido</h2>
+      <div class="pessoa">
+        <span class="retrato"><svg viewBox="0 0 120 120" role="img" aria-label="Retrato de Ana Oliveira"><rect width="120" height="120" fill="#e2e8d9"/><path d="M22 120q0-48 38-48t38 48" fill="#376453"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#443c32"/><path d="M51 60q9 8 18 0" fill="none" stroke="#fff" stroke-width="3"/><circle cx="49" cy="47" r="2" fill="#403b32"/><circle cx="69" cy="47" r="2" fill="#403b32"/></svg></span>
+        <span><strong>Ana Oliveira</strong><span>Profissional verificada</span></span>
+      </div>
+      <dl class="linhas">
+        <div><dt>Tarefa</dt><dd>Consulta médica<small>Clínica Viva Mais, Centro</small></dd></div>
+        <div><dt>Quando</dt><dd class="num"><span>Quarta, 28/10</span><small data-horas-periodo>Das 9h às 13h</small></dd></div>
+        <div><dt>Quem vai</dt><dd>Helena Costa, 78 anos</dd></div>
+        <div><dt>Saída e volta</dt><dd>Rua Maria Monteiro, 120<small>Cambuí, Campinas</small></dd></div>
+        <div><dt>Recado para Ana</dt><dd>Helena caminha devagar. Levar os exames anteriores, na pasta azul da sala.</dd></div>
+      </dl>
+    </section>
 
-    <div class="coluna coluna-valores">
-      <section class="cartao" aria-labelledby="t-valores">
-        <div class="cartao-cab"><h2 id="t-valores">Valores</h2><span class="meta">Exemplo ilustrativo</span></div>
-        <div class="total"><span>Total</span><span class="total-valor num" data-total>R$ 240,00</span></div>
-        <div class="composicao" aria-hidden="true" data-composicao><span class="c-horas"></span><span class="c-horas"></span><span class="c-horas"></span><span class="c-horas"></span></div>
-        <ul class="valores num">
-          <li class="v-horas" data-valor="240" data-linha-horas><i></i><span><span data-conta>4 horas × R$ 60,00</span><small data-conta-nota>Valor de Ana a partir de 4 h (até 3 h, R$ 70,00)</small></span><span class="valor" data-valor-horas>R$ 240,00</span></li>
-          <li data-valor="0"><i></i><span>Veículo<small>Incluso no valor da hora</small></span><span class="valor">R$ 0,00</span></li>
-          <li class="v-taxa"><i></i><span>Taxa da plataforma<small>Modelo de cobrança em definição</small></span><span class="valor sem-valor">—</span></li>
-        </ul>
-        <a class="ajustar" href="portfolio.html#orcamento">Ajustar as horas</a>
-        <p class="aviso"><span data-aviso>O desconto a partir de 4 horas é uma hipótese em teste. Sem ele, seriam R$ 280,00.</span> A taxa da plataforma não entra no total enquanto não for definida.</p>
-      </section>
+    <section class="cartao cartao-total" aria-labelledby="t-total">
+      <h2 id="t-total">Total</h2>
+      <p class="total-valor num" data-total>R$ 240,00</p>
+      <p class="total-conta num" data-conta>4 horas × R$ 60,00, com veículo incluso</p>
 
+      <div class="envio" data-estado="sem-conta">
+        <a class="btn btn-primario btn-largo" href="entrar.html" data-entrar>Entrar para enviar</a>
+        <p class="envio-alt">Primeira vez aqui? <a href="entrar.html?modo=criar" data-criar>Criar conta</a></p>
+        <p class="total-nota">Com a sua conta, você recebe a resposta de Ana e acompanha seus pedidos.</p>
+      </div>
+      <div class="envio" data-estado="com-conta" hidden>
+        <p class="envio-quem">Enviando como <strong data-nome>Mariana Costa</strong>. <button class="link" type="button" data-sair>Sair</button></p>
+        <button class="btn btn-primario btn-largo" type="button" data-enviar>Enviar pedido</button>
+        <p class="total-nota">O pedido só vale depois que Ana aceitar. A resposta chega por e-mail.</p>
+      </div>
+      <div class="envio" data-estado="enviado" hidden aria-live="polite">
+        <p class="envio-ok"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2"/></svg>Pedido enviado para Ana</p>
+        <p class="total-nota">A resposta chega em <strong data-email>seu e-mail</strong>. Nada fica marcado sem o aceite dela.</p>
+        <a class="btn btn-secundario btn-largo" href="pedidos.html">Ver meus pedidos</a>
+      </div>
 
-      <section class="cartao" aria-labelledby="t-depois">
-        <h2 id="t-depois">Depois do envio</h2>
-        <ol class="passos">
-          <li>Ana recebe o pedido e pode aceitar, recusar ou propor uma mudança.</li>
-          <li>Se mudar o serviço ou o valor, você vê a comparação e decide se aceita.</li>
-          <li>Com o aceite, o combinado fica confirmado e chega por e-mail.</li>
-        </ol>
-      </section>
-    </div>
+      <a class="ajustar" href="portfolio.html#orcamento" data-ajustar>Mudar as horas</a>
+    </section>
   </div>
 </main>
 
-<footer class="rodape-app">
-  Navegação de revisão, somente entre amostras:
-  <nav aria-label="Navegação de revisão"><a href="index.html">Busca</a><a href="portfolio.html">Portfólio</a><a href="resumo.html" aria-current="page">Resumo</a><a href="valores.html">Configurar valores</a><a href="login.html">Login</a><a href="cadastro.html">Cadastro</a><a href="pagamento.html">Pagamento</a><a href="mapa.html">Mapa das telas</a></nav>
-</footer>
 <script>
   // menu no celular
   (() => {
@@ -117,39 +79,35 @@
   const ana = { valor: 70, minimo: 2, desconto: { aPartir: 4, valor: 60 } };
   const brl2 = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const pedidas = Math.floor(Number(new URLSearchParams(location.search).get('horas')));
-  if (Number.isFinite(pedidas) && pedidas >= ana.minimo && pedidas !== 4) {
-    const h = pedidas;
-    const vh = h >= ana.desconto.aPartir ? ana.desconto.valor : ana.valor;
-    const t = h * vh;
-    const txt = `${h} horas`;
-    const linha = document.querySelector('[data-linha-horas]');
-    linha.dataset.valor = t;
-    document.querySelector('[data-conta]').textContent = `${txt} × ${brl2(vh)}`;
-    document.querySelector('[data-conta-nota]').textContent = h >= ana.desconto.aPartir ? 'Valor de Ana a partir de 4 h (até 3 h, R$ 70,00)' : 'Valor da hora de Ana até 3 h';
-    document.querySelector('[data-valor-horas]').textContent = brl2(t);
-    document.querySelector('[data-horas-texto]').textContent = txt;
-    document.querySelector('[data-aviso]').textContent = h >= ana.desconto.aPartir
-      ? `O desconto a partir de 4 horas é uma hipótese em teste. Sem ele, seriam ${brl2(h * ana.valor)}.`
-      : 'Com menos de 4 horas, o desconto em teste não se aplica.';
-    const comp = document.querySelector('[data-composicao]');
-    comp.innerHTML = '<span class="c-horas"></span>'.repeat(Math.min(h, 24));
-    const fim = 9 + h;
-    if (fim <= 18) {
-      document.querySelector('[data-horas-periodo]').textContent = `${txt}, das 9h às ${fim}h`;
-      document.querySelector('[data-visita]').style.width = `${h * 10}%`;
-      const f = document.querySelector('[data-fim]'); f.textContent = `${fim}h`; f.style.left = `${(fim - 8) * 10}%`;
-      document.querySelector('[data-legenda-dia]').textContent = `Acompanhamento pedido: 9h às ${fim}h`;
-    } else {
-      document.querySelector('[data-horas-periodo]').textContent = `${txt}, a partir das 9h`;
-      document.querySelector('[data-dia]').hidden = true;
-      document.querySelector('[data-horas-periodo]').insertAdjacentHTML('afterend', '<small>Passa do horário de Ana (8h às 18h): combine as datas no pedido.</small>');
+  const h = Number.isFinite(pedidas) && pedidas >= ana.minimo ? pedidas : 4;
+  const vh = h >= ana.desconto.aPartir ? ana.desconto.valor : ana.valor;
+  document.querySelector('[data-total]').textContent = brl2(h * vh);
+  document.querySelector('[data-conta]').textContent = `${h} horas × ${brl2(vh)}, com veículo incluso`;
+  document.querySelector('[data-horas-periodo]').textContent = 9 + h <= 18 ? `Das 9h às ${9 + h}h` : `${h} horas, a partir das 9h`;
+
+  // enviar exige conta: sem sessão, o botão leva para entrar e volta para este pedido
+  (() => {
+    const chave = 'mc-conta';
+    const le = () => { try { return JSON.parse(localStorage.getItem(chave)); } catch (_) { return null; } };
+    const volta = encodeURIComponent(location.pathname.split('/').pop() + location.search);
+    document.querySelector('[data-entrar]').href = `entrar.html?volta=${volta}`;
+    document.querySelector('[data-criar]').href = `entrar.html?modo=criar&volta=${volta}`;
+    const estados = document.querySelectorAll('[data-estado]');
+    const mostra = (nome) => estados.forEach((el) => { el.hidden = el.dataset.estado !== nome; });
+    const conta = le();
+    if (conta && conta.nome) {
+      document.querySelector('[data-nome]').textContent = conta.nome;
+      document.querySelector('[data-email]').textContent = conta.email;
+      mostra('com-conta');
     }
-  }
-  // o total vem das parcelas mostradas
-  const parcelas = [...document.querySelectorAll('[data-valor]')].map((li) => Number(li.dataset.valor));
-  const total = parcelas.reduce((a, b) => a + b, 0);
-  console.assert(total === Number(document.querySelector('[data-linha-horas]').dataset.valor), 'parcelas não somam o total', total);
-  document.querySelectorAll('[data-total]').forEach((el) => { el.textContent = brl2(total); });
+    document.querySelector('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem(chave); } catch (_) { /* sem armazenamento */ } mostra('sem-conta'); });
+    document.querySelector('[data-enviar]').addEventListener('click', () => {
+      mostra('enviado');
+      document.querySelector('[data-ajustar]').hidden = true;
+      document.querySelector('.titulo h1').textContent = 'Pedido enviado';
+      document.querySelector('.titulo .achado').textContent = 'Agora é com Ana. Você recebe a resposta por e-mail.';
+    });
+  })();
 </script>
 </body>
 </html>

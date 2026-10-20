@@ -172,3 +172,58 @@ button { font: inherit; }
 .valores .sem-valor { color: var(--muted); }
 .ajustar { display: inline-flex; align-items: center; min-height: 40px; margin-top: 8px; font-weight: 500; text-decoration: none; }
 .ajustar:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* pedido enxuto: quem, o quê, quando, onde e o total; nada mais */
+.tela-pedido { max-width: 920px; }
+.tela-pedido .voltar { margin-bottom: 12px; }
+.tela-pedido .titulo { display: block; }
+.tela-pedido .grade { grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; margin-top: 28px; }
+.tela-pedido .pessoa { grid-template-columns: 48px 1fr; }
+.tela-pedido .linhas > div { grid-template-columns: 150px 1fr; padding: 14px 0; }
+.cartao-total { position: sticky; top: 84px; display: flex; flex-direction: column; padding: 28px; }
+.cartao-total h2 { color: var(--muted); font-weight: 400; }
+.cartao-total .total-valor { margin-top: 6px; font-size: 36px; line-height: 1.1; font-weight: 700; }
+.total-conta { margin-top: 6px; color: var(--muted); }
+.envio { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+.envio[hidden], [data-ajustar][hidden] { display: none; }
+.btn-largo { justify-content: center; width: 100%; height: 48px; font-size: 16px; text-decoration: none; cursor: pointer; }
+.btn-largo:active { transform: scale(0.98); }
+.envio-alt, .envio-quem { color: var(--muted); text-align: center; }
+.envio-alt a, .link { color: var(--text); font-weight: 500; text-underline-offset: 4px; }
+.link { padding: 0; border: 0; background: none; font: inherit; text-decoration: underline; cursor: pointer; }
+.envio-quem strong { color: var(--text); font-weight: 500; }
+.envio-ok { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; }
+.envio-ok svg { width: 22px; height: 22px; flex: none; color: #2d5e4b; }
+.total-nota { color: var(--muted); font-size: var(--fs-small); line-height: 18px; text-align: center; }
+.envio-ok + .total-nota { text-align: left; }
+.total-nota strong { color: var(--text); font-weight: 500; }
+.cartao-total .ajustar { align-self: center; margin-top: 12px; }
+@media (max-width: 760px) {
+  .tela-pedido .grade { grid-template-columns: 1fr; }
+  .cartao-total { position: static; }
+  .tela-pedido .linhas > div { grid-template-columns: 1fr; gap: 2px; }
+}
+
+/* entrar ou criar conta da família */
+.tela-entrar { max-width: 480px; }
+.tela-entrar .voltar { margin-bottom: 12px; }
+.cartao-entrar { padding: 32px; }
+.cartao-entrar h1 { font-size: var(--fs-title); line-height: 30px; }
+.cartao-entrar .achado { margin-top: 6px; color: var(--muted); font-size: 16px; }
+.modos[hidden] { display: none; }
+.modos { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 24px; padding: 4px; border-radius: 8px; background: var(--raised); }
+.modo { height: 40px; border: 1px solid transparent; border-radius: var(--radius-control); background: none; color: var(--muted); font: inherit; font-weight: 500; cursor: pointer; }
+.modo[aria-pressed="true"] { border-color: var(--border); background: var(--surface); color: var(--text); }
+.form-entrar { display: grid; gap: 16px; margin-top: 24px; }
+.campo { display: grid; gap: 6px; }
+.campo[hidden], .campo-ajuda[hidden], .campo-erro[hidden] { display: none; }
+.campo label { font-weight: 500; }
+.campo input { height: 44px; padding: 0 12px; border: 1px solid var(--control); border-radius: var(--radius-control); background: var(--surface); color: var(--text); font: inherit; font-size: 16px; }
+.campo input:focus-visible { outline: 2px solid var(--text); outline-offset: 1px; }
+.campo input[aria-invalid="true"] { border-color: #b4234f; }
+.campo-ajuda { color: var(--muted); font-size: var(--fs-small); }
+.campo-erro { color: #b4234f; font-size: var(--fs-small); }
+.form-entrar .btn-largo { margin-top: 8px; }
+.entrar-pro { margin-top: 20px; color: var(--muted); font-size: var(--fs-small); text-align: center; }
+.entrar-pro a { color: var(--text); font-weight: 500; }
+@media (max-width: 640px) { .cartao-entrar { padding: 24px 20px; } }

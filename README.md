@@ -19,7 +19,10 @@ Links de revisão navegam entre as amostras. Botões, filtros e campos do produt
 3. Após aprovação, aplicar a direção às demais telas, incluindo estados vazios, proposta alterada, documentos e administração.
 4. Incorporar retorno e obter aprovação final como referência para planejamento técnico futuro.
 
-Não publicar como serviço operacional. Não implementar autenticação, banco, uploads, WhatsApp, tracking, pagamentos, e-mails, chat ou operações administrativas.
+Não publicar como serviço operacional. Não implementar uploads, WhatsApp, tracking, pagamentos, e-mails, chat ou operações administrativas.
+
+## Backend (a partir de 20/10/2026)
+A pedido do usuário, começou o backend em `api/`: contas da família e da profissional, login com sessão, pedidos de serviço e avaliação nos dois sentidos, por serviço. Node + Fastify + PostgreSQL (Drizzle). Ver `api/README.md`. Com a API rodando (`cd api && npm run dev`), as telas abrem em http://127.0.0.1:4173 e `entrar.html` cria contas e entra de verdade; aberta direto do arquivo, a tela continua só lembrando o nome no navegador. Isso vai além do escopo de `docs/CONTRATO.txt`, que previa só telas.
 
 A taxa de R$ 15 é somente exemplo. O modelo de recebimento permanece pendente.
 

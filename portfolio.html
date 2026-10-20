@@ -10,13 +10,12 @@
 <script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__fa)document.documentElement.classList.remove('js')},2500)</script>
 </head>
 <body class="pagina-perfil">
-<p class="prototipo">Protótipo para validação: pessoas, documentos e valores fictícios. Só o orçamento responde; nenhum dado é enviado.</p>
 
 <header class="site-topo" data-topo>
   <div class="site-barra">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="index.html#escolher" aria-current="page">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="resumo.html">Meu pedido</a><a class="botao-linha" href="login.html">Área profissional</a></nav>
+    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="botao-linha" href="profissional.html">Área profissional</a></nav>
   </div>
 </header>
 <header class="perfil-capa">
@@ -72,7 +71,7 @@
         <div class="atalhos" role="group" aria-label="Atalhos de horas"><button type="button" data-h="2">2 h</button><button type="button" data-h="4">4 h</button><button type="button" data-h="6">6 h</button><button type="button" data-h="8">8 h</button><button type="button" data-h="12">12 h</button></div>
         <div class="blocos-horas" aria-hidden="true" data-blocos><span class="bh"></span><span class="bh"></span><span class="bh"></span><span class="bh"></span></div>
         <p class="blocos-legenda nota"><i class="bh"></i><span data-legenda>Cada bloco é uma hora a R$ 60,00, valor de Ana a partir de 4 horas.</span></p>
-      </div><div class="orc-leitura" aria-live="polite"><p class="orc-total num" data-total>R$ 240,00</p><p class="orc-conta num" data-conta>4 horas × R$ 60,00 por hora</p><p data-minimo>Ana atende a partir de 2 horas.</p><p data-desconto>A partir de 4 horas, a hora de Ana cai para R$ 60,00. Você economiza R$ 40,00.</p><p class="orc-linha"><svg viewBox="0 0 30 22" aria-hidden="true" data-veiculo-icone data-tem="sim"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="#f2c94c"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/><path data-risco d="M2 20L28 2" stroke="#f28cb1" stroke-width="3"/></svg><span data-veiculo>Veículo incluso: Ana busca em casa, leva e traz de volta.</span></p><a class="botao" href="resumo.html" data-acao>Pedir 4 horas com Ana</a><p class="nota">Taxa da plataforma em definição, fora do total.</p></div><p class="orc-nota nota">Protótipo: o desconto por volume é uma hipótese em teste e as profissionais são fictícias. Nada é enviado.</p></div><script type="application/json" id="profissionais">{"ana": {"nome": "Ana", "completo": "Ana Oliveira", "valor": 70, "minimo": 2, "desconto": {"aPartir": 4, "valor": 60}, "veiculo": true, "link": "resumo.html"}}</script>
+      </div><div class="orc-leitura" aria-live="polite"><p class="orc-total num" data-total>R$ 240,00</p><p class="orc-conta num" data-conta>4 horas × R$ 60,00 por hora</p><p data-minimo>Ana atende a partir de 2 horas.</p><p data-desconto>A partir de 4 horas, a hora de Ana cai para R$ 60,00. Você economiza R$ 40,00.</p><p class="orc-linha"><svg viewBox="0 0 30 22" aria-hidden="true" data-veiculo-icone data-tem="sim"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="#f2c94c"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/><path data-risco d="M2 20L28 2" stroke="#f28cb1" stroke-width="3"/></svg><span data-veiculo>Veículo incluso: Ana busca em casa, leva e traz de volta.</span></p><a class="botao" href="resumo.html" data-acao>Pedir 4 horas com Ana</a></div></div><script type="application/json" id="profissionais">{"ana": {"nome": "Ana", "completo": "Ana Oliveira", "valor": 70, "minimo": 2, "desconto": {"aPartir": 4, "valor": 60}, "veiculo": true, "link": "resumo.html"}}</script>
   </section>
 
   <section class="perfil-servicos" aria-labelledby="t-servicos">
@@ -104,7 +103,7 @@
     <div class="ladrilho" data-chega style="--i:4"><strong>Revisão</strong><span class="num">01/10/2026</span></div>
     <div class="ladrilho" data-chega style="--i:5"><strong>Próxima</strong><span class="num">01/11/2026</span><span data-faltam="2026-11-01">Revisão mensal dos documentos.</span></div>
     <div class="ladrilho" data-chega style="--i:6"><strong>4,9 de 5</strong><span>12 avaliações</span></div>
-    <p class="perfil-docs-nota nota">Selos ilustrativos. Nenhuma verificação real foi realizada.</p>
+    
   </section>
 
   <section class="perfil-depoimento" aria-labelledby="t-dep">
@@ -116,7 +115,7 @@
       <blockquote data-chega style="--i:1"><p>“Eu estava no trabalho. A Ana levou minha mãe ao exame e esperou até o fim.”</p></blockquote>
       <p class="dep-autor" data-chega style="--i:2"><span role="img" aria-label="Nota 5 de 5">5 de 5</span> · Beatriz M., filha · 12/10/2026</p>
       <p class="dep-resposta" data-chega style="--i:3">Resposta de Ana: Obrigada pela confiança, Beatriz. Foi um prazer ir com a sua mãe.</p>
-      <p class="nota dep-nota">Avaliação fictícia vinculada ao atendimento FA-1024.</p>
+      <p class="nota dep-nota">Avaliação vinculada ao atendimento FA-1024.</p>
     </div>
     <figure class="dep-pequena" data-chega style="--i:2">
       <img src="assets/bosque-dos-jequitibas-800.webp" alt="O Bosque dos Jequitibás visto de cima" width="800" height="483" loading="lazy">
@@ -128,13 +127,12 @@
   <div class="blocos" aria-hidden="true"><span style="height:100%;background:#f28cb1" data-l="m"></span><span style="height:78%;background:#f2c94c" data-l="i"></span><span style="height:92%;background:#dce8e0" data-l="n"></span><span style="height:64%;background:#ffffff" data-l="h"></span><span style="height:86%;background:#f28cb1" data-l="a"></span><span class="espaco"></span><span style="height:72%;background:#f2c94c" data-l="c"></span><span style="height:100%;background:#dce8e0" data-l="o"></span><span style="height:76%;background:#ffffff" data-l="m"></span><span style="height:90%;background:#f28cb1" data-l="p"></span><span style="height:68%;background:#f2c94c" data-l="a"></span><span style="height:76%;background:#dce8e0" data-l="n"></span><span style="height:84%;background:#ffffff" data-l="h"></span><span style="height:100%;background:#f28cb1" data-l="i"></span><span style="height:70%;background:#f2c94c" data-l="a"></span></div>
   <p class="vh">Minha companhia</p>
   <div class="rodape-colunas">
-    <div><h2>Famílias</h2><ul><li><a href="index.html">Busca</a></li><li><a href="portfolio.html">Portfólio de Ana</a></li><li><a href="resumo.html">Resumo da solicitação</a></li></ul></div>
-    <div><h2>Profissionais</h2><ul><li><a href="login.html">Área profissional</a></li><li><a href="cadastro.html">Cadastro</a></li><li><a href="valores.html">Configurar valores</a></li><li><a href="pagamento.html">Pagamento</a></li></ul></div>
-    <div><h2>Protótipo</h2><ul><li><a href="mapa.html">Mapa das 16 telas</a></li></ul></div>
-    <div class="contato"><h2>Sobre esta amostra</h2><p>Amostra visual v0.4 para validar estilo, legibilidade, organização e tom.</p><p>Atendimento, envio de dados e cobranças não estão disponíveis.</p></div>
+    <div><h2>Famílias</h2><ul><li><a href="busca.html">Encontrar profissional</a></li><li><a href="index.html#como-contratar">Como contratar</a></li><li><a href="index.html#confianca">Por que confiar</a></li><li><a href="pedidos.html">Meus pedidos</a></li></ul></div>
+    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="cadastro.html">Quero me cadastrar</a></li></ul></div>
+    <div class="contato"><h2>Onde atendemos</h2><p>Em todo o Brasil, nas cidades com profissionais cadastradas.</p></div>
   </div>
   <p class="creditos">Fotos: <a href="https://commons.wikimedia.org/wiki/File:Lagoa_do_Taquaral_-_panoramio_(26).jpg">“Lagoa do Taquaral - panoramio (26)”</a>, de enioprado, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Rua_Maria_Monteiro_-_Cambu%C3%AD_-_Campinas,_SP.JPG">“Rua Maria Monteiro - Cambuí - Campinas, SP”</a>, de Fasouzafreitas, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Werner_Haberkorn_-_Pra%C3%A7a_Bento_Quirino_-_Campinas_1.jpg">“Werner Haberkorn - Praça Bento Quirino - Campinas 1”</a>, de Werner Haberkorn/Fotolabor/Museu Paulista da USP, <a href="https://creativecommons.org/publicdomain/mark/1.0/">domínio público</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Ip%C3%AA_rei_(3831844709).jpg">“Ipê rei (3831844709)”</a>, de Cássio Abreu from CAMPINAS, Brasil, <a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Bosque_dos_Jequitib%C3%A1s.jpg">“Bosque dos Jequitibás”</a>, de Prefeitura Campinas, <a href="https://creativecommons.org/publicdomain/mark/1.0/">domínio público</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Werner_Haberkorn_-_Bosque_dos_Jequitibas_-_Campinas.jpg">“Werner Haberkorn - Bosque dos Jequitibas - Campinas”</a>, de Werner Haberkorn/Fotolabor/Museu Paulista da USP, <a href="https://creativecommons.org/publicdomain/mark/1.0/">domínio público</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Mercado_Municipal_de_Campinas_1.tif">“Mercado Municipal de Campinas 1”</a>, de Bel Young, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons.</p>
-  <div class="rodape-fim"><span>Minha companhia · 2026</span><a class="botao" href="mapa.html">Ver mapa das telas</a></div>
+  <div class="rodape-fim"><span>Minha companhia · 2026</span></div>
 </footer>
 <script src="site.js" defer></script>
 </body>

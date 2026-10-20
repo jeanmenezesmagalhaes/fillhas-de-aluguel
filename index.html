@@ -4,54 +4,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<title>Profissionais para acompanhar sua mãe ou seu pai em Campinas · Minha companhia</title>
+<title>Profissionais para acompanhar sua mãe ou seu pai · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="site.css">
 <script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__fa)document.documentElement.classList.remove('js')},2500)</script>
 </head>
 <body class="pagina-home">
-<p class="prototipo">Protótipo para validação: pessoas, documentos e valores fictícios. Nenhum pedido é enviado.</p>
 
 <header class="site-topo" data-topo>
   <div class="site-barra">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="index.html#escolher">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="resumo.html">Meu pedido</a><a class="botao-linha" href="login.html">Área profissional</a></nav>
+    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="botao-linha" href="profissional.html">Área profissional</a></nav>
   </div>
-  <form class="busca-fixa" role="search" aria-label="Busca rápida (representação)" onsubmit="return false">
-    <label class="vh" for="cidade-fixa">Cidade</label><input id="cidade-fixa" type="search" value="Campinas" disabled>
-    <label class="vh" for="tarefa-fixa">Tarefa</label><select id="tarefa-fixa" disabled><option>Consulta ou exame</option></select>
-    <label class="vh" for="data-fixa">Data</label><input id="data-fixa" type="text" value="28/10/2026" disabled>
-    <a class="botao" href="#escolher">Ver profissionais</a>
+  <form class="busca-fixa" role="search" aria-label="Busca rápida" action="busca.html" method="get">
+    <label class="vh" for="cidade-fixa">Cidade</label><input id="cidade-fixa" name="cidade" type="search" placeholder="Sua cidade" autocomplete="address-level2">
+    <label class="vh" for="tarefa-fixa">Tarefa</label><select id="tarefa-fixa" name="tarefa"><option value="">Qualquer tarefa</option><option value="consulta" selected>Consulta ou exame</option><option value="banco">Banco ou cartório</option><option value="mercado">Mercado e farmácia</option><option value="passeio">Passeio</option></select>
+    <label class="vh" for="data-fixa">Dia do acompanhamento</label><input id="data-fixa" name="data" type="date" value="2026-10-28">
+    <button class="botao" type="submit">Ver profissionais</button>
   </form>
 </header>
 <div class="topo-home">
   <div class="abertura">
     <h1><span class="linha" style="--i:0">Escolha quem</span> <span class="linha" style="--i:1">acompanha sua mãe</span></h1>
-    <p class="apoio">Para os dias em que você não pode ir junto. Compare profissionais de Campinas, veja o valor antes de pedir e contrate pelo site.</p>
-    <p class="verificadas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5z" fill="currentColor"/><path d="M8 12.2l2.8 2.8L16.4 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><strong>Só profissionais verificadas.</strong> Conferimos os documentos de cada uma antes de entrar e de novo todo mês.</span></p>
-    <form class="busca busca-home" role="search" aria-label="Busca (representação)" onsubmit="return false">
-      <div><label for="cidade">Cidade</label><input id="cidade" type="search" value="Campinas" disabled></div>
-      <div><label for="tarefa">Tarefa</label><select id="tarefa" disabled><option>Consulta ou exame</option></select></div>
-      <div><label for="data">Data</label><input id="data" type="text" value="28/10/2026" disabled></div>
-      <a class="botao" href="#escolher">Ver profissionais</a>
+    <p class="apoio">Para os dias em que você não pode ir junto. Compare profissionais da sua cidade e contrate pelo site.</p>
+    <p class="verificadas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5z" fill="currentColor"/><path d="M8 12.2l2.8 2.8L16.4 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Só profissionais verificadas, com documentos conferidos todo mês.</span></p>
+    <form class="busca busca-home" role="search" aria-label="Busca" action="busca.html" method="get">
+      <div><label for="cidade">Cidade</label><input id="cidade" name="cidade" type="search" placeholder="Digite a cidade" autocomplete="address-level2"></div>
+      <div><label for="tarefa">Tarefa</label><select id="tarefa" name="tarefa"><option value="">Qualquer tarefa</option><option value="consulta" selected>Consulta ou exame</option><option value="banco">Banco ou cartório</option><option value="mercado">Mercado e farmácia</option><option value="passeio">Passeio</option></select></div>
+      <div><label for="data">Dia do acompanhamento</label><input id="data" name="data" type="date" value="2026-10-28"></div>
+      <button class="botao" type="submit">Ver profissionais</button>
     </form>
+    <p class="ver-todas-topo"><a href="busca.html">Ou veja todos os profissionais<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></a></p>
   </div>
 </div>
 
 <main>
   <section class="lista" id="escolher" aria-labelledby="t-lista">
     <div class="lista-cab">
-      <h2 class="lista-titulo" id="t-lista">Profissionais em Campinas</h2>
-      <p class="lista-conta" data-conta-lista aria-live="polite">4 profissionais verificadas para todas as tarefas</p>
+      <h2 class="lista-titulo" id="t-lista">Profissionais em destaque</h2>
     </div>
-    <div class="filtro" role="group" aria-label="Filtrar por tarefa"><button type="button" class="ft ft-todas" data-t="todas" aria-pressed="true"><span class="ft-nome">Todas as tarefas</span><small>4 profissionais</small></button><button type="button" class="ft" data-t="consulta" aria-pressed="false"><img src="assets/rua-maria-monteiro-cambui-campinas-sp-800.webp" alt="" width="800" height="600" loading="lazy"><span class="ft-nome">Consulta ou exame</span><small>em geral 2 a 4 h · 4 profissionais</small></button><button type="button" class="ft" data-t="banco" aria-pressed="false"><img src="assets/werner-haberkorn-praca-bento-quirino-campinas-1-800.webp" alt="" width="800" height="531" loading="lazy"><span class="ft-nome">Banco ou cartório</span><small>em geral 2 a 3 h · 2 profissionais</small></button><button type="button" class="ft" data-t="mercado" aria-pressed="false"><img src="assets/mercado-municipal-de-campinas-1-800.webp" alt="" width="800" height="534" loading="lazy"><span class="ft-nome">Mercado e farmácia</span><small>em geral 1 a 2 h · 3 profissionais</small></button><button type="button" class="ft" data-t="passeio" aria-pressed="false"><img src="assets/lagoa-do-taquaral-panoramio-26-800.webp" alt="" width="800" height="533" loading="lazy"><span class="ft-nome">Passeio</span><small>em geral 1 a 3 h · 3 profissionais</small></button></div>
+    <div class="filtro-linha"><div class="filtro" role="group" aria-label="Filtrar por tarefa"><button type="button" class="ft" data-t="todas" aria-pressed="true"><span class="ft-nome">Todas as tarefas</span><span class="ft-conta num">4</span></button><button type="button" class="ft" data-t="consulta" aria-pressed="false"><span class="ft-nome">Consulta ou exame</span><span class="ft-conta num">4</span></button><button type="button" class="ft" data-t="banco" aria-pressed="false"><span class="ft-nome">Banco ou cartório</span><span class="ft-conta num">2</span></button><button type="button" class="ft" data-t="mercado" aria-pressed="false"><span class="ft-nome">Mercado e farmácia</span><span class="ft-conta num">3</span></button><button type="button" class="ft" data-t="passeio" aria-pressed="false"><span class="ft-nome">Passeio</span><span class="ft-conta num">3</span></button></div><a class="ver-todas" href="busca.html">Ver todos<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></a><p class="vh" data-conta-lista aria-live="polite"></p></div>
     <ul class="cartoes">
         <li class="pc" data-tarefas="consulta banco mercado passeio">
-          <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato ilustrativo da personagem fictícia Ana Oliveira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#2d5e4b"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#3d332b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+          <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Ana Oliveira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#2d5e4b"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#3d332b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
           <div class="pc-quem"><h3>Ana Oliveira</h3><p class="pc-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,9</strong> <span aria-hidden="true">(12)</span><span class="vh"> de 5, 12 avaliações</span></p></div>
           <p class="pc-preco num"><strong>R$ 70</strong> por hora</p>
-          <p class="pc-bairro">Cambuí e Taquaral</p>
+          <p class="pc-bairro">Cambuí e Taquaral · Campinas, SP</p>
           <ul class="pc-fatos">
             <li class="num"><svg class="pc-relogio" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
             <li class="pc-veiculo sim"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
@@ -59,41 +58,41 @@
           <a class="botao escuro pc-acao" href="portfolio.html">Conhecer a Ana</a>
         </li>
         <li class="pc" data-tarefas="consulta mercado passeio">
-          <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato ilustrativo da personagem fictícia Cláudia Ramos"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#8d5a3b"/><circle cx="40" cy="30" r="13" fill="#1f1a17"/><circle cx="52" cy="20" r="14" fill="#1f1a17"/><circle cx="66" cy="20" r="14" fill="#1f1a17"/><circle cx="79" cy="30" r="13" fill="#1f1a17"/><circle cx="36" cy="44" r="10" fill="#1f1a17"/><circle cx="84" cy="44" r="10" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+          <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Cláudia Ramos"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#8d5a3b"/><circle cx="40" cy="30" r="13" fill="#1f1a17"/><circle cx="52" cy="20" r="14" fill="#1f1a17"/><circle cx="66" cy="20" r="14" fill="#1f1a17"/><circle cx="79" cy="30" r="13" fill="#1f1a17"/><circle cx="36" cy="44" r="10" fill="#1f1a17"/><circle cx="84" cy="44" r="10" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
           <div class="pc-quem"><h3>Cláudia Ramos</h3><p class="pc-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,8</strong> <span aria-hidden="true">(7)</span><span class="vh"> de 5, 7 avaliações</span></p></div>
           <p class="pc-preco num"><strong>R$ 65</strong> por hora</p>
-          <p class="pc-bairro">Taquaral</p>
+          <p class="pc-bairro">Taquaral · Campinas, SP</p>
           <ul class="pc-fatos">
             <li class="num"><svg class="pc-relogio" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 1 hora</li>
             <li class="pc-veiculo nao"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/><path d="M2 20L28 2" stroke="#f28cb1" stroke-width="3"/></svg>Sem veículo</li>
           </ul>
-          <button class="pc-acao pc-indisponivel" type="button" disabled>Perfil fora da amostra</button>
+          <button class="pc-acao pc-indisponivel" type="button" disabled>Perfil em breve</button>
         </li>
         <li class="pc" data-tarefas="consulta banco">
-          <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato ilustrativo da personagem fictícia Marta Ferreira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f2c94c"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#e0b08f"/><path d="M30 62Q24 12 60 12t30 50h-9q2-24-21-27-23 3-21 27z" fill="#b9b4ad"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+          <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Marta Ferreira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f2c94c"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#e0b08f"/><path d="M30 62Q24 12 60 12t30 50h-9q2-24-21-27-23 3-21 27z" fill="#b9b4ad"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
           <div class="pc-quem"><h3>Marta Ferreira</h3><p class="pc-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>5,0</strong> <span aria-hidden="true">(4)</span><span class="vh"> de 5, 4 avaliações</span></p></div>
           <p class="pc-preco num"><strong>R$ 75</strong> por hora</p>
-          <p class="pc-bairro">Centro e Bosque</p>
+          <p class="pc-bairro">Centro e Bosque · Campinas, SP</p>
           <ul class="pc-fatos">
             <li class="num"><svg class="pc-relogio" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 3 horas</li>
             <li class="pc-veiculo sim"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
           </ul>
-          <button class="pc-acao pc-indisponivel" type="button" disabled>Perfil fora da amostra</button>
+          <button class="pc-acao pc-indisponivel" type="button" disabled>Perfil em breve</button>
         </li>
         <li class="pc" data-tarefas="consulta mercado passeio">
-          <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato ilustrativo da personagem fictícia Joana Prado"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#24503f"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#a86f4c"/><circle cx="60" cy="14" r="11" fill="#2b211b"/><path d="M35 46Q34 22 60 22t25 24q-10-12-25-12T35 46z" fill="#2b211b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
+          <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Joana Prado"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#24503f"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#a86f4c"/><circle cx="60" cy="14" r="11" fill="#2b211b"/><path d="M35 46Q34 22 60 22t25 24q-10-12-25-12T35 46z" fill="#2b211b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
           <div class="pc-quem"><h3>Joana Prado</h3><p class="pc-nota num"><svg class="pc-estrela" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="#e3b53a"/></svg><strong>4,7</strong> <span aria-hidden="true">(19)</span><span class="vh"> de 5, 19 avaliações</span></p></div>
           <p class="pc-preco num"><strong>R$ 70</strong> por hora</p>
-          <p class="pc-bairro">Cambuí</p>
+          <p class="pc-bairro">Cambuí · Campinas, SP</p>
           <ul class="pc-fatos">
             <li class="num"><svg class="pc-relogio" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
             <li class="pc-veiculo nao"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/><path d="M2 20L28 2" stroke="#f28cb1" stroke-width="3"/></svg>Sem veículo</li>
           </ul>
-          <button class="pc-acao pc-indisponivel" type="button" disabled>Perfil fora da amostra</button>
+          <button class="pc-acao pc-indisponivel" type="button" disabled>Perfil em breve</button>
         </li>
     </ul>
-    <p class="lista-vazia" data-vazia hidden>Ainda não temos profissional para essa tarefa em Campinas. Veja as outras tarefas.</p>
-    <p class="lista-nota nota">No perfil você conhece a experiência de cada uma, as tarefas que ela faz e o desconto para mais horas, quando houver. Perfis, avaliações e valores desta amostra são fictícios.</p>
+    <p class="lista-vazia" data-vazia hidden>Nenhum destaque para essa tarefa agora. Veja as outras tarefas ou todos os profissionais.</p>
+    <div class="lista-pe"><a class="botao escuro" href="busca.html">Ver todos os profissionais</a><p class="lista-nota nota">No perfil você conhece a experiência de cada uma, as tarefas que ela faz e o desconto para mais horas, quando houver.</p></div>
   </section>
 
   <section class="como" id="como-contratar" aria-labelledby="t-como">
@@ -103,12 +102,13 @@
       <li data-chega style="--i:2"><span class="etapa num" aria-hidden="true">2</span><strong>Faça o orçamento</strong><p>Diga quanto tempo a tarefa deve levar. Você vê o valor total antes de pedir.</p></li>
       <li data-chega style="--i:3"><span class="etapa num" aria-hidden="true">3</span><strong>Confirme</strong><p>Envie o pedido. Quando a profissional aceitar, você recebe a confirmação por e-mail. Pronto: sua mãe já tem companhia.</p></li>
     </ol>
+    <a class="botao como-acao" href="busca.html">Escolher profissional</a>
   </section>
 
   <section class="confianca" id="confianca" aria-labelledby="t-conf">
     <div class="pasta-grande" data-chega>
       <span class="aba vazia" aria-hidden="true"></span>
-      <svg class="documento" viewBox="0 0 400 500" role="img" aria-label="Ficha ilustrativa dos documentos de Ana Oliveira, revisada em 1º de outubro de 2026">
+      <svg class="documento" viewBox="0 0 400 500" role="img" aria-label="Ficha dos documentos de Ana Oliveira, revisada em 1º de outubro de 2026">
           <g transform="rotate(-3 200 250)">
             <rect x="20" y="10" width="360" height="480" fill="#ffffff"/>
             <text x="52" y="78" font-size="30" font-weight="700" fill="#10251e">Ana Oliveira</text>
@@ -134,17 +134,17 @@
     <div class="confianca-texto">
       <h2 class="cabeca" id="t-conf" data-chega>Por que você pode confiar</h2>
       <div class="motivo" data-chega style="--i:1"><h3>Só entra quem é verificada</h3><p>Antes de aparecer aqui, cada profissional mostra identidade e certificado de formação, e nossa equipe confere tudo. Todo mês, conferimos de novo.</p></div>
-      <div class="motivo" data-chega style="--i:2"><h3>Quem já contratou conta como foi</h3><blockquote><p>“Eu estava no trabalho. A Ana levou minha mãe ao exame e esperou até o fim.”</p></blockquote><p class="nota">Beatriz M., filha · avaliação fictícia</p></div>
-      <div class="motivo" data-chega style="--i:3"><h3>Você sabe quanto vai pagar</h3><p>Antes de pedir, você vê o total: quantas horas, o valor de cada hora e se o carro está incluso.</p><p class="nota">Nesta amostra, a taxa da plataforma ainda está em definição e não entra no total.</p></div>
+      <div class="motivo" data-chega style="--i:2"><h3>Quem já contratou conta como foi</h3><blockquote><p>“Eu estava no trabalho. A Ana levou minha mãe ao exame e esperou até o fim.”</p></blockquote><p class="nota">Beatriz M., filha</p></div>
+      <div class="motivo" data-chega style="--i:3"><h3>Você sabe quanto vai pagar</h3><p>Antes de pedir, você vê o total: quantas horas, o valor de cada hora e se o carro está incluso.</p></div>
     </div>
   </section>
 
-  <a class="chamada" href="#escolher">
+  <a class="chamada" href="busca.html?tarefa=consulta">
     <span class="aba vazia" aria-hidden="true"></span>
     <span class="frase">Sua mãe tem uma consulta marcada? Escolha quem vai com ela.</span>
     <svg class="seta" viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36L36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
     <span class="palavra" aria-hidden="true">Escolher</span>
-    <span class="vh">Voltar à lista de profissionais</span>
+    <span class="vh">Ver a lista de profissionais</span>
   </a>
 </main>
 
@@ -152,13 +152,11 @@
   <div class="blocos" aria-hidden="true"><span style="height:100%;background:#f28cb1" data-l="m"></span><span style="height:78%;background:#f2c94c" data-l="i"></span><span style="height:92%;background:#dce8e0" data-l="n"></span><span style="height:64%;background:#ffffff" data-l="h"></span><span style="height:86%;background:#f28cb1" data-l="a"></span><span class="espaco"></span><span style="height:72%;background:#f2c94c" data-l="c"></span><span style="height:100%;background:#dce8e0" data-l="o"></span><span style="height:76%;background:#ffffff" data-l="m"></span><span style="height:90%;background:#f28cb1" data-l="p"></span><span style="height:68%;background:#f2c94c" data-l="a"></span><span style="height:76%;background:#dce8e0" data-l="n"></span><span style="height:84%;background:#ffffff" data-l="h"></span><span style="height:100%;background:#f28cb1" data-l="i"></span><span style="height:70%;background:#f2c94c" data-l="a"></span></div>
   <p class="vh">Minha companhia</p>
   <div class="rodape-colunas">
-    <div><h2>Famílias</h2><ul><li><a href="index.html">Busca</a></li><li><a href="portfolio.html">Portfólio de Ana</a></li><li><a href="resumo.html">Resumo da solicitação</a></li></ul></div>
-    <div><h2>Profissionais</h2><ul><li><a href="login.html">Área profissional</a></li><li><a href="cadastro.html">Cadastro</a></li><li><a href="valores.html">Configurar valores</a></li><li><a href="pagamento.html">Pagamento</a></li></ul></div>
-    <div><h2>Protótipo</h2><ul><li><a href="mapa.html">Mapa das 16 telas</a></li></ul></div>
-    <div class="contato"><h2>Sobre esta amostra</h2><p>Amostra visual v0.4 para validar estilo, legibilidade, organização e tom.</p><p>Atendimento, envio de dados e cobranças não estão disponíveis.</p></div>
+    <div><h2>Famílias</h2><ul><li><a href="busca.html">Encontrar profissional</a></li><li><a href="index.html#como-contratar">Como contratar</a></li><li><a href="index.html#confianca">Por que confiar</a></li><li><a href="pedidos.html">Meus pedidos</a></li></ul></div>
+    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="cadastro.html">Quero me cadastrar</a></li></ul></div>
+    <div class="contato"><h2>Onde atendemos</h2><p>Em todo o Brasil, nas cidades com profissionais cadastradas.</p></div>
   </div>
-  <p class="creditos">Fotos: <a href="https://commons.wikimedia.org/wiki/File:Lagoa_do_Taquaral_-_panoramio_(26).jpg">“Lagoa do Taquaral - panoramio (26)”</a>, de enioprado, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Rua_Maria_Monteiro_-_Cambu%C3%AD_-_Campinas,_SP.JPG">“Rua Maria Monteiro - Cambuí - Campinas, SP”</a>, de Fasouzafreitas, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Werner_Haberkorn_-_Pra%C3%A7a_Bento_Quirino_-_Campinas_1.jpg">“Werner Haberkorn - Praça Bento Quirino - Campinas 1”</a>, de Werner Haberkorn/Fotolabor/Museu Paulista da USP, <a href="https://creativecommons.org/publicdomain/mark/1.0/">domínio público</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Mercado_Municipal_de_Campinas_1.tif">“Mercado Municipal de Campinas 1”</a>, de Bel Young, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons.</p>
-  <div class="rodape-fim"><span>Minha companhia · 2026</span><a class="botao" href="mapa.html">Ver mapa das telas</a></div>
+  <div class="rodape-fim"><span>Minha companhia · 2026</span></div>
 </footer>
 <script src="site.js" defer></script>
 </body>

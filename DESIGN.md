@@ -212,7 +212,7 @@ Verde-copa como chão, dois ipês como acento e campos, sálvia e branco como pa
 
 Página branca com margens iguais de 16 a 48px; as pastas ficam recuadas 7vw (0 no celular, onde ocupam toda a largura). Seções separadas por 96 a 160px de chão mais a altura da aba (40px; 32px no celular).
 
-- **Home, abertura:** marca à esquerda e botão "Área profissional" à direita; título alinhado à esquerda em duas linhas; frase de apoio; busca (cidade, tarefa, data) num campo sálvia com o botão rosa "Ver profissionais".
+- **Home, abertura:** respira. O título fica de 56 a 104 px abaixo do menu. A frase de apoio é curta, a 32 px do título. Abaixo dela vem uma linha folha com escudo, "Só profissionais verificadas, com documentos conferidos todo mês.". A busca fica a 56 px. No celular, as distâncias são 32, 20 e 32 px.
 - **Home, lista:** título curto e contagem ao lado; atalhos de tarefa (Todas + quatro fotos de Campinas com véu verde e duração típica) que filtram a lista; quatro cartões em grade (2 no tablet, 1 no celular). No computador, os retratos aparecem na primeira tela.
 - **Home, como contratar:** campo folha com três etapas numeradas. Cada uma tem o número numa aba ipê-amarela (trapézio da pasta), o verbo grande (Escolha, Faça o orçamento, Confirme) e uma frase curta em linguagem simples.
 - **Home, verificação:** abaixo da frase de apoio, um escudo folha com "Só profissionais verificadas." e o que é conferido. A contagem da lista diz "profissionais verificadas", e o primeiro motivo de confiança é "Só entra quem é verificada".
@@ -220,7 +220,7 @@ Página branca com margens iguais de 16 a 48px; as pastas ficam recuadas 7vw (0 
 - **Home, por que confiar:** pasta rosa com a ficha de Ana fixa à esquerda e três motivos à direita.
 - **Como funciona:** diagrama de quadradinhos (dispersos, comprimidos, ordenados em rosa) e três colunas embaixo.
 - **Portfólio:** capa dividida 50/50 (ficha sálvia com condições e foto fixa), painel verde de apresentação, orçamento só com Ana (seletor sem teto), cardápio de tarefas e de onde e quando, ladrilhos de documentos, depoimento deslocado.
-- **Resumo:** coluna de 1100px (12 × 77 + 11 × 16), atendimento em 7 colunas e valores em 5.
+- **Resumo:** coluna de 920px, com o pedido à esquerda e o total de 320px à direita.
 
 Pontos de quebra: 760px (telefone) e 1100px (tablet, onde grades de quatro viram duas e o cardápio vira uma coluna).
 
@@ -240,7 +240,7 @@ Cantos retos. A única forma é a aba trapezoidal: `clip-path: polygon(16px 0, c
 ### Buttons
 - **Primário:** trapézio rosa (`ipe-rosa`), texto verde-copa 500, 52px de altura. Pressionar reduz para 97%. Os botões do produto ficam `disabled` por contrato, com opacidade total.
 - **Foco:** anel de 3px por dentro do recorte (offset -7px), porque o `clip-path` cortaria um anel externo.
-- **Resumo:** primário quase preto (`copa`), secundário em cinza-sálvia, 40px (44px no celular); uma linha de nota explica por que o envio não funciona.
+- **Resumo:** primário quase preto (`copa`), secundário em cinza-sálvia, 40px (44px no celular).
 
 ### Cards / Containers
 - **Pasta:** campo de cor reto, padding de 40 a 72px, aba no topo. Fica no portfólio (orçamento) e na chamada final; a home não usa mais a pilha. Abas das seções não levam texto; as da capa levam o nome da seção e são links.
@@ -263,7 +263,7 @@ Topo fixo em branco: marca à esquerda, links (Encontrar profissional, Como cont
 Só o que a filha usa para comparar e escolher. Campo sálvia sem borda. No topo, retrato ilustrado num campo de 132px com recorte de aba na base. Depois: nome (destaque) com a nota à direita (estrela amarela, nota e número de avaliações), valor da hora em título, bairro em líquen e duas linhas brancas com ícone: "Mínimo de N horas" e "Veículo incluso" ou "Sem veículo" (carrinho riscado de rosa). Fecha com o botão verde-copa "Ver perfil e orçar"; perfis fora da amostra levam um botão sálvia desativado. Desconto por volume, revisão de documentos, tarefas e experiência ficam no perfil, não no cartão.
 
 ### Atalho de tarefa
-Foto de Campinas com véu verde-copa a 72% na parte de baixo, nome da tarefa, duração típica e quantas profissionais fazem. Escolhido: contorno de 4px em verde-copa. "Todas as tarefas" é um campo sálvia que fica verde-copa quando ativo.
+Os atalhos são botões de filtro simples, sem foto: o nome da tarefa e a contagem em cinza. A borda é sálvia; o botão ativo fica preenchido em verde-copa, com texto branco. No computador ficam lado a lado numa linha que quebra se precisar. No celular, "Todas as tarefas" ocupa a largura toda e os outros ficam em duas colunas. Saíram as fotos de Campinas, o véu escuro e a duração típica.
 
 ### Orçamento por horas
 A peça viva do perfil. Seletor de horas sem teto num campo ipê-amarelo: botões trapezoidais verde-copa de menos e mais, número grande editável, atalhos de 2, 4, 6, 8 e 12 h e uma fileira de blocos com recorte de aba, um por hora (até 48, depois "+ N h"), brancos no valor cheio e verde-copa no valor com desconto. Abaixo do mínimo, o menos trava e o número é corrigido com aviso. Ao lado, o quadro verde-copa mostra o total em título, a conta ("4 horas × R$ 60,00 por hora"), o mínimo, o desconto (com a economia, quando vale) e o veículo, com um carrinho amarelo que ganha um risco rosa quando não está incluso. Sem script, o campo continua editável e o quadro mostra o exemplo de 4 horas.
@@ -277,8 +277,87 @@ Desenho de uma folha levemente girada com nome, linhas de documento e carimbo re
 ### Contagem da revisão
 Texto calculado a cada visita ("Faltam 12 dias…") a partir de 01/11/2026, com frase fixa como reserva sem script.
 
-### Faixa do dia (resumo)
-Trilho de 8h a 18h (disponibilidade de Ana) com a visita das 9h às 13h em `app-dado`.
+### Listagem de profissionais (busca.html)
+É uma tela de trabalho (estilo livro-caixa) dentro do topo do site, e responde a uma pergunta: quem pode ir com minha mãe nesse dia, e quanto custa a hora?
+- **Brasil todo:** sem cidade, o título é "Profissionais em todo o Brasil" e a frase de achado conta as cidades. O campo de cidade sugere as cidades atendidas. Cada linha mostra "bairros · Cidade, UF". O filtro de bairro fica inativo ("Escolha a cidade antes") até haver uma cidade.
+- **Topo:** a busca da home (cidade, tarefa, data) vale para a lista inteira. Quando ela sai da tela, aparece a busca compacta no topo.
+- **Título e ordenação:** título de 32 px "Profissionais em {cidade}" (ou "em todo o Brasil"), com uma frase que diz quantas estão livres no dia e a faixa de valor. "Ordenar por" fica à direita.
+- **Filtros (sálvia, 280 px):**
+  - bairro da mãe;
+  - valor da hora: um controle deslizante de mínimo e máximo (degraus de R$ 5, limites tirados dos dados) sobre barras que mostram quantas profissionais cobram cada valor; as barras dentro da faixa ficam folha;
+  - mulher ou homem;
+  - veículo incluso.
+  Cada opção mostra quantas sobrariam se só ela mudasse. Os filtros não repetem a cidade, a tarefa nem a data da busca do topo.
+- **Turnos:** quatro cartões com contagem que filtram. O escolhido ganha borda e fundo folha.
+- **Linhas da lista:** retrato de 112 px, nome com a nota, bairros, "Livre na quarta, 28/10, de manhã" com ponto folha, mínimo e veículo. O valor da hora fica sempre na borda direita, com o botão logo abaixo.
+- **Cor:** só nos dados, ou seja, a disponibilidade e o turno escolhido.
+- **Abaixo de 1000 px:** os filtros viram uma folha aberta pelo botão "Filtros", que mostra quantos filtros estão ativos. No celular, os turnos rolam na horizontal.
+- **Dia do acompanhamento** (antes, só "Data"):
+  - Sem dia escolhido, um aviso pergunta "Para qual dia?" e oferece atalhos para os próximos seis dias, cada um com quantas profissionais estão livres, além de "Outro dia", que abre o calendário. No celular aparecem três atalhos e "Outro dia".
+  - Com dia escolhido, a frase de achado mostra o dia e um "Trocar o dia".
+  - Mudar a data aplica na hora, sem precisar apertar Buscar.
+  - Na busca compacta do celular, o dia aparece junto da tarefa.
+- **Sem resultado:** cidade sem atendimento, dia sem ninguém livre ou filtros demais. Cada caso tem uma frase e uma ação.
+- **URL:** filtros e ordenação ficam na URL.
+
+### Caminhos da home para a listagem
+- Botão da busca: "Ver profissionais", que envia cidade, tarefa e dia.
+- Link "Ou veja todos os profissionais de Campinas", abaixo da busca.
+- Link "Ver todos", no cabeçalho da lista.
+- Botão "Ver todos os profissionais", abaixo dos cartões, com texto fixo.
+- Botão rosa "Escolher profissional", no fim de "Como contratar".
+- A chamada final e o menu.
+
+### Área profissional (profissional.html)
+Página para quem quer trabalhar acompanhando pessoas idosas.
+- **Banner:** campo verde-copa dentro das margens. À esquerda, "Uma nova renda para quem cuida", a frase de apoio, o botão rosa "Quero me cadastrar" e o link "Já tenho cadastro: entrar". À direita, a camada da marca: quatro pastas empilhadas (rosa, ipê, sálvia, folha), cada uma com sua aba trapezoidal. Na pasta da frente fica o pedido como ele chega, com quem pede, a tarefa, o dia, as horas × o valor, o total, "Aceitar" e "Propor mudança".
+- **Quanto você pode ganhar:** calculadora em campo sálvia. O total de 4 semanas vem primeiro; abaixo, dois controles deslizantes, valor da hora (R$ 70 a R$ 150) e horas por semana (2 a 40). Uma nota diz que o valor é antes da taxa da plataforma.
+- **Como funciona:** título à esquerda e três etapas com o número na aba ipê.
+- **Quem decide é você:** campo ipê com três linhas (preço, agenda, perfil). Cada linha traz um recorte da tela de perfil da profissional.
+- **Final:** chamada rosa "Cadastrar".
+- Todos os links "Área profissional" levam para esta página.
+
+### Lista da home
+Os atalhos de tarefa e o link "Ver todos" dividem a mesma linha, com o link à direita. A contagem "4 profissionais verificadas…" saiu da tela e ficou só para leitores de tela.
+
+### Resumo do pedido (resumo.html, enxuto)
+Tem só o essencial para enviar o pedido.
+- **Topo:** link "Perfil de Ana", título "Revise o pedido" e uma frase.
+- **Cartão do pedido:** a profissional (retrato, nome, "Profissional verificada") e cinco linhas: tarefa, quando, quem vai, saída e volta, recado para a profissional.
+- **Cartão do total**, que fica fixo ao rolar: o total e a conta (horas × valor, veículo incluso), seguidos de um de três estados:
+  - **Sem conta:** "Entrar para enviar", "Primeira vez aqui? Criar conta" e uma nota.
+  - **Com conta:** "Enviando como Mariana Costa. Sair", "Enviar pedido" e a nota de aceite.
+  - **Enviado:** "Pedido enviado para Ana", com o e-mail da resposta.
+  "Mudar as horas" fica abaixo e some depois do envio.
+- **Entrar (entrar.html):** cartão de 480 px com "Entrar" e "Criar conta" lado a lado.
+  - Para entrar: e-mail e senha.
+  - Para criar conta: também nome e celular com WhatsApp.
+  - Os erros aparecem abaixo de cada campo.
+  - O botão diz "Entrar e voltar ao pedido" quando há um pedido esperando.
+- **Saíram:** a trilha, as etapas, a faixa de disponibilidade, a barra de composição, "Quem contrata", o tempo mínimo, o aviso de desconto e "Depois do envio".
+
+### Telas de gestão (painel.html e pedidos.html, gestao.css)
+Seguem o estilo livro-caixa do resumo: chão sálvia, cartões brancos e coluna de 1100 px, com 2/3 para o conteúdo principal e 360 px para a lateral.
+- **Pedidos que pedem ação:** cada um traz quem pede, a tarefa, o dia, as horas × o valor e o total. Os botões são um primário, um secundário e "Recusar" como link. Recusar pede confirmação. O resultado aparece no próprio pedido.
+- **Proposta:** na profissional, campos de início e horas, mais um recado. Na família, "Você pediu", riscado, ao lado de "propôs", em verde-claro.
+- **Agenda e anteriores:** linhas com dia, horário, o quê e o valor ou a ação, sempre nas mesmas colunas.
+- **O mês:** o número grande, depois barras por semana (feito em folha, confirmado em cinza, na mesma escala) e o total com os confirmados.
+- **Selos:** pequenos e em tom claro (cinza, rosa para prazo, verde para "No ar").
+- **Estrelas:** desenhadas em SVG.
+- **Sem entrada:** um cartão de entrar no lugar da tela.
+
+### Ganhos (ganhos.html)
+Extrato para a profissional não precisar do suporte.
+- **Título:** a frase diz quanto já caiu e o próximo depósito.
+- **"Como chegamos ao valor":** a conta do mês linha por linha (atendimentos, desconto, cancelamento, taxa e "Você recebe"), cada uma com a regra em cinza. Embaixo, três caixas: "Já na sua conta", "Programado" e "Previsto".
+- **Próximos depósitos:** dia e valor, com o motivo, e a chave Pix.
+- **Extrato:** tabela arejada, com 20 px por célula e no máximo uma linha de apoio em cada uma. As colunas são atendimento, serviço com a família, pagamento ("Pix", "Cartão, 3x" com o valor das parcelas), valor, taxa, o que ela recebe e o depósito.
+  - Os filtros de período são "Último dia", "7 dias", "30 dias" (o padrão), "365 dias" e "Todo o período". Eles valem só para atendimentos que já aconteceram e mudam também "Como chegamos ao valor" e o total da tabela, que batem entre si.
+  - Os atendimentos que ainda vão acontecer ficam em "Próximos depósitos".
+  - "Ver conta" abre a soma e o caminho do dinheiro.
+  - "Baixar extrato" baixa o período escolhido.
+  - No celular, a tabela vira lista.
+- **Dúvidas sobre pagamento:** seis perguntas que se abrem e um e-mail de ajuda com o assunto já preenchido.
 
 ## Do's and Don'ts
 
