@@ -265,3 +265,10 @@
   .segmentos { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
   .segmentos button { flex: none; }
 }
+
+/* detalhe da linha: duas caixas brancas lado a lado, o texto quebra dentro delas */
+.extrato .ex-detalhe td { white-space: normal; }
+.det { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 12px; }
+.det-caixa { min-width: 0; padding: 16px 18px; border-radius: 6px; background: var(--surface); }
+.det-tempo li { grid-template-columns: 48px minmax(0, 1fr); line-height: 21px; }
+@media (max-width: 640px) { .det { grid-template-columns: 1fr; } }

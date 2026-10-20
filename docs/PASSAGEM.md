@@ -268,3 +268,8 @@ O usuário preferiu a tabela à lista em frases, mas com mais respiro e com filt
 - **Exemplo:** ganhou meses anteriores (setembro e julho de 2026, março de 2026, novembro e agosto de 2025), para os filtros longos terem conteúdo.
 - **Somas conferidas por período:** 61,60 / 369,60 / 1.100,00 / 1.839,20 / 1.962,40.
 - **Modo API:** não filtra mais só o mês corrente, porque usa os mesmos períodos.
+
+## Detalhe do extrato e o termo do cancelamento — 20/10/2026
+- **Texto saindo da caixa:** era um white-space: nowrap da primeira célula. O detalhe agora são duas caixas brancas lado a lado ("A conta" e "O caminho do dinheiro"), uma embaixo da outra no celular.
+- **Linha do tempo mais curta:** "Você aceitou o pedido.", "A família pagou R$ X por Pix.", "Atendimento feito: 9h às 11h." e "Caiu R$ X no seu Pix." ou "R$ X vai cair no seu Pix.".
+- **"Em cima da hora" saiu da tela.** No lugar entrou "Cancelado com menos de 24 h de antecedência" (no resumo, "você recebe metade do valor"). No detalhe e nos depósitos ficou "cancelado com menos de 24 h".

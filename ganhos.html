@@ -8,7 +8,7 @@
 <title>Ganhos · Área profissional · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="resumo.css?v=6">
-<link rel="stylesheet" href="gestao.css?v=11">
+<link rel="stylesheet" href="gestao.css?v=12">
 </head>
 <body class="pagina-gestao">
 
@@ -76,7 +76,7 @@
       <details><summary>Quando o dinheiro cai na minha conta?</summary><p>Dois dias úteis depois do atendimento, por Pix, na chave cadastrada. Fins de semana e feriados não contam. Em outubro, o feriado de 12/10 empurrou um depósito de 13 para 14/10.</p></details>
       <details><summary>Por que recebo menos do que a família pagou?</summary><p>A família paga o valor do serviço: as horas vezes o seu valor da hora, já com o seu desconto, se houver. Desse valor sai a taxa da plataforma, de 12%. O resto é seu.</p></details>
       <details><summary>A família parcelou no cartão. Eu recebo parcelado?</summary><p>Não. Você recebe o valor inteiro de uma vez, no prazo normal. As parcelas e os juros, se houver, ficam entre a família e o cartão e não mudam o que você recebe.</p></details>
-      <details><summary>E se a família cancelar?</summary><p>Com 24 horas ou mais de antecedência, o pedido é cancelado sem custo e não entra no extrato. Com menos de 24 horas, você recebe 50% do valor do serviço, e a taxa vale só sobre essa metade.</p></details>
+      <details><summary>E se a família cancelar?</summary><p>Se cancelar com 24 horas ou mais de antecedência, não há custo e o pedido não entra no extrato. Se cancelar com menos de 24 horas, você recebe metade do valor do serviço, e a taxa vale só sobre essa metade.</p></details>
       <details><summary>De onde sai o desconto para mais horas?</summary><p>Do seu valor da hora. É o desconto que você mesma definiu no perfil: a partir de 4 horas, a hora sai por R$ 60 em vez de R$ 70. Ele aparece separado no extrato para você ver quanto deixou de cobrar.</p></details>
       <details><summary>Como guardo o comprovante do mês?</summary><p>Use “Baixar extrato”. O arquivo traz cada atendimento com data, família, forma de pagamento, valor, taxa, o que você recebeu e a data do depósito.</p></details>
     </div>
@@ -202,7 +202,7 @@
     // próximos depósitos e a frase do topo não dependem do período
     const proximos = linhas.filter((l) => l.estado !== 'recebido').sort((a, b) => a.deposito.localeCompare(b.deposito));
     document.querySelector('[data-depositos]').innerHTML = proximos.length
-      ? proximos.map((l) => `<li><span class="dp-dia">${l.concluir ? 'Depois de você concluir' : `${maiusc(quando(l.deposito))}${quando(l.deposito).includes(',') ? '' : `, ${dd(l.deposito)}`}`}</span><span class="dp-oque">${esc(l.tarefa)}<small>${esc(l.familia)} · ${l.concluir ? `atendimento de ${dd(l.dia)} ainda não marcado como feito` : l.estado === 'previsto' ? `depois do atendimento de ${dd(l.dia)}` : l.cancelado ? 'cancelamento em cima da hora' : `atendimento de ${dd(l.dia)}`}</small></span><span class="dp-val">${brl(l.liquido)}</span></li>`).join('')
+      ? proximos.map((l) => `<li><span class="dp-dia">${l.concluir ? 'Depois de você concluir' : `${maiusc(quando(l.deposito))}${quando(l.deposito).includes(',') ? '' : `, ${dd(l.deposito)}`}`}</span><span class="dp-oque">${esc(l.tarefa)}<small>${esc(l.familia)} · ${l.concluir ? `atendimento de ${dd(l.dia)} ainda não marcado como feito` : l.estado === 'previsto' ? `depois do atendimento de ${dd(l.dia)}` : l.cancelado ? 'cancelado com menos de 24 h' : `atendimento de ${dd(l.dia)}`}</small></span><span class="dp-val">${brl(l.liquido)}</span></li>`).join('')
       : '<li class="vazio">Nenhum depósito programado. Os próximos aparecem quando você tiver atendimentos confirmados.</li>';
     const prox = proximos.find((l) => !l.concluir);
     const aConcluir = linhas.filter((l) => l.concluir).length;
@@ -237,7 +237,7 @@
       document.querySelector('[data-conta-mes]').innerHTML = [
         ['Atendimentos feitos', `${normais.length} ${normais.length === 1 ? 'atendimento' : 'atendimentos'}, ${horas} h${valores.length === 1 ? ` × ${brl(valores[0])}` : ''}`, brl(brutoNormais), ''],
         descontos ? ['Desconto que você oferece', dados.desconto || 'para pedidos mais longos', `− ${brl(descontos)}`, ''] : null,
-        cancelados.length ? ['Cancelamento em cima da hora', `${cancelados.length} ${cancelados.length === 1 ? 'pedido cancelado' : 'pedidos cancelados'} com menos de 24 h: você recebe 50%`, `+ ${brl(cancel)}`, ''] : null,
+        cancelados.length ? ['Cancelado com menos de 24 h de antecedência', `${cancelados.length} ${cancelados.length === 1 ? 'pedido' : 'pedidos'}: você recebe metade do valor`, `+ ${brl(cancel)}`, ''] : null,
         ['Taxa da plataforma', `12% do valor do serviço (${brl(centavos(brutoNormais - descontos + cancel))})`, `− ${brl(taxa)}`, ''],
         ['Você recebe', `pelos atendimentos ${ROTULO[periodo]}`, brl(liquido), 'total'],
       ].filter(Boolean).map(([t, s2, v, c]) => `<div class="${c}"><dt>${t}<small>${s2}</small></dt><dd>${v}</dd></div>`).join('');
@@ -260,18 +260,18 @@
         </tr>
         <tr class="ex-detalhe" id="det-${esc(l.id)}" hidden><td colspan="8">
           <div class="det">
-            <div><h3>A conta</h3><dl class="det-conta">
+            <div class="det-caixa"><h3>A conta</h3><dl class="det-conta">
               <div><dt>${l.horas} horas de ${brl(l.valorHora)}</dt><dd>${brl(l.base)}</dd></div>
               ${l.desconto ? `<div><dt>Seu desconto para 4 h ou mais</dt><dd>− ${brl(l.desconto)}</dd></div>` : ''}
-              ${l.cancelado ? `<div><dt>Cancelado em cima da hora (metade)</dt><dd>− ${brl(l.base - l.servico)}</dd></div>` : ''}
+              ${l.cancelado ? `<div><dt>Cancelado com menos de 24 h (fica a metade)</dt><dd>− ${brl(l.base - l.servico)}</dd></div>` : ''}
               <div><dt>Taxa da plataforma (12%)</dt><dd>− ${brl(l.taxa)}</dd></div>
               <div class="total"><dt>Fica para você</dt><dd>${brl(l.liquido)}</dd></div>
             </dl></div>
-            <div><h3>O caminho do dinheiro</h3><ol class="det-tempo">
-              ${l.aceito ? `<li><span>${dd(l.aceito)}</span>Você aceitou o pedido de ${esc(l.familia)}, para ${esc(l.para)}.</li>` : ''}
-              ${l.pago ? `<li><span>${dd(l.pago)}</span>A família pagou ${brl(l.cancelado ? l.base : l.servico)} ${l.pag.startsWith('Pix') ? 'por Pix' : l.parcelas ? `no cartão, em ${l.parcelas} vezes. Você recebe tudo de uma vez` : 'no cartão, à vista'}.</li>` : ''}
-              ${l.cancelado ? `<li><span>${dd(l.cancelado)}</span>A família cancelou a menos de 24 h do atendimento e recebeu ${brl(l.base - l.servico)} de volta.</li>` : `<li><span>${dd(l.dia)}</span>${l.estado === 'previsto' ? 'Atendimento marcado' : 'Atendimento feito'}, das ${l.inicio}h às ${l.inicio + l.horas}h.</li>`}
-              ${l.concluir ? `<li class="previsto"><span>Agora</span>Marque o atendimento como feito no <a href="painel.html">painel</a>. O depósito sai dois dias úteis depois.</li>` : `<li class="${l.estado}"><span>${dd(l.deposito)}</span>${l.estado === 'recebido' ? `Depósito de ${brl(l.liquido)} na sua chave Pix.` : `Depósito de ${brl(l.liquido)} programado para a sua chave Pix.`}</li>`}
+            <div class="det-caixa"><h3>O caminho do dinheiro</h3><ol class="det-tempo">
+              ${l.aceito ? `<li><span>${dd(l.aceito)}</span>Você aceitou o pedido.</li>` : ''}
+              ${l.pago ? `<li><span>${dd(l.pago)}</span>A família pagou ${brl(l.cancelado ? l.base : l.servico)} ${l.pag.startsWith('Pix') ? 'por Pix' : l.parcelas ? `no cartão, em ${l.parcelas}x. Você recebe tudo de uma vez` : 'no cartão, à vista'}.</li>` : ''}
+              ${l.cancelado ? `<li><span>${dd(l.cancelado)}</span>A família cancelou com menos de 24 h. Metade voltou para ela.</li>` : `<li><span>${dd(l.dia)}</span>${l.estado === 'previsto' ? 'Atendimento marcado' : 'Atendimento feito'}: ${l.inicio}h às ${l.inicio + l.horas}h.</li>`}
+              ${l.concluir ? `<li class="previsto"><span>Agora</span>Marque como feito no <a href="painel.html">painel</a> para receber.</li>` : `<li class="${l.estado}"><span>${dd(l.deposito)}</span>${l.estado === 'recebido' ? `Caiu ${brl(l.liquido)} no seu Pix.` : `${brl(l.liquido)} vai cair no seu Pix.`}</li>`}
             </ol></div>
           </div>
         </td></tr>`).join('') : `<tr><td colspan="8" class="ex-vazio">Nenhum atendimento ${ROTULO[periodo]}.</td></tr>`;
