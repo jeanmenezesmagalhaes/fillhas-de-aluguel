@@ -43,6 +43,13 @@
       "when": 1792539470268,
       "tag": "0005_tarefas_por_profissional",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792539965933,
+      "tag": "0006_links_agenda",
+      "breakpoints": true
     }
   ]
 }

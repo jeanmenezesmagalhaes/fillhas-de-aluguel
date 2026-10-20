@@ -54,6 +54,14 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
   - Ficam registradas três etapas, que o bônus pode usar quando for definido: cadastro, aprovação (para profissionais) e primeiro serviço feito.
   - Quem indicou vê só o primeiro nome com a inicial de cada pessoa indicada e a etapa em que ela está.
   - O bônus em si (valor, quando paga, limites) ainda não existe.
+- **Agenda por assinatura (iCalendar):**
+  - Cada conta tem um link `.ics`, que o Google Agenda, o iPhone ou o Outlook assinam. O arquivo é aberto sem sessão: o link é a chave.
+  - O token tem 256 bits e sai de um HMAC com `SEGREDO_AGENDA` e um número de versão. Por isso o link é sempre o mesmo; gerar um novo sobe a versão e o antigo para de funcionar.
+  - O banco guarda só o hash do token, e o token não aparece no log.
+  - O arquivo traz os serviços confirmados ou já feitos da conta, dos dois lados, dos últimos 30 dias em diante. Cancelado e recusado somem; troca de horário aceita muda a data.
+  - Cada evento tem UID estável, lembrete 1 hora antes e não traz telefone nem CPF.
+  - Limite de 60 leituras por minuto por link.
+  - Em produção, sem `SEGREDO_AGENDA`, as rotas respondem 503. Trocar o segredo muda todos os links.
 - **Mensagens:** a interface `Mensageiro` (`src/mensagens.ts`) envia e-mail e WhatsApp. Fora de produção, a mensagem só vai para o log do servidor. Em produção sem provedor, o envio responde 503.
 - **Arquivos:** a interface `Armazenamento` (`src/armazenamento.ts`). Em desenvolvimento, os arquivos ficam em disco (`api/.data/arquivos`). Em produção, precisa de um bucket privado (S3 ou R2).
 - **Tarefas e mínimo de horas:**
@@ -99,6 +107,9 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET | `/api/admin/qualificacoes` | administração: cursos esperando validação |
 | GET | `/api/admin/qualificacoes/:id/arquivo` | administração: baixa o comprovante |
 | POST | `/api/admin/qualificacoes/:id/aprovar` · `recusar` | administração (`recusar` pede `motivo`) |
+| GET | `/api/agenda/link` | link de assinatura da agenda (`url` e `webcal`) |
+| POST | `/api/agenda/link/novo` | troca o link; o antigo deixa de funcionar |
+| GET | `/api/agenda/:token.ics` | público com o token: o arquivo da agenda |
 | GET | `/api/indicacoes/eu` | código, links, resumo e pessoas indicadas |
 | GET | `/api/indicacoes/:codigo` | público: de quem é o código ("Ana O.") |
 | GET | `/api/admin/fila` | administração: lista de espera em ordem |

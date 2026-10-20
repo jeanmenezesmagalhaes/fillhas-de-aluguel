@@ -367,3 +367,15 @@ export const tarefasProfissional = pgTable(
     index('tarefas_por_tipo').on(t.tipo),
   ],
 );
+
+// Link de assinatura da agenda (iCalendar). O token sai de um segredo do servidor com a
+// versão, então a mesma conta recebe sempre o mesmo link; gerar um novo sobe a versão e
+// o antigo deixa de valer. No banco fica só o hash, para achar a conta pelo link.
+export const linksAgenda = pgTable('links_agenda', {
+  usuarioId: uuid('usuario_id')
+    .primaryKey()
+    .references(() => usuarios.id, { onDelete: 'cascade' }),
+  versao: integer('versao').notNull().default(1),
+  tokenHash: text('token_hash').notNull().unique(),
+  criadoEm: quando('criado_em').notNull().defaultNow(),
+});
