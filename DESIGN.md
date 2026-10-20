@@ -1,6 +1,6 @@
 ---
 name: Minha companhia
-description: Acompanhantes para o pai ou a mãe idoso em Campinas; a pasta de documentos revisada todo mês como forma única do sistema, em fundo claro.
+description: Profissionais para acompanhar o pai ou a mãe idoso em Campinas; a pasta de documentos revisada todo mês como forma única do sistema, em fundo claro.
 colors:
   chao: "#ffffff"
   copa: "#10251e"
@@ -143,7 +143,7 @@ components:
 
 **Creative North Star: "A pasta de documentos"**
 
-A pessoa que decide é a filha que contrata uma acompanhante para levar a mãe ou o pai a uma consulta, ao banco ou ao mercado, quase sempre pelo celular e de dia. O que separa este serviço dos outros é que os documentos de cada profissional são revisados todo mês. A pasta onde eles ficam deu a forma do sistema: a aba trapezoidal recorta fotos, retratos, botões e blocos. Na home ela ficou só como detalhe: a validação com uma usuária mostrou que a pilha de pastas confundia e escondia o essencial, que ali se escolhe e se contrata uma profissional. A home agora é um marketplace: título que diz isso, busca, atalhos de tarefa com foto e a lista de acompanhantes com preço, mínimo, veículo e avaliações já na primeira tela.
+A pessoa que decide é a filha que contrata uma profissional para levar a mãe ou o pai a uma consulta, ao banco ou ao mercado, quase sempre pelo celular e de dia. O que separa este serviço dos outros é que os documentos de cada profissional são revisados todo mês. A pasta onde eles ficam deu a forma do sistema: a aba trapezoidal recorta fotos, retratos, botões e blocos. Na home ela ficou só como detalhe: a validação com uma usuária mostrou que a pilha de pastas confundia e escondia o essencial, que ali se escolhe e se contrata uma profissional. A home agora é um marketplace: título que diz isso, busca, atalhos de tarefa com foto e a lista de profissionais com preço, mínimo, veículo e avaliações já na primeira tela.
 
 As cores vêm de Campinas: o verde-escuro da copa das tipuanas e do Bosque dos Jequitibás como tinta e campo forte, os dois ipês da cidade (o rosa para a ação, o amarelo para o orçamento) e a sálvia como papel. O chão é branco: a filha lê preço e condições de dia, no celular, e o fundo escuro anterior gritava demais para esse momento. Fotos reais da cidade, de acervos abertos e com crédito no rodapé, mostram onde o cuidado acontece; pessoas continuam sendo ilustração. A tipografia é uma família só, Jost, em caixa normal, com o título da capa em peso 700.
 
@@ -155,7 +155,7 @@ Aplicado hoje em `index.html`, `portfolio.html` (`site.css`, `site.js`) e `resum
 
 **Key Characteristics:**
 - Chão branco e tinta verde-copa; campos de cor separam as seções.
-- Home de marketplace: lista de cartões de acompanhantes logo abaixo da busca.
+- Home de marketplace: lista de cartões de profissionais logo abaixo da busca.
 - O orçamento é a peça viva do perfil: seletor de horas sem teto, com mínimo, desconto e veículo.
 - Uma forma só (a aba), em escalas muito diferentes: capa, seções, fotos, botões, marcadores.
 - Jost em cinco tamanhos: display, título, destaque, corpo, nota.
@@ -212,9 +212,11 @@ Verde-copa como chão, dois ipês como acento e campos, sálvia e branco como pa
 
 Página branca com margens iguais de 16 a 48px; as pastas ficam recuadas 7vw (0 no celular, onde ocupam toda a largura). Seções separadas por 96 a 160px de chão mais a altura da aba (40px; 32px no celular).
 
-- **Home, abertura:** marca à esquerda e botão "Área profissional" à direita; título alinhado à esquerda em duas linhas; frase de apoio; busca (cidade, tarefa, data) num campo sálvia com o botão rosa "Ver acompanhantes".
+- **Home, abertura:** marca à esquerda e botão "Área profissional" à direita; título alinhado à esquerda em duas linhas; frase de apoio; busca (cidade, tarefa, data) num campo sálvia com o botão rosa "Ver profissionais".
 - **Home, lista:** título curto e contagem ao lado; atalhos de tarefa (Todas + quatro fotos de Campinas com véu verde e duração típica) que filtram a lista; quatro cartões em grade (2 no tablet, 1 no celular). No computador, os retratos aparecem na primeira tela.
-- **Home, como contratar:** campo folha com três verbos grandes (Escolha, Faça o orçamento, Confirme).
+- **Home, como contratar:** campo folha com três etapas numeradas. Cada uma tem o número numa aba ipê-amarela (trapézio da pasta), o verbo grande (Escolha, Faça o orçamento, Confirme) e uma frase curta em linguagem simples.
+- **Home, verificação:** abaixo da frase de apoio, um escudo folha com "Só profissionais verificadas." e o que é conferido. A contagem da lista diz "profissionais verificadas", e o primeiro motivo de confiança é "Só entra quem é verificada".
+- **Home, história:** os textos seguem a filha do problema à decisão. A abertura começa por "Para os dias em que você não pode ir junto". A lista mostra quem pode ir. As três etapas terminam em "Pronto: sua mãe já tem companhia". "Por que você pode confiar" traz verificação, a voz de quem já contratou e "Você sabe quanto vai pagar". A chamada final volta à consulta marcada. As notas de amostra ficam em texto pequeno e cinza, sem contagem de dias.
 - **Home, por que confiar:** pasta rosa com a ficha de Ana fixa à esquerda e três motivos à direita.
 - **Como funciona:** diagrama de quadradinhos (dispersos, comprimidos, ordenados em rosa) e três colunas embaixo.
 - **Portfólio:** capa dividida 50/50 (ficha sálvia com condições e foto fixa), painel verde de apresentação, orçamento só com Ana (seletor sem teto), cardápio de tarefas e de onde e quando, ladrilhos de documentos, depoimento deslocado.
@@ -255,13 +257,13 @@ Cantos retos. A única forma é a aba trapezoidal: `clip-path: polygon(16px 0, c
 Direção "Lado a lado", escolhida em 20/10/2026 entre três (`docs/marca/direcoes.html`): duas abas de pasta que se apoiam, a primeira em ipê-rosa e a segunda em verde-copa (branca sobre fundo escuro), seguidas de "minha companhia" em Jost 500, minúsculas. Símbolo de 32 × 22px no topo, com 10px até o nome. Favicon em `favicon.svg`: o símbolo sobre um quadrado sálvia com cantos de 14px. No rodapé, o nome volta construído em blocos coloridos (MINHA / COMPANHIA no celular).
 
 ### Menu e busca que acompanham a rolagem
-Topo fixo em branco: marca à esquerda, links (Acompanhantes, Como contratar, Por que confiar, Meu pedido) e o botão sálvia "Área profissional". Some ao rolar para baixo e volta ao rolar para cima (transformação de 320ms). Na home, quando a busca grande sai da tela, o topo traz junto uma busca compacta numa faixa sálvia (no celular, só tarefa e botão). Abaixo de 900px, os links viram um botão "Menu" que abre a lista por cima da página, com sombra por ser uma camada que flutua. No resumo, o mesmo menu em estilo de tela de trabalho, com uma faixa de caminho abaixo ("Perfil de Ana / Pedido para Helena Costa").
+Topo fixo em branco: marca à esquerda, links (Encontrar profissional, Como contratar, Por que confiar, Meu pedido) e o botão sálvia "Área profissional". Some ao rolar para baixo e volta ao rolar para cima (transformação de 320ms). Na home, quando a busca grande sai da tela, o topo traz junto uma busca compacta numa faixa sálvia (no celular, só tarefa e botão). Abaixo de 900px, os links viram um botão "Menu" que abre a lista por cima da página, com sombra por ser uma camada que flutua. No resumo, o mesmo menu em estilo de tela de trabalho, com uma faixa de caminho abaixo ("Perfil de Ana / Pedido para Helena Costa").
 
-### Cartão de acompanhante
-Campo sálvia sem borda. No topo, retrato ilustrado num campo de 150px com recorte de aba na base. Depois: nome, valor da hora em título, valor com desconto (ou "Mesmo valor em qualquer duração"), bairro e anos, mínimo, veículo (carrinho verde, ou riscado de rosa quando não há), nota, data da revisão de documentos, tarefas que faz, um quadro branco com o exemplo de 4 horas já com mínimo e desconto, e o botão verde-copa "Ver perfil e orçar".
+### Cartão de profissional
+Só o que a filha usa para comparar e escolher. Campo sálvia sem borda. No topo, retrato ilustrado num campo de 132px com recorte de aba na base. Depois: nome (destaque) com a nota à direita (estrela amarela, nota e número de avaliações), valor da hora em título, bairro em líquen e duas linhas brancas com ícone: "Mínimo de N horas" e "Veículo incluso" ou "Sem veículo" (carrinho riscado de rosa). Fecha com o botão verde-copa "Ver perfil e orçar"; perfis fora da amostra levam um botão sálvia desativado. Desconto por volume, revisão de documentos, tarefas e experiência ficam no perfil, não no cartão.
 
 ### Atalho de tarefa
-Foto de Campinas com véu verde-copa a 72% na parte de baixo, nome da tarefa, duração típica e quantas acompanhantes fazem. Escolhido: contorno de 4px em verde-copa. "Todas as tarefas" é um campo sálvia que fica verde-copa quando ativo.
+Foto de Campinas com véu verde-copa a 72% na parte de baixo, nome da tarefa, duração típica e quantas profissionais fazem. Escolhido: contorno de 4px em verde-copa. "Todas as tarefas" é um campo sálvia que fica verde-copa quando ativo.
 
 ### Orçamento por horas
 A peça viva do perfil. Seletor de horas sem teto num campo ipê-amarelo: botões trapezoidais verde-copa de menos e mais, número grande editável, atalhos de 2, 4, 6, 8 e 12 h e uma fileira de blocos com recorte de aba, um por hora (até 48, depois "+ N h"), brancos no valor cheio e verde-copa no valor com desconto. Abaixo do mínimo, o menos trava e o número é corrigido com aviso. Ao lado, o quadro verde-copa mostra o total em título, a conta ("4 horas × R$ 60,00 por hora"), o mínimo, o desconto (com a economia, quando vale) e o veículo, com um carrinho amarelo que ganha um risco rosa quando não está incluso. Sem script, o campo continua editável e o quadro mostra o exemplo de 4 horas.

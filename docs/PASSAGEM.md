@@ -32,3 +32,26 @@ Validação com usuária: a lógica de pastas confundiu e não ficava claro que 
 
 ## Menu, busca no topo e marca Minha companhia — 20/10/2026
 Menu de navegação (Acompanhantes, Como contratar, Por que confiar, Meu pedido, Área profissional) na home, no portfólio e no resumo; no celular vira botão "Menu". Na home, o topo some ao rolar para baixo e volta ao rolar para cima, trazendo uma busca compacta quando a busca grande já saiu da tela. Nome definido pelo usuário: Minha companhia. Três direções de logo em docs/marca/direcoes.html; escolhida a A (Lado a lado: duas abas de pasta que se apoiam). Aplicada em todas as telas, inclusive as que ainda usam styles.css (valores, login, cadastro, pagamento, mapa), além de favicon.svg e da marca em blocos do rodapé.
+
+## Cartões da home simplificados — 20/10/2026
+O usuário achou os cartões poluídos. Ficaram só nome, nota, valor da hora, bairro, mínimo e veículo, mais o botão. Saíram do cartão: data de revisão de documentos, lista de tarefas, linha de desconto, exemplo de 4 horas e anos de experiência (continuam no perfil).
+
+## Como contratar e verificação na home — 20/10/2026
+Textos das três etapas reescritos em linguagem simples, cada uma com número (1, 2, 3) numa aba ipê-amarela. A home agora diz que só há profissionais verificadas: uma linha com escudo abaixo da frase de apoio, a contagem da lista ("4 acompanhantes verificadas") e o primeiro motivo de "Por que confiar" ("Só entra quem é verificada"). Corrigido o texto que dizia que a data de revisão aparece no cartão; agora diz que aparece no perfil.
+
+## Textos da home pensados para a filha — 20/10/2026
+A home inteira foi reescrita como uma história para quem contrata:
+- Abertura: "Para os dias em que você não pode ir junto…".
+- Botão do cartão: "Conhecer a Ana".
+- A nota da lista explica o que aparece no perfil.
+- Etapas: "Diga quanto tempo a tarefa deve levar", e a terceira termina em "Pronto: sua mãe já tem companhia".
+- "Por que você pode confiar": "Só entra quem é verificada", "Quem já contratou conta como foi" e "Você sabe quanto vai pagar". A taxa em definição ficou numa nota de amostra.
+
+A contagem "Faltam N dias para a próxima revisão de Ana" saiu da home e do site.js; a contagem do portfólio continua. Frases novas a confirmar com o cliente.
+
+## Fim do termo "acompanhante" — 20/10/2026
+O usuário apontou que "acompanhante" remete a garota de programa. O termo saiu de todas as telas, do site.js, da página de marca e da documentação, e virou regra no PRODUCT.md: nunca usar.
+- Quem presta o serviço agora é "profissional", e no perfil "profissional verificada" (selo do portfólio, ficha da home, resumo).
+- No menu, "Encontrar profissional", para não se confundir com "Área profissional".
+- A âncora da lista mudou de #acompanhantes para #escolher.
+- O verbo "acompanhar" continua. As entradas antigas deste registro mantêm o termo como histórico.

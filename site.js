@@ -17,7 +17,6 @@
     const [a, m, d] = el.dataset.faltam.split('-').map(Number);
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
     const dias = Math.round((new Date(a, m - 1, d) - hoje) / 86400000);
-    if (el.hasAttribute('data-curto')) { if (dias >= 0) el.textContent = dias === 0 ? 'A próxima revisão de Ana é hoje.' : `Faltam ${dias} ${dias === 1 ? 'dia' : 'dias'} para a próxima revisão de Ana.`; return; }
     if (dias > 1) el.textContent = `Faltam ${dias} dias. A data aparece no perfil de cada profissional.`;
     else if (dias === 1) el.textContent = 'Falta 1 dia. A data aparece no perfil de cada profissional.';
     else if (dias === 0) el.textContent = 'A revisão é hoje. A data aparece no perfil de cada profissional.';
@@ -121,7 +120,7 @@
   desenha(true);
 })();
 
-// home: filtro por tarefa na lista de acompanhantes
+// home: filtro por tarefa na lista de profissionais
 (() => {
   const lista = document.querySelector('.lista');
   if (!lista) return;
@@ -135,7 +134,7 @@
     botoes.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
     let n = 0;
     cartoes.forEach((c) => { const ok = t === 'todas' || c.dataset.tarefas.split(' ').includes(t); c.hidden = !ok; if (ok) n++; });
-    conta.textContent = `${n} ${n === 1 ? 'acompanhante' : 'acompanhantes'} para ${nomes[t]}`;
+    conta.textContent = `${n} ${n === 1 ? 'profissional verificada' : 'profissionais verificadas'} para ${nomes[t]}`;
     vazia.hidden = n > 0;
   }));
 })();

@@ -10,7 +10,7 @@ web
 
 - **Contratante (foco da home):** a filha. Validação com usuária (20/10/2026): a home precisa deixar claro de imediato que é um marketplace, onde ela escolhe e contrata uma profissional. A filha que quer contratar uma profissional para acompanhar a mãe ou o pai idoso em alguma tarefa (consulta, exame, banco, compras, passeio). É ela quem decide e contrata. Exemplo canônico: Mariana Costa contrata para Helena Costa (78). Muitas vezes decide sem tempo ou à distância, pelo celular.
 - **Pessoa acompanhada:** a mãe ou o pai idoso. Recebe o acompanhamento, mas não opera a contratação.
-- **Profissional (acompanhante):** publica portfólio, define o valor da própria hora e, se quiser, um tempo mínimo de contratação; envia documentos, recebe e responde solicitações. A home só oferece um botão de acesso à área profissional.
+- **Profissional:** publica portfólio, define o valor da própria hora e, se quiser, um tempo mínimo de contratação; envia documentos, recebe e responde solicitações. A home só oferece um botão de acesso à área profissional.
 - **Administração:** analisa perfis e documentos, revisões mensais, denúncias e métricas.
 
 ## Product Purpose
@@ -51,8 +51,8 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
 - Nome: **Minha companhia** (antes, provisório: Filha de Aluguel). As telas ainda mostram o nome antigo até a escolha da marca.
 - Tom de voz: **acolhedor e respeitoso**. Próximo e calmo, como alguém de confiança da família. Nunca infantilizar o idoso.
 - Textos em português do Brasil.
-- Termo de gênero: textos gerais usam forma neutra ("profissional", "acompanhante"); perfis individuais seguem a pessoa. Decidido em 20/10/2026.
-- Termo do serviço (proposta, 20/10/2026): "acompanhante" e "acompanhar em tarefas", no lugar de "cuidado em casa".
+- Termo de gênero: textos gerais usam a forma neutra "profissional"; perfis individuais seguem a pessoa. Decidido em 20/10/2026.
+- Termo do serviço: "acompanhar em tarefas", no lugar de "cuidado em casa". Quem presta o serviço é "a profissional" (perfil: "profissional verificada"). Decidido em 20/10/2026: **nunca usar "acompanhante"**, que em português remete a garota de programa. O verbo "acompanhar" continua.
 
 ## Evidence on Hand
 
