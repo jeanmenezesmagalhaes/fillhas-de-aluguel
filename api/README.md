@@ -8,7 +8,7 @@ Contas da família e da profissional, login, sessões, pedidos de serviço e ava
 cd api
 npm install
 npm run seed     # contas e pedidos de demonstração (só fora de produção)
-npm run dev      # http://127.0.0.1:4173
+npm run dev      # http://127.0.0.1:4175 (a 4173 fica para o servidor estático do protótipo)
 ```
 
 Sem `DATABASE_URL`, o banco é um Postgres embutido (PGlite) gravado em `api/.data/pglite`. Para um Postgres de verdade, defina `DATABASE_URL=postgres://…` (ver `.env.example`). As migrations rodam sozinhas ao iniciar.

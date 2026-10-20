@@ -16,4 +16,4 @@ const fechar = async () => {
 process.on('SIGINT', fechar);
 process.on('SIGTERM', fechar);
 
-await app.listen({ port: Number(process.env.PORT ?? 4173), host: process.env.HOST ?? '127.0.0.1' });
+await app.listen({ port: Number(process.env.PORT ?? 4175), host: process.env.HOST ?? '127.0.0.1' });
