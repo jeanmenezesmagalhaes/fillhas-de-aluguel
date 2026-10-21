@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
 import { alias, type PgUpdateSetSource } from 'drizzle-orm/pg-core';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
@@ -320,6 +320,30 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
       if (violouUnico(err, 'avaliacao_unica_por_sentido')) throw conflito('ja_avaliado', 'Você já avaliou este serviço.');
       throw err;
     }
+  });
+
+  // a profissional responde, uma vez e em público, à avaliação que recebeu da família
+  app.post('/api/avaliacoes/:id/resposta', async (req) => {
+    const u = exigirUsuario(req);
+    const { id } = idParam.parse(req.params);
+    const { resposta } = z
+      .object({ resposta: v.semContato(z.string({ error: 'Escreva a resposta.' }).trim().min(2, 'Escreva a resposta.').max(500, 'Use no máximo 500 caracteres.')) })
+      .parse(req.body);
+    const agora = ctx.agora();
+    const [a] = await ctx.db
+      .select({ avaliadoId: avaliacoes.avaliadoId, sentido: avaliacoes.sentido, resposta: avaliacoes.resposta, revelada: sql<boolean>`${avaliacaoRevelada(agora)}` })
+      .from(avaliacoes)
+      .innerJoin(servicos, eq(servicos.id, avaliacoes.servicoId))
+      .where(eq(avaliacoes.id, id));
+    if (!a || a.avaliadoId !== u.id || a.sentido !== 'familia_avalia_profissional') throw naoEncontrado('Avaliação não encontrada.');
+    if (!a.revelada) throw conflito('avaliacao_escondida', 'Você poderá responder quando a avaliação aparecer no seu perfil.');
+    const [feita] = await ctx.db
+      .update(avaliacoes)
+      .set({ resposta, respondidoEm: agora })
+      .where(and(eq(avaliacoes.id, id), isNull(avaliacoes.resposta)))
+      .returning({ id: avaliacoes.id, resposta: avaliacoes.resposta, respondidoEm: avaliacoes.respondidoEm });
+    if (!feita) throw conflito('ja_respondida', 'Você já respondeu a esta avaliação.');
+    return { avaliacao: feita };
   });
 
   // as duas avaliações do serviço, do ponto de vista de quem pergunta: a minha sempre;
