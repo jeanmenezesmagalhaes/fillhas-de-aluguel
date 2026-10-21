@@ -127,6 +127,7 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | POST | `/api/sessoes` | login |
 | DELETE | `/api/sessoes/atual` | sair |
 | GET | `/api/eu` | conta da sessão |
+| GET | `/api/sessao` | sempre 200: a conta, ou `usuario: null` sem sessão (para as telas públicas) |
 | GET, POST | `/api/pessoas` | família: pessoas acompanhadas |
 | DELETE | `/api/pessoas/:id` | família |
 | PATCH | `/api/profissionais/eu` | profissional: valor da hora, desconto, experiência, veículo, bairros, apresentação, `tarefas`, `aceitaOutras` e `disponibilidade` |

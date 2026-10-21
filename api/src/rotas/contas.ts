@@ -225,6 +225,13 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
     return reply.status(204).send();
   });
 
+  // Para as telas públicas saberem se há alguém conectado sem gerar um 401 no console:
+  // sempre 200, com a conta ou null.
+  app.get('/api/sessao', async (req, reply) => {
+    reply.header('cache-control', 'no-store');
+    return { usuario: req.usuario ? await dadosDaConta(ctx.db, req.usuario.id) : null };
+  });
+
   app.get('/api/eu', async (req) => {
     const u = exigirUsuario(req);
     return { usuario: await dadosDaConta(ctx.db, u.id) };

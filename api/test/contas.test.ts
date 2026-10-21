@@ -145,3 +145,15 @@ describe('portfólio público', () => {
     expect((await pro.c.get(`/api/profissionais/${pro.slug}`)).status).toBe(200);
   });
 });
+
+describe('sessão para telas públicas', () => {
+  it('responde 200 com a conta ou null', async () => {
+    const c = cliente(amb.app);
+    const sem = await c.get('/api/sessao');
+    expect(sem).toMatchObject({ status: 200, corpo: { usuario: null } });
+    await c.post('/api/contas', familia());
+    const com = await c.get('/api/sessao');
+    expect(com.corpo.usuario.papeis).toEqual(['contratante']);
+    expect(com.resposta.headers['cache-control']).toBe('no-store');
+  });
+});

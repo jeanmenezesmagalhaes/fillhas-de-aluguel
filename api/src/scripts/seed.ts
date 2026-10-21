@@ -7,6 +7,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { inArray, or, sql } from 'drizzle-orm';
 import { armazenamentoEmDisco } from '../armazenamento.js';
 import { gerarHashSenha } from '../auth.js';
+import { slugDoNome } from '../rotas/contas.js';
 import { abrirBanco } from '../db/index.js';
 import { avaliacoes, contratantes, disponibilidade, documentos, indicacoes, pessoasAcompanhadas, profissionais, qualificacoes, servicos, tarefasProfissional, usuarios } from '../db/schema.js';
 
@@ -17,7 +18,32 @@ if (process.env.NODE_ENV === 'production') {
 
 // senha das contas de demonstração (só para o banco local)
 const SENHA_DEMO = 'demonstracao-local';
-const EMAILS = ['ana', 'claudia', 'mariana', 'rafael', 'joana', 'equipe'].map((n) => `${n}@demo.minhacompanhia.test`);
+// Demais profissionais da listagem de exemplo (docs/gera_busca.py), aprovadas e no ar, em
+// várias cidades. Turnos: m (7h às 12h), t (12h às 18h), n (18h às 22h).
+const LISTAGEM = [
+  { id: 'marta', nome: 'Marta Ferreira', cidade: 'Campinas', uf: 'SP', bairros: ["Centro", "Bosque"], valor: 75, minimo: 3, veiculo: true, dias: [1,2,3,4,5], turnos: 'm', tarefas: ["consulta", "banco"] as const, anos: 9 },
+  { id: 'roberto', nome: 'Roberto Lima', cidade: 'Campinas', uf: 'SP', bairros: ["Barão Geraldo"], valor: 80, minimo: 2, veiculo: true, dias: [1,2,3,4,5], turnos: 'mt', tarefas: ["consulta", "banco", "mercado"] as const, anos: 8 },
+  { id: 'luciana', nome: 'Luciana Alves', cidade: 'Campinas', uf: 'SP', bairros: ["Nova Campinas", "Cambuí"], valor: 85, minimo: 3, veiculo: true, dias: [1,2,3,4,5], turnos: 'mt', tarefas: ["consulta", "banco", "mercado", "passeio"] as const, anos: 11 },
+  { id: 'patricia', nome: 'Patrícia Gomes', cidade: 'Campinas', uf: 'SP', bairros: ["Castelo", "Guanabara"], valor: 72, minimo: 2, veiculo: false, dias: [0,1,2,3,4,5,6], turnos: 'm', tarefas: ["consulta", "mercado"] as const, anos: 2 },
+  { id: 'sonia', nome: 'Sônia Martins', cidade: 'Campinas', uf: 'SP', bairros: ["Sousas"], valor: 90, minimo: 4, veiculo: true, dias: [1,2,4,5], turnos: 'mt', tarefas: ["consulta", "passeio"] as const, anos: 14 },
+  { id: 'paulo', nome: 'Paulo Mendes', cidade: 'Campinas', uf: 'SP', bairros: ["Centro", "Guanabara"], valor: 70, minimo: 1, veiculo: true, dias: [1,2,3,4,5,6], turnos: 'tn', tarefas: ["banco", "mercado"] as const, anos: 5 },
+  { id: 'renata', nome: 'Renata Dias', cidade: 'Campinas', uf: 'SP', bairros: ["Taquaral", "Barão Geraldo"], valor: 78, minimo: 2, veiculo: false, dias: [1,2,3,4,5], turnos: 'mtn', tarefas: ["consulta", "banco", "mercado", "passeio"] as const, anos: 7 },
+  { id: 'vera', nome: 'Vera Nunes', cidade: 'Campinas', uf: 'SP', bairros: ["Bosque", "Centro"], valor: 74, minimo: 2, veiculo: false, dias: [0,3,4,5,6], turnos: 't', tarefas: ["consulta", "passeio"] as const, anos: 6 },
+  { id: 'elaine', nome: 'Elaine Rocha', cidade: 'Campinas', uf: 'SP', bairros: ["Castelo"], valor: 82, minimo: 2, veiculo: true, dias: [1,3,5,6], turnos: 'mn', tarefas: ["consulta", "mercado", "passeio"] as const, anos: 10 },
+  { id: 'fernanda', nome: 'Fernanda Lopes', cidade: 'São Paulo', uf: 'SP', bairros: ["Pinheiros", "Vila Madalena"], valor: 90, minimo: 2, veiculo: false, dias: [1,2,3,4,5], turnos: 'mt', tarefas: ["consulta", "banco", "mercado", "passeio"] as const, anos: 9 },
+  { id: 'carlos', nome: 'Carlos Henrique Souza', cidade: 'São Paulo', uf: 'SP', bairros: ["Moema", "Vila Mariana"], valor: 95, minimo: 3, veiculo: true, dias: [1,2,3,4,5,6], turnos: 'mt', tarefas: ["consulta", "banco", "mercado"] as const, anos: 12 },
+  { id: 'juliana', nome: 'Juliana Freitas', cidade: 'São Paulo', uf: 'SP', bairros: ["Tatuapé", "Mooca"], valor: 80, minimo: 2, veiculo: false, dias: [2,3,4,5,6], turnos: 'tn', tarefas: ["consulta", "mercado", "passeio"] as const, anos: 5 },
+  { id: 'adriana', nome: 'Adriana Matos', cidade: 'Rio de Janeiro', uf: 'RJ', bairros: ["Copacabana", "Botafogo"], valor: 85, minimo: 2, veiculo: false, dias: [1,2,3,4,5], turnos: 'mt', tarefas: ["consulta", "banco", "mercado", "passeio"] as const, anos: 8 },
+  { id: 'marcia', nome: 'Márcia Pinto', cidade: 'Rio de Janeiro', uf: 'RJ', bairros: ["Tijuca"], valor: 75, minimo: 2, veiculo: true, dias: [1,2,3,4,5,6], turnos: 'm', tarefas: ["consulta", "banco"] as const, anos: 6 },
+  { id: 'cristina', nome: 'Cristina Barbosa', cidade: 'Belo Horizonte', uf: 'MG', bairros: ["Savassi", "Funcionários"], valor: 78, minimo: 2, veiculo: true, dias: [1,2,3,4,5], turnos: 'mt', tarefas: ["consulta", "banco", "mercado", "passeio"] as const, anos: 10 },
+  { id: 'simone', nome: 'Simone Ribeiro', cidade: 'Curitiba', uf: 'PR', bairros: ["Batel", "Água Verde"], valor: 76, minimo: 2, veiculo: false, dias: [1,2,3,4,5], turnos: 'mt', tarefas: ["consulta", "mercado", "passeio"] as const, anos: 7 },
+  { id: 'lucia', nome: 'Lúcia Fernandes', cidade: 'Porto Alegre', uf: 'RS', bairros: ["Moinhos de Vento", "Petrópolis"], valor: 74, minimo: 2, veiculo: true, dias: [1,2,3,4,5], turnos: 'mt', tarefas: ["consulta", "banco"] as const, anos: 11 },
+  { id: 'jose', nome: 'José Carlos Araújo', cidade: 'Recife', uf: 'PE', bairros: ["Boa Viagem"], valor: 70, minimo: 2, veiculo: true, dias: [1,2,3,4,5,6], turnos: 'mt', tarefas: ["consulta", "banco", "mercado"] as const, anos: 6 },
+  { id: 'rita', nome: 'Rita Santana', cidade: 'Salvador', uf: 'BA', bairros: ["Barra", "Pituba"], valor: 72, minimo: 2, veiculo: false, dias: [1,2,3,4,5,6], turnos: 'mt', tarefas: ["consulta", "mercado", "passeio"] as const, anos: 9 },
+  { id: 'tania', nome: 'Tânia Moreira', cidade: 'Brasília', uf: 'DF', bairros: ["Asa Sul", "Asa Norte"], valor: 88, minimo: 3, veiculo: true, dias: [1,2,3,4,5], turnos: 'mt', tarefas: ["consulta", "banco"] as const, anos: 13 },
+];
+
+const EMAILS = ['ana', 'claudia', 'mariana', 'rafael', 'joana', 'equipe', ...LISTAGEM.map((p) => p.id)].map((n) => `${n}@demo.minhacompanhia.test`);
 
 // dia relativo a hoje, numa hora cheia do horário de Brasília (UTC-3, sem horário de verão)
 const HORA = 60 * 60 * 1000;
@@ -150,6 +176,31 @@ await banco.db.transaction(async (tx) => {
     ...[1, 2, 3, 4, 5].map((dia) => ({ profissionalId: ana, dia, inicioMin: 8 * 60, fimMin: 18 * 60 })),
     ...[2, 4, 6].map((dia) => ({ profissionalId: claudia, dia, inicioMin: 8 * 60, fimMin: 13 * 60 })),
   ]);
+
+  // turnos contínuos viram uma faixa só (mt = 7h às 18h); manhã e noite ficam em duas
+  const TURNO = { m: [7, 12], t: [12, 18], n: [18, 22] } as const;
+  const faixas = (turnos: string) => {
+    const lista = [...turnos].map((t) => TURNO[t as keyof typeof TURNO]);
+    const juntas: [number, number][] = [];
+    for (const [ini, fim] of lista) {
+      const ultima = juntas.at(-1);
+      if (ultima && ultima[1] === ini) ultima[1] = fim;
+      else juntas.push([ini, fim]);
+    }
+    return juntas;
+  };
+  for (const [n, p] of LISTAGEM.entries()) {
+    const id = await conta(p.nome, `${p.id}@demo.minhacompanhia.test`, `1193333${String(n).padStart(4, '0')}`);
+    await tx.insert(profissionais).values({
+      usuarioId: id, slug: slugDoNome(p.nome), cidade: p.cidade, uf: p.uf, bairros: p.bairros,
+      valorHoraCentavos: p.valor * 100, horasMinimas: p.minimo, veiculoIncluso: p.veiculo, anosExperiencia: p.anos,
+      situacao: 'aprovado', aprovadoEm: em(-30, 12), revisadoEm: dia(em(-10 - (n % 15), 12)), proximaRevisao: dia(em(20 - (n % 15), 12)),
+    });
+    await tx.insert(tarefasProfissional).values(p.tarefas.map((tipo, ordem) => ({ profissionalId: id, tipo, minimoHoras: p.minimo, ordem })));
+    await tx.insert(disponibilidade).values(
+      p.dias.flatMap((d) => faixas(p.turnos).map(([ini, fim]) => ({ profissionalId: id, dia: d, inicioMin: ini * 60, fimMin: fim * 60 }))),
+    );
+  }
 
   await conta('Equipe Minha Companhia', EMAILS[5]!, '19944440000', { admin: true });
 
