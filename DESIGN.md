@@ -198,7 +198,7 @@ Verde-copa como chão, dois ipês como acento e campos, sálvia e branco como pa
 **Character:** Geometria circular dos anos 1920, firme no título da capa e calma no texto de leitura. Uma família, cinco tamanhos.
 
 ### Hierarchy
-- **Display** (700, 44 a 76px, 0.98, -0.035em, caixa normal): só o título da home ("Escolha quem acompanha sua mãe"); em escala maior, a palavra da chamada ("Escolher"). A marca em blocos do rodapé é a única caixa alta.
+- **Display** (700, 44 a 76px, 0.98, -0.035em, caixa normal): só o título da home ("Contrate profissionais para acompanhar seus pais"); em escala maior, a palavra da chamada ("Escolher"). A marca em blocos do rodapé é a única caixa alta.
 - **Headline** (700, 36–64px, 1.0, -0.03em): títulos das seções, nomes das tarefas, total do orçamento, nome de Ana.
 - **Lead** (500, 20–26px, 1.3): frase de apoio, lista de documentos, títulos de cartões e degraus.
 - **Body** (400, 17–19px, 1.5): texto corrido, máximo 60ch.
@@ -216,7 +216,7 @@ Página branca com margens iguais de 16 a 48px; as pastas ficam recuadas 7vw (0 
 - **Home, lista:** título curto e contagem ao lado; atalhos de tarefa (Todas + quatro fotos de Campinas com véu verde e duração típica) que filtram a lista; quatro cartões em grade (2 no tablet, 1 no celular). No computador, os retratos aparecem na primeira tela.
 - **Home, como contratar:** campo folha com três etapas numeradas. Cada uma tem o número numa aba ipê-amarela (trapézio da pasta), o verbo grande (Escolha, Faça o orçamento, Confirme) e uma frase curta em linguagem simples.
 - **Home, verificação:** abaixo da frase de apoio, um escudo folha com "Só profissionais verificadas." e o que é conferido. A contagem da lista diz "profissionais verificadas", e o primeiro motivo de confiança é "Só entra quem é verificada".
-- **Home, história:** os textos seguem a filha do problema à decisão. A abertura começa por "Para os dias em que você não pode ir junto". A lista mostra quem pode ir. As três etapas terminam em "Pronto: sua mãe já tem companhia". "Por que você pode confiar" traz verificação, a voz de quem já contratou e "Você sabe quanto vai pagar". A chamada final volta à consulta marcada. As notas de amostra ficam em texto pequeno e cinza, sem contagem de dias.
+- **Home, história:** os textos seguem a filha do problema à decisão. A abertura diz o que se contrata: "Contrate profissionais para acompanhar seus pais". A lista mostra quem pode ir. As três etapas terminam em "Pronto: seus pais já têm companhia". "Por que você pode confiar" traz verificação, a voz de quem já contratou e "Você sabe quanto vai pagar". A chamada final volta à consulta marcada. As notas de amostra ficam em texto pequeno e cinza, sem contagem de dias.
 - **Home, por que confiar:** pasta rosa com a ficha de Ana fixa à esquerda e três motivos à direita.
 - **Como funciona:** diagrama de quadradinhos (dispersos, comprimidos, ordenados em rosa) e três colunas embaixo.
 - **Portfólio:** capa dividida 50/50 (ficha sálvia com condições e foto fixa), painel verde de apresentação, orçamento só com Ana (seletor sem teto), cardápio de tarefas e de onde e quando, ladrilhos de documentos, depoimento deslocado.

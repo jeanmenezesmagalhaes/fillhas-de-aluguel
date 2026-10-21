@@ -550,3 +550,8 @@ Pedido da sessão do backend, sobre a API do commit 860fa6f.
 - **index.html, com a API:** os destaques atualizam valor, nota, bairros, mínimo, veículo, tarefas e o link. Quem não está no ar sai da lista: hoje a Joana, que está na lista de espera. As contagens dos botões de tarefa são recalculadas.
 - **Sem a API:** tudo continua com os dados de exemplo. A Cláudia da home foi para R$ 70.
 - **Testado na 4175:** portfólio da Adriana, da Cláudia, da Ana e de um slug inexistente; listagem com e sem filtros (22 profissionais); home com 3 destaques. Testado também sem API, na 4173.
+
+## Topo da home fala de "seus pais" — 21/10/2026
+- Título: "Contrate profissionais para acompanhar seus pais". Subtítulo: "Profissionais verificadas acompanham seus pais em consultas, exames, mercado ou passeios quando você não pode ir." Pedido do usuário: frase direta, focada no que se contrata, em até duas linhas no computador.
+- "Banco" saiu do subtítulo para não parecer golpe; "Banco ou cartório" continua nos filtros e na busca (decisão do usuário).
+- Textos que falavam só da mãe agora incluem o pai: título da aba, etapas 1 e 3, chamada final, filtro "Bairro dos seus pais" (busca.html e docs/gera_busca.py) e "Saída e volta da casa dos seus pais" no portfólio. Depoimentos ficaram como estão.

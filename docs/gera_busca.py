@@ -241,7 +241,7 @@ html = f'''<!doctype html>
       </div>
       <div class="filtros-campos">
         <div class="filtro-grupo">
-          <label class="filtro-titulo" for="bairro">Bairro da sua mãe</label>
+          <label class="filtro-titulo" for="bairro">Bairro dos seus pais</label>
           <select id="bairro" name="bairro" disabled>
               <option value="">Escolha a cidade antes</option>
           </select>

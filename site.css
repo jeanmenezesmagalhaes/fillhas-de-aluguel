@@ -344,9 +344,9 @@ a.botao:active { transform: scale(0.97); }
 
 /* ---------- home: marketplace ---------- */
 .abertura { padding: clamp(32px, 4vh, 48px) var(--margin) 0; }
-.abertura h1 { max-width: 16ch; font-size: clamp(2.75rem, 5vw, 4.75rem); line-height: 1.04; letter-spacing: -0.035em; }
+.abertura h1 { max-width: 22ch; font-size: clamp(2.75rem, 5vw, 4.75rem); line-height: 1.04; letter-spacing: -0.035em; }
 .abertura h1 .linha { display: block; }
-.abertura .apoio { max-width: 44ch; margin-top: 32px; font-size: var(--step-lead); line-height: 1.4; }
+.abertura .apoio { max-width: 58ch; margin-top: 32px; font-size: var(--step-lead); line-height: 1.4; }
 .verificadas { display: flex; align-items: center; gap: 10px; max-width: 60ch; margin-top: 20px; color: var(--folha-2); font-size: 1.0625rem; font-weight: 500; line-height: 1.35; }
 .verificadas svg { width: 24px; height: 24px; flex: none; color: var(--folha); }
 .busca-home { grid-template-columns: 1.3fr 1.3fr 1fr auto; margin-top: 56px; padding: 24px; background: var(--salvia); }
