@@ -10,6 +10,7 @@
     "db:gerar": "drizzle-kit generate",
     "db:migrar": "tsx src/scripts/migrar.ts",
     "seed": "tsx src/scripts/seed.ts",
+    "vitrine": "tsx src/scripts/vitrine.ts",
     "aprovar": "tsx src/scripts/aprovar.ts",
     "admin": "tsx src/scripts/admin.ts",
     "montar-public": "tsx src/scripts/montar-public.ts",
