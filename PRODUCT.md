@@ -75,7 +75,7 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
 Dados canônicos fictícios, consistentes entre telas (fonte: `docs/PASSAGEM.md`):
 
 - Ana Oliveira, Campinas (Cambuí/Taquaral), 6 anos de experiência, carro próprio incluso, seg–sex 8h–18h. Revisão 01/10/2026, próxima 01/11/2026. Nota 4,9 em 12 avaliações fictícias.
-- Proposta nas amostras redesenhadas (20/10/2026): R$70/h, mínimo de 2 h, a partir de 4 h R$60/h (hipótese de desconto), veículo incluso.
+- Ana, valores (decidido pelo usuário em 20/10/2026): R$80/h e, a partir de 4 h, R$70/h (hipótese de desconto), veículo incluso. Substitui o R$70/h com R$60/h a partir de 4 h, que ficava abaixo do mínimo de R$70/h da plataforma.
 - Cláudia Ramos (amostra nova, Taquaral): R$65/h, mínimo de 1 h, sem desconto, sem veículo.
 - Marta Ferreira (amostra nova, Centro e Bosque, 9 anos): R$75/h, mínimo de 3 h, R$68/h a partir de 3 h, veículo incluso, 5,0 em 4 avaliações, revisão 08/10/2026.
 - Joana Prado (amostra nova, Cambuí, 3 anos): R$70/h, mínimo de 2 h, sem desconto, sem veículo, 4,7 em 19 avaliações, revisão 29/09/2026.
@@ -91,7 +91,7 @@ Dados canônicos fictícios, consistentes entre telas (fonte: `docs/PASSAGEM.md`
 
   Os dados ficam em `docs/gera_busca.py`. Três são homens. Só Ana tem perfil publicado.
 - Cláudia: 4,8 em 7 avaliações, revisão 05/10/2026, Taquaral, 4 anos.
-- Mariana Costa contrata Ana para levar Helena Costa (78) a uma consulta, 28/10/2026, 9h–13h: 4 h × R$60 = R$240; taxa da plataforma em definição, fora do total.
+- Mariana Costa contrata Ana para levar Helena Costa (78) a uma consulta, 28/10/2026, 9h–13h: 4 h × R$70 = R$280 (hora com desconto); taxa da plataforma em definição, fora do total.
 - Dados anteriores (R$330 com deslocamento R$20, acompanhamento externo R$15 e taxa R$15; visão da cuidadora R$315) seguem nas telas ainda não revisadas (valores.html, pagamento.html).
 
 Retratos são ilustrações locais, não fotografias de pessoas reais. Não existem clientes, depoimentos, métricas ou parcerias reais; não inventar.

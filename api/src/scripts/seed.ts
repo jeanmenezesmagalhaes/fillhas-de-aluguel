@@ -59,7 +59,10 @@ await banco.db.transaction(async (tx) => {
     uf: 'SP',
     bairros: ['Cambuí', 'Taquaral'],
     apresentacao: 'Acompanho pessoas idosas em consultas, exames, banco e compras há 6 anos.',
-    valorHoraCentavos: 7000,
+    // R$ 80 a hora; a partir de 4 h, R$ 70 (decidido pelo usuário em 20/10/2026)
+    valorHoraCentavos: 8000,
+    descontoAPartirHoras: 4,
+    valorHoraDescontoCentavos: 7000,
     horasMinimas: 1,
     veiculoIncluso: true,
     aceitaOutras: true,
@@ -164,15 +167,17 @@ await banco.db.transaction(async (tx) => {
     .values({ contratanteId: rafael, nome: 'Dirce Souza', dataNascimento: '1944-05-10', parentesco: 'filho' })
     .returning({ id: pessoasAcompanhadas.id });
 
+  // valor da hora congelado em cada pedido: Cláudia R$ 70; Ana R$ 80, ou R$ 70 a partir de 4 h
   const base = { valorHoraCentavos: 7000 };
+  const daAna = (horas: number) => ({ profissionalId: ana, valorHoraCentavos: horas >= 4 ? 7000 : 8000 });
   const doMariana = { contratanteId: mariana, pessoaAcompanhadaId: helena!.id };
   const doRafael = { contratanteId: rafael, pessoaAcompanhadaId: dirce!.id };
   const feitos = await tx
     .insert(servicos)
     .values([
-      { ...base, ...doRafael, profissionalId: ana, tarefa: 'Banco', local: 'Agência Centro', inicio: em(10, 14), horas: 2, respondaAte: em(1, 20) },
+      { ...doRafael, ...daAna(2), tarefa: 'Banco', local: 'Agência Centro', inicio: em(10, 14), horas: 2, respondaAte: em(1, 20) },
       {
-        ...base, ...doMariana, profissionalId: ana, tarefa: 'Consulta médica', local: 'Clínica Viva Mais, Centro',
+        ...doMariana, ...daAna(4), tarefa: 'Consulta médica', local: 'Clínica Viva Mais, Centro',
         observacoes: 'Helena caminha devagar. Levar os exames anteriores, na pasta azul da sala.', inicio: em(8, 9), horas: 4, respondaAte: em(1, 18),
       },
       {
@@ -180,10 +185,10 @@ await banco.db.transaction(async (tx) => {
         inicio: em(11, 9), horas: 2, situacao: 'proposta_alterada', propostaInicio: em(11, 10), propostaHoras: 2,
         propostaRecado: 'Às 9h tenho outro atendimento. Às 10h consigo ir com calma.', respondaAte: em(1, 21),
       },
-      { ...base, ...doRafael, profissionalId: ana, tarefa: 'Exame de imagem', local: 'Hospital Vera Cruz', inicio: em(2, 8), horas: 3, situacao: 'confirmado' },
-      { ...base, ...doMariana, profissionalId: ana, tarefa: 'Passeio no Taquaral', inicio: em(-1, 10), horas: 2, situacao: 'confirmado' },
-      { ...base, ...doMariana, profissionalId: ana, tarefa: 'Banco', inicio: em(-6, 10), horas: 2, situacao: 'realizado', realizadoEm: em(-6, 12) },
-      { ...base, ...doRafael, profissionalId: ana, tarefa: 'Consulta médica', inicio: em(-11, 8), horas: 4, situacao: 'realizado', realizadoEm: em(-11, 12) },
+      { ...doRafael, ...daAna(3), tarefa: 'Exame de imagem', local: 'Hospital Vera Cruz', inicio: em(2, 8), horas: 3, situacao: 'confirmado' },
+      { ...doMariana, ...daAna(2), tarefa: 'Passeio no Taquaral', inicio: em(-1, 10), horas: 2, situacao: 'confirmado' },
+      { ...doMariana, ...daAna(2), tarefa: 'Banco', inicio: em(-6, 10), horas: 2, situacao: 'realizado', realizadoEm: em(-6, 12) },
+      { ...doRafael, ...daAna(4), tarefa: 'Consulta médica', inicio: em(-11, 8), horas: 4, situacao: 'realizado', realizadoEm: em(-11, 12) },
     ])
     .returning({ id: servicos.id });
 
