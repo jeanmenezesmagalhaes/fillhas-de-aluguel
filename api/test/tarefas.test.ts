@@ -47,6 +47,9 @@ describe('tarefas da profissional', () => {
       tarefas: [{ tipo: 'personalizada', nome: 'Leitura', minimoHoras: 1 }, { tipo: 'personalizada', nome: 'leitura', minimoHoras: 2 }],
     });
     expect(nomeRepetido.corpo.erro.campos['tarefas.1.nome']).toContain('já tem');
+    const onze = Array.from({ length: 11 }, (_, i) => ({ tipo: 'personalizada', nome: `Atividade ${i + 1}`, minimoHoras: 1 }));
+    expect((await pro.c.patch('/api/profissionais/eu', { tarefas: onze })).corpo.erro.campos.tarefas).toBe('Cadastre no máximo 10 tarefas.');
+    expect((await pro.c.patch('/api/profissionais/eu', { tarefas: onze.slice(0, 10) })).status).toBe(200);
     const foraDaFaixa = await pro.c.patch('/api/profissionais/eu', { tarefas: [{ tipo: 'passeio', minimoHoras: 13 }] });
     expect(foraDaFaixa.corpo.erro.campos['tarefas.0.minimoHoras']).toBeDefined();
 

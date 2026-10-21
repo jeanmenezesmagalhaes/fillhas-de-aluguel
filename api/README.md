@@ -66,7 +66,7 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
 - **Arquivos:** a interface `Armazenamento` (`src/armazenamento.ts`). Em desenvolvimento, os arquivos ficam em disco (`api/.data/arquivos`). Em produção, precisa de um bucket privado (S3 ou R2).
 - **Tarefas e mínimo de horas:**
   - A profissional escolhe as tarefas que faz, cada uma com o próprio mínimo de 1 a 12 horas.
-  - As tarefas fixas são `consulta` (Consulta ou exame), `banco` (Banco ou cartório), `mercado` (Mercado e farmácia) e `passeio` (Passeio). Ela também pode criar atividades `personalizada`, com nome próprio. Até 20 tarefas, sem repetir tipo fixo nem nome.
+  - As tarefas fixas são `consulta` (Consulta ou exame), `banco` (Banco ou cartório), `mercado` (Mercado e farmácia) e `passeio` (Passeio). Ela também pode criar atividades `personalizada`, com nome próprio. Até 10 tarefas no total (fixas mais personalizadas), sem repetir tipo fixo nem nome.
   - `aceitaOutras` libera "Outra tarefa · a combinar", com mínimo de 1 h.
   - A lista só pode ficar vazia se ela aceitar outras.
   - `horasMinimas` passa a ser o menor mínimo da lista.

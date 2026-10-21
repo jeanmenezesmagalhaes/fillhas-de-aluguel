@@ -13,7 +13,7 @@ export const NOME_TAREFA: Record<(typeof TIPOS_FIXOS)[number], string> = {
   passeio: 'Passeio',
 };
 
-export const MAX_TAREFAS = 20;
+export const MAX_TAREFAS = 10;
 
 const horasTexto = (n: number) => `${n} ${n === 1 ? 'hora' : 'horas'}`;
 
