@@ -18,6 +18,7 @@ import * as v from '../validacao.js';
 import { codigoIndicacao, registrarIndicacao } from './indicacoes.js';
 import { tarefasDe } from '../tarefas.js';
 import { disponibilidadeDe } from '../disponibilidade.js';
+import { fotoDaConta } from './fotos.js';
 
 const pessoa = z.object({
   nome: v.nome,
@@ -134,7 +135,12 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
     celularVerificado: !!linha.celularVerificado,
     papeis,
     profissional: linha.profissional
-      ? { ...linha.profissional, tarefas: await tarefasDe(db, linha.id), disponibilidade: await disponibilidadeDe(db, linha.id) }
+      ? {
+          ...linha.profissional,
+          tarefas: await tarefasDe(db, linha.id),
+          disponibilidade: await disponibilidadeDe(db, linha.id),
+          ...(await fotoDaConta(db, linha.id)),
+        }
       : null,
   };
 }

@@ -437,3 +437,29 @@ export const bloqueiosAgenda = pgTable(
     check('bloqueio_periodo', sql`${t.inicio} < ${t.fim}`),
   ],
 );
+
+// Foto do perfil. Guardamos só a versão regravada pela API (sem metadados, como a
+// localização da câmera), que passa pela conferência da equipe antes de aparecer.
+export const fotosPerfil = pgTable(
+  'fotos_perfil',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    profissionalId: uuid('profissional_id')
+      .notNull()
+      .references(() => profissionais.usuarioId, { onDelete: 'cascade' }),
+    arquivoChave: text('arquivo_chave').notNull().unique(),
+    tipoArquivo: text('tipo_arquivo').notNull(),
+    largura: integer('largura').notNull(),
+    altura: integer('altura').notNull(),
+    tamanho: integer('tamanho').notNull(),
+    situacao: situacaoDocumento('situacao').notNull().default('enviado'),
+    motivoRecusa: text('motivo_recusa'),
+    enviadoEm: quando('enviado_em').notNull().defaultNow(),
+    revisadoEm: quando('revisado_em'),
+    revisadoPor: uuid('revisado_por').references(() => usuarios.id, { onDelete: 'set null' }),
+  },
+  (t) => [
+    index('fotos_por_profissional').on(t.profissionalId, t.situacao),
+    check('foto_recusada_tem_motivo', sql`${t.situacao} <> 'recusado' or ${t.motivoRecusa} is not null`),
+  ],
+);

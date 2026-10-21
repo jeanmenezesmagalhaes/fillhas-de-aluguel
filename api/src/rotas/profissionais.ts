@@ -12,6 +12,7 @@ import { qualificacoesPublicas } from './qualificacoes.js';
 import { documentosAtuais } from './verificacao.js';
 import { listaDeTarefas, salvarTarefas, tarefasDe } from '../tarefas.js';
 import { disponibilidadeDe, listaDeDisponibilidade, salvarDisponibilidade } from '../disponibilidade.js';
+import { fotoPublica } from './fotos.js';
 import type { Db } from '../db/index.js';
 
 const perfil = z
@@ -144,6 +145,7 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
         nota: { media: notas.media, total: notas.total },
         tarefas: await tarefasDe(ctx.db, usuarioId),
         disponibilidade: await disponibilidadeDe(ctx.db, usuarioId),
+        fotoUrl: await fotoPublica(ctx.db, usuarioId),
         // só cursos com o comprovante aprovado pela administração
         qualificacoes: await qualificacoesPublicas(ctx.db, usuarioId),
       },

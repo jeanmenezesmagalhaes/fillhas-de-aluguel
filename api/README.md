@@ -48,6 +48,12 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
   - A administração aprova o curso, ou recusa com motivo.
   - Só os aprovados aparecem no portfólio público, com a data da validação.
   - Ela pode apagar um curso, e o comprovante é apagado junto. O limite é de 30 cursos.
+- **Foto do perfil:**
+  - A profissional envia JPG, PNG, WebP ou HEIC até 10 MB. HEIC só funciona se o sistema conseguir abrir; caso contrário, o erro pede JPG ou PNG.
+  - A API regrava a foto: corrige a rotação, limita a 1200 px e salva em WebP. Isso apaga os metadados, inclusive a localização GPS, e só a versão regravada fica guardada.
+  - A foto nova entra como enviada e espera a conferência da equipe. A aprovada continua no ar até a nova ser aprovada; aí a antiga é apagada.
+  - Foto recusada vem com o motivo.
+  - O endereço `/api/fotos/:id` é público só para a foto aprovada de um perfil aprovado (com cache de um dia, porque o endereço muda a cada foto). As outras, só a dona e a administração abrem.
 - **Indicações:**
   - Toda conta tem um código (ex.: `ANA-7K2P`) e links de cadastro para profissional e para família.
   - Quem se cadastra com o código fica ligado a quem indicou.
@@ -105,6 +111,10 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET, POST | `/api/pessoas` | família: pessoas acompanhadas |
 | DELETE | `/api/pessoas/:id` | família |
 | PATCH | `/api/profissionais/eu` | profissional: valor da hora, desconto, experiência, veículo, bairros, apresentação, `tarefas`, `aceitaOutras` e `disponibilidade` |
+| POST | `/api/profissionais/eu/foto` | profissional: envia foto (multipart `arquivo`) |
+| GET | `/api/fotos/:id` | a foto (pública quando aprovada) |
+| GET | `/api/admin/fotos` | administração: fotos esperando conferência |
+| POST | `/api/admin/fotos/:id/aprovar` · `recusar` | administração (`recusar` pede `motivo`) |
 | GET, POST | `/api/profissionais/eu/bloqueios` | profissional: folgas e bloqueios futuros; criar devolve `conflitos` |
 | DELETE | `/api/profissionais/eu/bloqueios/:id` | profissional |
 | POST | `/api/avaliacoes/:id/resposta` | profissional: responde uma vez à avaliação recebida, depois de ela aparecer |

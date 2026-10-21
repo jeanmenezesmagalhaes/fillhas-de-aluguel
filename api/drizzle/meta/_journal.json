@@ -64,6 +64,13 @@
       "when": 1792541209149,
       "tag": "0008_disponibilidade_bloqueios_prazo",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792541473426,
+      "tag": "0009_fotos_perfil",
+      "breakpoints": true
     }
   ]
 }
