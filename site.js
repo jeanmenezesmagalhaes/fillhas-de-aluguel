@@ -37,7 +37,13 @@
   const total = (p, h) => h * valorHora(p, h);
   const horas = (h) => `${h} ${h === 1 ? 'hora' : 'horas'}`;
   const $ = (s) => raiz.querySelector(s);
-  const atual = () => pros[(raiz.querySelector('input[name="quem"]:checked') || {}).value || raiz.dataset.orcamento];
+  // o mínimo vem da tarefa escolhida, quando a profissional define um por tarefa
+  const atual = () => {
+    const p = pros[(raiz.querySelector('input[name="quem"]:checked') || {}).value || raiz.dataset.orcamento];
+    const chave = (raiz.querySelector('input[name="tarefa"]:checked') || {}).value;
+    const t = p.tarefas && chave ? p.tarefas[chave] : null;
+    return t ? { ...p, minimo: t.minimo, tarefa: chave, tarefaNome: t.nome, aCombinar: !!t.aCombinar } : p;
+  };
   const campo = $('#horas-qtd');
 
   // lê a quantidade escolhida; no seletor, corrige para o mínimo e avisa
@@ -67,18 +73,8 @@
     return null;
   };
 
+  // atalhos de horas e o botão de menos, que não deixa passar do mínimo
   const blocos = (p, h) => {
-    const caixa = $('[data-blocos]');
-    if (!caixa) return;
-    const comDesconto = p.desconto && h >= p.desconto.aPartir;
-    const limite = 48;
-    caixa.innerHTML = '';
-    for (let i = 0; i < Math.min(h, limite); i++) { const b = document.createElement('span'); b.className = 'bh' + (comDesconto ? '' : ' cheia'); caixa.append(b); }
-    if (h > limite) { const m = document.createElement('span'); m.className = 'blocos-mais'; m.textContent = `+ ${h - limite} h`; caixa.append(m); }
-    raiz.querySelector('.blocos-legenda .bh').className = 'bh' + (comDesconto ? '' : ' cheia');
-    $('[data-legenda]').textContent = comDesconto
-      ? `Cada bloco é uma hora a ${brl2(p.desconto.valor)}, valor de ${p.nome} a partir de ${horas(p.desconto.aPartir)}.`
-      : `Cada bloco é uma hora a ${brl2(p.valor)}.`;
     raiz.querySelectorAll('.atalhos button').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.h) === h)));
     raiz.querySelectorAll('.passo-btn[data-passo="-1"]').forEach((b) => { b.disabled = h <= p.minimo; });
   };
@@ -94,7 +90,7 @@
     totalEl.classList.add('muda');
     requestAnimationFrame(() => requestAnimationFrame(() => totalEl.classList.remove('muda')));
     $('[data-conta]').textContent = `${horas(h)} × ${brl2(vh)} por hora`;
-    $('[data-minimo]').textContent = `${p.nome} atende a partir de ${horas(p.minimo)}.`;
+    $('[data-minimo]').textContent = p.aCombinar ? `Para outras tarefas, ${p.nome} confirma o tempo e o valor quando aceitar o pedido.` : p.tarefaNome ? `Para ${p.tarefaNome.toLowerCase()}, ${p.nome} atende a partir de ${horas(p.minimo)}.` : `${p.nome} atende a partir de ${horas(p.minimo)}.`;
     const d = $('[data-desconto]');
     if (!p.desconto) d.textContent = `${p.nome} cobra o mesmo valor por hora, seja qual for a duração.`;
     else if (h >= p.desconto.aPartir) d.textContent = `A partir de ${horas(p.desconto.aPartir)}, a hora de ${p.nome} cai para ${brl2(p.desconto.valor)}. Você economiza ${brl2(h * p.valor - t)}.`;
@@ -102,12 +98,29 @@
     $('[data-veiculo]').textContent = p.veiculo ? `Veículo incluso: ${p.nome} busca em casa, leva e traz de volta.` : 'Sem veículo: combine táxi ou aplicativo para a ida e a volta.';
     raiz.querySelector('[data-veiculo-icone]').dataset.tem = p.veiculo ? 'sim' : 'nao';
     const acao = $('[data-acao]');
-    if (p.link) { acao.href = `${p.link}?horas=${h}`; acao.textContent = `Pedir ${horas(h)} com ${p.nome}`; acao.removeAttribute('aria-disabled'); acao.classList.remove('inativo'); }
+    if (p.link) { acao.href = `${p.link}?horas=${h}${p.tarefa ? `&tarefa=${encodeURIComponent(p.tarefa)}` : ''}`; acao.textContent = `Pedir ${horas(h)} com ${p.nome}`; acao.removeAttribute('aria-disabled'); acao.classList.remove('inativo'); }
     else { acao.removeAttribute('href'); acao.textContent = `Perfil de ${p.nome} em breve`; acao.setAttribute('aria-disabled', 'true'); acao.classList.add('inativo'); }
     blocos(p, h);
   };
 
-  raiz.addEventListener('change', () => desenha(true));
+  raiz.addEventListener('change', (ev) => {
+    if (ev.target.name === 'tarefa') { const outra = raiz.querySelector('[data-tarefa-outra]'); if (outra) outra.hidden = ev.target.value !== 'outra'; }
+    desenha(true);
+  });
+  // com a API, valor, desconto e veículo vêm do perfil público (evento disparado abaixo)
+  raiz.addEventListener('mc:perfil', (ev) => { Object.assign(pros[raiz.dataset.orcamento], ev.detail); desenha(false); });
+  // com a API, as tarefas e os mínimos vêm do perfil público (evento disparado abaixo)
+  raiz.addEventListener('mc:tarefas', (ev) => {
+    const p = pros[raiz.dataset.orcamento];
+    p.tarefas = ev.detail;
+    const ops = raiz.querySelector('[data-tarefa-ops]');
+    if (!ops) return;
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    ops.innerHTML = Object.entries(ev.detail).map(([chave, t], i) => `<label><input type="radio" name="tarefa" value="${esc(chave)}"${i ? '' : ' checked'}><span>${esc(t.nome)}</span></label>`).join('');
+    const outra = raiz.querySelector('[data-tarefa-outra]');
+    if (outra) outra.hidden = true;
+    desenha(true);
+  });
   if (campo) {
     campo.addEventListener('input', () => desenha(false));
     raiz.querySelectorAll('.passo-btn').forEach((b) => b.addEventListener('click', () => {
@@ -204,22 +217,9 @@
     if (/^\d{4}-\d{2}-\d{2}$/.test(params.get('data') || '')) f.data.value = params.get('data');
   });
   const busca = buscas[buscas.length - 1];
-  // sem dia escolhido, a tela pede o dia com atalhos para os próximos seis dias
-  const pedeDia = document.querySelector('[data-pede-dia]');
+  // o dia vem do campo da busca no topo; "Trocar o dia" leva até ele
   const trocar = document.querySelector('[data-trocar-dia]');
-  const CURTO = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
   const abreData = () => { busca.data.focus({ preventScroll: true }); busca.scrollIntoView({ block: 'start', behavior: 'smooth' }); try { busca.data.showPicker(); } catch (_) { /* navegador sem seletor nativo */ } };
-  const chips = [];
-  for (let i = 1; i <= 6; i++) {
-    const d = new Date(hoje); d.setDate(d.getDate() + i);
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'dia'; b.dataset.iso = iso(d); b.dataset.semana = d.getDay();
-    b.innerHTML = `<span class="dia-nome">${i === 1 ? 'Amanhã' : `${CURTO[d.getDay()][0].toUpperCase()}${CURTO[d.getDay()].slice(1)}`}, ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}</span><span class="dia-conta num"></span>`;
-    chips.push(b);
-  }
-  const outra = document.createElement('button');
-  outra.type = 'button'; outra.className = 'dia dia-outra'; outra.textContent = 'Outro dia';
-  document.querySelector('[data-dias]').append(...chips, outra);
   const c = filtros.elements;
   // os bairros dependem da cidade; o pedido da URL espera as opções existirem
   let bairroPedido = params.get('bairro') || null;
@@ -293,7 +293,6 @@
       b.classList.toggle('dentro', d >= e.vmin && d <= e.vmax);
     });
     ['', 'f', 'm'].forEach((g) => conta(`genero:${g}`, base.filter((p) => passa(p, e, 'genero') && (!g || p.genero === g)).length));
-    ['', 'm', 't', 'n'].forEach((t) => conta(`turno:${t}`, base.filter((p) => passa(p, e, 'turno') && (!t || p.turnos.includes(t))).length));
     conta('veiculo:sim', base.filter((p) => passa(p, e, 'veiculo') && p.veiculo).length);
     if (cidadeAtual) [...c.bairro.options].forEach((o) => {
       const n = base.filter((p) => passa(p, e, 'bairro') && (!o.value || p.bairros.includes(o.value))).length;
@@ -312,19 +311,11 @@
 
     titulo.textContent = !e.cidade ? 'Profissionais em todo o Brasil' : `Profissionais em ${cidadeAtual || e.cidade}`;
     const n = ver_.length;
-    if (n) {
-      const vs = ver_.map((p) => p.valor); const min = Math.min(...vs); const max = Math.max(...vs);
-      const nCidades = new Set(ver_.map((p) => p.cidade)).size;
-      const onde = e.cidade ? '' : ` em ${plural(nCidades, 'cidade', 'cidades')}`;
-      const quem = dia ? `${plural(n, 'profissional livre', 'profissionais livres')}${onde} ${quando}` : `${plural(n, 'profissional verificada', 'profissionais verificadas')}${onde}`;
-      achado.textContent = `${quem}${e.tarefa ? `${dia ? ',' : ''} para ${TAREFAS[e.tarefa]}` : ''}, ${min === max ? `por R$ ${min}` : `de R$ ${min} a R$ ${max}`} por hora.`;
-    } else achado.textContent = 'Nenhuma profissional encontrada.';
-
-    pedeDia.hidden = !!dia; trocar.hidden = !dia;
-    chips.forEach((b) => {
-      const k = naCidade.filter((p) => (!e.tarefa || p.tarefas.includes(e.tarefa)) && p.dias.includes(Number(b.dataset.semana)) && passa(p, e)).length;
-      b.querySelector('.dia-conta').textContent = plural(k, 'livre', 'livres');
-    });
+    // uma frase curta: quantas e, se houver, o dia e a tarefa
+    achado.textContent = n
+      ? `${dia ? `${plural(n, 'profissional livre', 'profissionais livres')} ${quando}` : plural(n, 'profissional verificada', 'profissionais verificadas')}${e.tarefa ? `${dia ? ',' : ''} para ${TAREFAS[e.tarefa]}` : ''}.`
+      : 'Nenhuma profissional encontrada.';
+    trocar.hidden = !dia;
     vazio.hidden = n > 0;
     if (!naCidade.length) { vazioTexto.textContent = `Ainda não há profissionais cadastradas em ${e.cidade}. Estamos chegando a novas cidades: veja onde já atendemos.`; vazioBotao.textContent = 'Ver todas as cidades'; vazioBotao.dataset.acao = 'cidades'; }
     else if (!base.length) { vazioTexto.textContent = `Ninguém livre ${quando || 'nessa data'}${e.tarefa ? ` para ${TAREFAS[e.tarefa]}` : ''}. Tente outro dia.`; vazioBotao.textContent = 'Ver qualquer data'; vazioBotao.dataset.acao = 'data'; }
@@ -341,8 +332,6 @@
   };
 
   filtros.addEventListener('change', desenha);
-  chips.forEach((b) => b.addEventListener('click', () => { buscas.forEach((f) => { f.data.value = b.dataset.iso; }); desenha(); }));
-  outra.addEventListener('click', abreData);
   trocar.addEventListener('click', abreData);
   buscas.forEach((f) => f.data.addEventListener('change', () => { buscas.forEach((o) => { o.data.value = f.data.value; }); desenha(); }));
   // ao arrastar, um controle empurra o outro em vez de cruzar
@@ -398,4 +387,155 @@
   };
   calc.addEventListener('input', desenha);
   desenha();
+})();
+
+// portfólio: com a API, os cursos validados e as tarefas vêm do perfil público; sem ela, fica o que está na página
+(() => {
+  const sec = document.querySelector('[data-cursos-validados]');
+  if (!sec || !/^https?:$/.test(location.protocol)) return;
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const dd = (iso) => { const d = new Date(iso); return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; };
+  // "O que Ana faz" e o orçamento seguem as tarefas que ela cadastrou: as fixas que ela faz,
+  // as atividades próprias (chave "personalizada:Nome") e "Outra tarefa", se aceitar outras
+  const tarefasDaApi = (p) => {
+    if (!Array.isArray(p.tarefas)) return;
+    const lista = document.querySelector('.perfil-servicos .cardapio-itens');
+    const outraLi = lista && lista.querySelector('[data-tarefa="outra"]');
+    const porChave = {};
+    p.tarefas.forEach((t) => { porChave[t.tipo === 'personalizada' ? `personalizada:${t.nome}` : t.tipo] = { nome: t.nome, minimo: t.minimoHoras }; });
+    if (p.aceitaOutras) porChave.outra = { nome: 'Outra tarefa', minimo: 1, aCombinar: true };
+    if (lista && outraLi) {
+      lista.querySelectorAll('[data-tarefa]').forEach((li) => {
+        const t = porChave[li.dataset.tarefa];
+        if (li.dataset.tarefa.startsWith('personalizada:')) { li.remove(); return; }
+        li.hidden = !t;
+        if (t && !t.aCombinar) li.querySelector('.item-linha span').textContent = `Mínimo ${t.minimo} h`;
+      });
+      p.tarefas.filter((t) => t.tipo === 'personalizada').forEach((t) => {
+        const li = outraLi.cloneNode(true);
+        li.dataset.tarefa = `personalizada:${t.nome}`;
+        li.hidden = false;
+        li.classList.add('chegou');
+        li.querySelector('.icone-tarefa').innerHTML = '<svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 6v16M6 14h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+        li.querySelector('.item-linha strong').textContent = t.nome;
+        li.querySelector('.item-linha span').textContent = `Mínimo ${t.minimoHoras} h`;
+        const texto = li.querySelector('.item-linha + p');
+        if (texto) texto.remove();
+        lista.insertBefore(li, outraLi);
+      });
+    }
+    const minimos = p.tarefas.map((t) => t.minimoHoras);
+    const cond = document.querySelector('[data-cond-minimo]');
+    if (cond) cond.textContent = `A partir de ${minimos.length ? Math.min(...minimos) : 1} h`;
+    const orc = document.querySelector('[data-orcamento]');
+    if (orc && Object.keys(porChave).length) orc.dispatchEvent(new CustomEvent('mc:tarefas', { detail: porChave }));
+  };
+  // foto, anos, valor e desconto, veículo, bairros e dias e horários do perfil público
+  const DIAS = [[1, 'Seg'], [2, 'Ter'], [3, 'Qua'], [4, 'Qui'], [5, 'Sex'], [6, 'Sáb'], [0, 'Dom']];
+  const hh = (t) => { const [h, m] = t.split(':'); return `${Number(h)}h${m === '00' ? '' : m}`; };
+  const resumoDias = (disp) => {
+    if (!disp.length) return 'Combine no pedido';
+    const grupos = [];
+    DIAS.forEach(([dia, curto]) => {
+      const txt = disp.filter((f) => f.dia === dia).map((f) => `${hh(f.inicio)} às ${hh(f.fim)}`).join(' e ');
+      const ult = grupos[grupos.length - 1];
+      if (txt && ult && ult.txt === txt && ult.seguido) { ult.fim = curto; return; }
+      if (txt) grupos.push({ ini: curto, fim: null, txt, seguido: true });
+      else if (ult) ult.seguido = false;
+    });
+    return grupos.map((g) => `${g.ini}${g.fim ? ` a ${g.fim.toLowerCase()}` : ''}, ${g.txt}`).join(' · ');
+  };
+  const perfilDaApi = (p) => {
+    const txt = (sel, t) => { const el = document.querySelector(sel); if (el) el.textContent = t; };
+    const reais = (c) => `R$ ${(c / 100).toLocaleString('pt-BR')}`;
+    const primeiro = String(p.nome || '').split(' ')[0];
+    if (p.fotoUrl) {
+      const fig = document.querySelector('[data-retrato]');
+      const svgRetrato = fig && fig.querySelector('svg');
+      if (svgRetrato) svgRetrato.outerHTML = `<img src="${esc(p.fotoUrl)}" alt="Foto de ${esc(p.nome)}">`;
+      if (fig) fig.classList.add('com-foto');
+    }
+    if (p.anosExperiencia) txt('[data-legenda-retrato]', `${p.nome} · ${p.anosExperiencia} ${p.anosExperiencia === 1 ? 'ano' : 'anos'} acompanhando pessoas idosas`);
+    if (p.valorHoraCentavos) {
+      txt('[data-cond-valor]', `${reais(p.valorHoraCentavos)}/h`);
+      const temDesconto = p.descontoAPartirHoras && p.valorHoraDescontoCentavos;
+      txt('[data-cond-desconto]', temDesconto ? `${reais(p.valorHoraDescontoCentavos)}/h a partir de ${p.descontoAPartirHoras} h` : 'por hora');
+      const orc = document.querySelector('[data-orcamento]');
+      if (orc) orc.dispatchEvent(new CustomEvent('mc:perfil', { detail: { valor: p.valorHoraCentavos / 100, desconto: temDesconto ? { aPartir: p.descontoAPartirHoras, valor: p.valorHoraDescontoCentavos / 100 } : null, veiculo: !!p.veiculoIncluso } }));
+    }
+    const cv = document.querySelector('[data-cond-veiculo]');
+    if (cv) cv.innerHTML = p.veiculoIncluso ? '<strong>Veículo incluso</strong><span>busca e traz de volta</span>' : `<strong>Sem veículo</strong><span>${esc(primeiro)} vai até a casa</span>`;
+    txt('[data-onde-veiculo]', p.veiculoIncluso ? 'Incluso' : 'Sem veículo');
+    txt('[data-onde-veiculo-texto]', p.veiculoIncluso ? 'Carro próprio, sem cobrança à parte.' : 'O deslocamento é combinado com a família.');
+    if (Array.isArray(p.bairros) && p.bairros.length) txt('[data-onde-bairros]', p.bairros.length > 1 ? `${p.bairros.slice(0, -1).join(', ')} e ${p.bairros[p.bairros.length - 1]}` : p.bairros[0]);
+    if (Array.isArray(p.disponibilidade)) txt('[data-onde-dias]', resumoDias(p.disponibilidade));
+  };
+  fetch(`/api/profissionais/${encodeURIComponent(sec.dataset.slug)}`, { credentials: 'same-origin' })
+    .then((r) => (r.ok && (r.headers.get('content-type') || '').includes('json') ? r.json() : null))
+    .then((dados) => {
+      if (dados && dados.profissional) { tarefasDaApi(dados.profissional); perfilDaApi(dados.profissional); }
+      const lista = dados && (dados.qualificacoes || (dados.profissional && dados.profissional.qualificacoes));
+      if (!Array.isArray(lista)) return;
+      if (!lista.length) { sec.hidden = true; return; }
+      sec.querySelector('[data-lista-cursos]').innerHTML = lista.map((c) => `<li class="chegou"><strong>${esc(c.titulo)}</strong><span>${esc(c.instituicao)}</span><span class="num">${[c.cargaHorariaHoras ? `${c.cargaHorariaHoras} horas` : null, c.anoConclusao].filter(Boolean).join(' · ')}</span>${c.verificadoEm ? `<span class="curso-ok num">Validado em ${dd(c.verificadoEm)}</span>` : ''}</li>`).join('');
+    })
+    .catch(() => { /* sem a API, fica a lista da página */ });
+})();
+
+// portfólio: avaliações das famílias. Três na página e todas numa janela, com ordenação.
+// Com a API, vêm de /api/profissionais/:slug/avaliacoes; sem ela, ficam as de exemplo da página.
+(() => {
+  const sec = document.querySelector('[data-avaliacoes]');
+  const janela = document.querySelector('[data-av-janela]');
+  if (!sec || !janela) return;
+  const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const ESTRELA = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg>';
+  const estrelas = (n) => `<span class="estrelas-av" role="img" aria-label="Nota ${n} de 5">${ESTRELA.repeat(n)}${ESTRELA.replace('<svg', '<svg class="apagada"').repeat(5 - n)}</span>`;
+  // no horário daqui, não no UTC: uma avaliação das 22h não aparece com a data do dia seguinte
+  const data = (iso) => { const d = iso.length > 10 ? new Date(iso) : new Date(`${iso}T12:00:00`); return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; };
+  const item = (a) => `<li><div class="av-cab"><span class="av-quem">${esc(a.autor)}${a.relacao ? `, ${esc(a.relacao.toLowerCase())}` : ''} · <span class="num">${data(a.criadoEm)}</span></span>${estrelas(a.nota)}</div>${a.comentario ? `<p class="av-texto">“${esc(a.comentario)}”</p>` : '<p class="av-texto av-sem">Deu a nota sem comentário.</p>'}${a.resposta ? `<p class="av-resposta"><strong>Resposta de Ana:</strong> ${esc(a.resposta)}</p>` : ''}</li>`;
+  let lista = [];
+  try { lista = JSON.parse(document.getElementById('avaliacoes-exemplo').textContent); } catch (_) { lista = []; }
+  const media = () => (lista.length ? lista.reduce((s, a) => s + a.nota, 0) / lista.length : 0);
+  const resumo = () => {
+    const m = media().toFixed(1).replace('.', ',');
+    sec.querySelector('[data-av-media]').textContent = m;
+    sec.querySelector('[data-av-total]').textContent = `${lista.length} ${lista.length === 1 ? 'avaliação' : 'avaliações'} de quem contratou Ana`;
+    janela.querySelector('[data-av-janela-sub]').textContent = `${m} de 5 · ${lista.length} ${lista.length === 1 ? 'avaliação' : 'avaliações'}`;
+  };
+  const ORDENS = {
+    recentes: (a, b) => b.criadoEm.localeCompare(a.criadoEm),
+    antigas: (a, b) => a.criadoEm.localeCompare(b.criadoEm),
+    melhores: (a, b) => b.nota - a.nota || b.criadoEm.localeCompare(a.criadoEm),
+    piores: (a, b) => a.nota - b.nota || b.criadoEm.localeCompare(a.criadoEm),
+  };
+  const todas = (ordem) => { janela.querySelector('[data-av-todas]').innerHTML = [...lista].sort(ORDENS[ordem]).map(item).join(''); };
+  janela.querySelectorAll('[data-ordem]').forEach((b) => b.addEventListener('click', () => {
+    janela.querySelectorAll('[data-ordem]').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+    todas(b.dataset.ordem);
+    janela.querySelector('[data-av-todas]').scrollTop = 0;
+  }));
+  const abrir = sec.querySelector('[data-av-abrir]');
+  abrir.addEventListener('click', () => {
+    todas(janela.querySelector('[data-ordem][aria-pressed="true"]').dataset.ordem);
+    if (janela.showModal) janela.showModal(); else janela.setAttribute('open', '');
+    document.documentElement.classList.add('janela-aberta');
+  });
+  const fecha = () => { if (janela.close) janela.close(); else janela.removeAttribute('open'); };
+  janela.querySelector('[data-av-fechar]').addEventListener('click', fecha);
+  janela.addEventListener('click', (ev) => { if (ev.target === janela) fecha(); });
+  janela.addEventListener('close', () => { document.documentElement.classList.remove('janela-aberta'); abrir.focus(); });
+  resumo();
+
+  if (!/^https?:$/.test(location.protocol)) return;
+  fetch(`/api/profissionais/${encodeURIComponent(sec.dataset.slug)}/avaliacoes`, { credentials: 'same-origin' })
+    .then((r) => (r.ok && (r.headers.get('content-type') || '').includes('json') ? r.json() : null))
+    .then((d) => {
+      if (!d || !Array.isArray(d.avaliacoes)) return;
+      if (!d.avaliacoes.length) { sec.hidden = true; return; }
+      lista = d.avaliacoes.map((a) => ({ nota: a.nota, autor: a.autor, criadoEm: a.criadoEm, comentario: a.comentario, resposta: a.resposta || null, relacao: a.relacao || null }));
+      resumo();
+      sec.querySelector('[data-av-destaque]').innerHTML = [...lista].sort(ORDENS.recentes).slice(0, 3).map(item).join('');
+    })
+    .catch(() => { /* sem a API, ficam as avaliações da página */ });
 })();

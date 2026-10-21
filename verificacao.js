@@ -24,6 +24,7 @@
     const q = new URLSearchParams(location.search).get('exemplo');
     const doc = (tipo, rotulo, situacao = 'pendente', motivoRecusa = null) => ({ tipo, rotulo, situacao, motivoRecusa, arquivo: situacao === 'pendente' ? null : { id: `ex-${tipo}`, nome: `${tipo}.jpg`, tipoArquivo: 'image/jpeg', tamanho: 845000, enviadoEm: new Date().toISOString() } });
     const v = {
+      veiculoIncluso: false,
       situacao: 'rascunho',
       contatos: { email: { destino: 'jo•••@exemplo.com', verificado: true }, whatsapp: { destino: '(19) •••••-4521', verificado: false } },
       dadosFiscais: null, endereco: null,
@@ -38,6 +39,12 @@
       if (q === 'espera') { v.situacao = 'em_analise'; v.filaDeEspera = { desde: new Date(Date.now() - 2 * 86400000).toISOString(), posicao: 3 }; }
       else { v.situacao = 'correcao'; v.motivoCorrecao = 'Recebemos tudo, mas a foto do seu documento saiu cortada. Envie uma foto nova, mostrando o documento inteiro.'; }
     }
+    if (q === 'aprovada') { v.situacao = 'aprovado'; v.contatos.whatsapp.verificado = true; v.dadosFiscais = { cpf: '•••.•••.•••-09', cnpj: null, razaoSocial: null }; v.endereco = { cep: '13025-320', logradouro: 'Rua Maria Monteiro', numero: '120', complemento: null, bairro: 'Cambuí', cidade: 'Campinas', uf: 'SP' }; v.documentos.forEach((d) => { d.situacao = 'aprovado'; d.arquivo = { id: `ex-${d.tipo}`, nome: `${d.tipo}.jpg`, tipoArquivo: 'image/jpeg', tamanho: 845000, enviadoEm: new Date().toISOString() }; }); }
+    let cnhAvulsa = null;
+    const cursos = [
+      { id: 'c1', titulo: 'Cuidador de idosos', instituicao: 'Senac Campinas', cargaHorariaHoras: 160, anoConclusao: 2022, situacao: 'aprovado', motivoRecusa: null, enviadoEm: new Date(Date.now() - 9 * 86400000).toISOString(), revisadoEm: new Date(Date.now() - 8 * 86400000).toISOString(), arquivo: { nome: 'certificado-cuidador.pdf', tipoArquivo: 'application/pdf', tamanho: 412000 } },
+      { id: 'c2', titulo: 'Primeiros socorros', instituicao: 'Cruz Vermelha Brasileira', cargaHorariaHoras: 16, anoConclusao: 2024, situacao: 'enviado', motivoRecusa: null, enviadoEm: new Date(Date.now() - 86400000).toISOString(), revisadoEm: null, arquivo: { nome: 'primeiros-socorros.jpg', tipoArquivo: 'image/jpeg', tamanho: 630000 } },
+    ];
     const ind = { codigo: 'JOA-4F8M', links: { profissional: '/entrar.html?perfil=pro&modo=criar&indicacao=JOA-4F8M', familia: '/entrar.html?modo=criar&indicacao=JOA-4F8M' }, resumo: { cadastradas: 2, aprovadas: 1, comPrimeiroServico: 0 }, indicadas: [{ nome: 'Paula M.', tipo: 'profissional', etapa: 'aprovada' }, { nome: 'Sérgio L.', tipo: 'familia', etapa: 'cadastrada' }] };
     const arquivos = {};
     const recalcula = () => {
@@ -53,6 +60,32 @@
       async chamar(metodo, url, corpo) {
         await new Promise((r) => setTimeout(r, 250));
         if (url === '/api/profissionais/eu/verificacao') return { verificacao: structuredClone(v) };
+        if (url === '/api/profissionais/eu' && metodo === 'PATCH') {
+          if (corpo.veiculoIncluso && !v.veiculoIncluso) {
+            if (v.situacao === 'em_analise') erro(409, 'Seu cadastro está na lista de espera. Depois da aprovação, você pode passar a oferecer veículo.');
+            if (v.situacao === 'aprovado' && (!cnhAvulsa || cnhAvulsa.situacao !== 'aprovado')) erro(422, 'Para oferecer veículo, envie sua CNH. Ela passa pela nossa análise e, aprovada, o veículo aparece no seu perfil.', { veiculoIncluso: cnhAvulsa ? 'Sua CNH ainda está em análise.' : 'Envie sua CNH primeiro.' });
+          }
+          v.veiculoIncluso = !!corpo.veiculoIncluso;
+          if (['rascunho', 'correcao'].includes(v.situacao)) {
+            if (v.veiculoIncluso && !v.documentos.some((d) => d.tipo === 'cnh')) v.documentos.push({ tipo: 'cnh', rotulo: 'CNH (para quem atende com veículo)', situacao: 'pendente', motivoRecusa: null, arquivo: null });
+            if (!v.veiculoIncluso) v.documentos = v.documentos.filter((d) => d.tipo !== 'cnh');
+            recalcula();
+          }
+          return { usuario: {} };
+        }
+        if (url === '/api/profissionais/eu/qualificacoes' && metodo === 'GET') return { qualificacoes: structuredClone(cursos) };
+        if (url === '/api/profissionais/eu/qualificacoes' && metodo === 'POST') {
+          const campos = {};
+          if ((corpo.get('titulo') || '').trim().length < 3) campos.titulo = 'Informe o nome do curso.';
+          if ((corpo.get('instituicao') || '').trim().length < 2) campos.instituicao = 'Informe onde você fez o curso.';
+          if (Object.keys(campos).length) erro(422, 'Confira os campos marcados.', campos);
+          const f2 = corpo.get('arquivo');
+          const c = { id: `c${Date.now()}`, titulo: corpo.get('titulo'), instituicao: corpo.get('instituicao'), cargaHorariaHoras: Number(corpo.get('cargaHorariaHoras')) || null, anoConclusao: Number(corpo.get('anoConclusao')) || null, situacao: 'enviado', motivoRecusa: null, enviadoEm: new Date().toISOString(), revisadoEm: null, arquivo: { nome: f2.name, tipoArquivo: f2.type, tamanho: f2.size } };
+          arquivos[`curso-${c.id}`] = URL.createObjectURL(f2);
+          cursos.unshift(c); return { qualificacao: c };
+        }
+        const mc2 = url.match(/^\/api\/profissionais\/eu\/qualificacoes\/([^/]+)$/);
+        if (mc2 && metodo === 'DELETE') { const i = cursos.findIndex((c) => c.id === mc2[1]); if (i >= 0) cursos.splice(i, 1); return null; }
         if (url === '/api/indicacoes/eu') return structuredClone(ind);
         if (url === '/api/eu/verificacoes') return { enviadoPara: v.contatos[corpo.canal].destino, expiraEm: new Date(Date.now() + 15 * 60000).toISOString() };
         if (url === '/api/eu/verificacoes/confirmar') {
@@ -81,8 +114,9 @@
           recalcula(); return { verificacao: structuredClone(v) };
         }
         if (url === '/api/profissionais/eu/documentos') {
-          travado();
           const tipo = corpo.get('tipo'); const f = corpo.get('arquivo');
+          if (tipo === 'cnh' && v.situacao === 'aprovado') { cnhAvulsa = { situacao: 'enviado', nome: f.name, tamanho: f.size }; return { documento: { tipo, situacao: 'enviado' }, verificacao: structuredClone(v) }; }
+          travado();
           const d = v.documentos.find((x) => x.tipo === tipo);
           d.situacao = 'enviado'; d.motivoRecusa = null;
           d.arquivo = { id: `ex-${tipo}-${Date.now()}`, nome: f.name, tipoArquivo: f.type, tamanho: f.size, enviadoEm: new Date().toISOString() };
@@ -351,6 +385,113 @@
     $('[data-indicacoes]').hidden = false;
   };
 
+
+  // --- veículo e CNH ---
+  const veiculoMsg = $('[data-veiculo-msg]');
+  const cnhCard = $('[data-cnh-avulsa]');
+  const marcaVeiculo = () => {
+    $$('[name="veiculo"]').forEach((r) => { r.checked = (r.value === 'sim') === !!v.veiculoIncluso; });
+    const pill = $('[data-veiculo-pill]');
+    pill.className = `pill ${v.veiculoIncluso ? 'pill-ok' : ''}`;
+    pill.textContent = v.veiculoIncluso ? 'Veículo incluso' : 'Sem veículo';
+  };
+  $$('[name="veiculo"]').forEach((r) => r.addEventListener('change', async () => {
+    const quer = r.value === 'sim';
+    if (quer === !!v.veiculoIncluso) return;
+    veiculoMsg.textContent = 'Salvando…'; veiculoMsg.className = 'ex-msg';
+    try {
+      await chamar('PATCH', '/api/profissionais/eu', { veiculoIncluso: quer });
+      v = (await chamar('GET', '/api/profissionais/eu/verificacao')).verificacao;
+      if (v.veiculoIncluso === undefined) v.veiculoIncluso = quer;
+      desenha(); marcaVeiculo();
+      veiculoMsg.textContent = quer
+        ? (editavel() ? 'Pronto. A CNH entrou na lista de documentos, na etapa 3.' : 'Pronto. O veículo aparece no seu perfil.')
+        : 'Pronto. Seu perfil mostra que você atende sem veículo.';
+    } catch (e) {
+      marcaVeiculo();
+      const emAnalise = e.campos && /análise/.test(e.campos.veiculoIncluso || '');
+      veiculoMsg.textContent = emAnalise ? 'Sua CNH ainda está em análise. Quando a equipe aprovar, você pode marcar que leva de carro.' : e.message;
+      veiculoMsg.className = 'ex-msg ex-aviso';
+      // aprovada sem CNH: ela pode mandar a CNH por aqui; o veículo libera quando a equipe aprovar
+      if (e.status === 422 && e.campos && /Envie/.test(e.campos.veiculoIncluso || '')) cnhCard.hidden = false;
+    }
+  }));
+  $$('[data-cnh-arquivo-input]').forEach((inp) => inp.addEventListener('change', async () => {
+    const arq = inp.files && inp.files[0]; const erro = $('[data-cnh-erro]');
+    if (!arq) return;
+    erro.hidden = true;
+    if (arq.size > LIMITE) { erro.textContent = 'O arquivo passa de 10 MB. Tire a foto de novo ou escolha um arquivo menor.'; erro.hidden = false; return; }
+    const fd = new FormData(); fd.append('tipo', 'cnh'); fd.append('arquivo', arq, arq.name || 'cnh.jpg');
+    try {
+      await chamar('POST', '/api/profissionais/eu/documentos', fd);
+      $('[data-cnh-pill]').textContent = 'Enviada, em conferência';
+      const info = $('[data-cnh-arquivo]'); info.textContent = `${arq.name} · ${tamanho(arq.size)}`; info.hidden = false;
+      $$('.doc-acoes', cnhCard).forEach((d) => { d.hidden = true; });
+      veiculoMsg.textContent = 'Recebemos sua CNH. Quando a equipe aprovar, marque "Sim, levo de carro" de novo.'; veiculoMsg.className = 'ex-msg';
+    } catch (e) { erro.textContent = e.message; erro.hidden = false; }
+  }));
+
+  // --- cursos e treinamentos ---
+  const SIT_CURSO = { enviado: ['', 'Em validação'], aprovado: ['pill-ok', 'Validado'], recusado: ['pill-aviso', 'Recusado'] };
+  let cursos = [];
+  const desenhaCursos = () => {
+    const validados = cursos.filter((c) => c.situacao === 'aprovado').length;
+    $('[data-cursos-conta]').textContent = cursos.length ? `${validados} de ${cursos.length} ${cursos.length === 1 ? 'validado' : 'validados'}` : '';
+    $('[data-cursos]').innerHTML = cursos.length ? cursos.map((c) => {
+      const [cl, rot] = SIT_CURSO[c.situacao] || ['', c.situacao];
+      const ver = modoApi ? `/api/profissionais/eu/qualificacoes/${encodeURIComponent(c.id)}/arquivo` : exemplo.arquivos[`curso-${c.id}`];
+      const detalhes = [c.instituicao, c.cargaHorariaHoras ? `${c.cargaHorariaHoras} h` : null, c.anoConclusao].filter(Boolean).map(esc).join(' · ');
+      return `<li class="curso${c.situacao === 'recusado' ? ' doc-recusado' : ''}" data-curso="${esc(c.id)}">
+        <div class="doc-cab"><p class="doc-nome">${esc(c.titulo)}</p><span class="pill ${cl}">${rot}</span></div>
+        <p class="curso-det num">${detalhes}</p>
+        ${c.motivoRecusa ? `<p class="doc-motivo">${esc(c.motivoRecusa)}</p>` : ''}
+        <p class="doc-arquivo num">${c.arquivo ? `${esc(c.arquivo.nome)} · ${tamanho(c.arquivo.tamanho)}` : ''}${ver ? ` · <a href="${esc(ver)}" target="_blank" rel="noopener">Ver certificado</a>` : ''} · <button class="link curso-tirar" type="button" data-tirar>Tirar do perfil</button></p>
+        <p class="campo-erro" data-erro-tirar hidden></p>
+      </li>`;
+    }).join('') : '<li class="vazio">Nenhum curso enviado ainda. Cursos validados deixam seu perfil mais forte para as famílias.</li>';
+    $$('[data-curso]').forEach((li) => {
+      const b = $('[data-tirar]', li);
+      b.addEventListener('click', async () => {
+        if (!b.dataset.confirmar) { b.dataset.confirmar = '1'; b.textContent = 'Confirmar: tirar este curso'; return; }
+        try { await chamar('DELETE', `/api/profissionais/eu/qualificacoes/${encodeURIComponent(li.dataset.curso)}`); cursos = cursos.filter((c) => c.id !== li.dataset.curso); desenhaCursos(); }
+        catch (e) { const p = $('[data-erro-tirar]', li); p.textContent = e.message; p.hidden = false; }
+      });
+    });
+  };
+  const fc = $('[data-form-curso]');
+  let arquivoCurso = null;
+  $('[data-novo-curso]').addEventListener('click', (ev) => { fc.hidden = false; ev.currentTarget.hidden = true; fc.titulo.focus(); });
+  $('[data-cancelar-curso]').addEventListener('click', () => { fc.hidden = true; fc.reset(); arquivoCurso = null; $('[data-curso-escolhido]').hidden = true; $('[data-novo-curso]').hidden = false; });
+  $$('[data-curso-arquivo]').forEach((inp) => inp.addEventListener('change', () => {
+    const arq = inp.files && inp.files[0]; if (!arq) return;
+    arquivoCurso = arq;
+    const p = $('[data-curso-escolhido]'); p.textContent = `${arq.name} · ${tamanho(arq.size)}`; p.hidden = false;
+  }));
+  fc.anoConclusao.addEventListener('input', () => { fc.anoConclusao.value = soDigitos(fc.anoConclusao.value).slice(0, 4); });
+  fc.cargaHorariaHoras.addEventListener('input', () => { fc.cargaHorariaHoras.value = soDigitos(fc.cargaHorariaHoras.value).slice(0, 4); });
+  fc.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    $$('[data-erro-curso]', fc).forEach((p) => { p.hidden = true; });
+    const geral = $('[data-erro-curso="geral"]', fc);
+    if (!arquivoCurso) { geral.textContent = 'Anexe o certificado do curso.'; geral.hidden = false; return; }
+    if (arquivoCurso.size > LIMITE) { geral.textContent = 'O certificado passa de 10 MB. Escolha um arquivo menor.'; geral.hidden = false; return; }
+    const fd = new FormData();
+    fd.append('titulo', fc.titulo.value.trim()); fd.append('instituicao', fc.instituicao.value.trim());
+    if (fc.cargaHorariaHoras.value) fd.append('cargaHorariaHoras', fc.cargaHorariaHoras.value);
+    if (fc.anoConclusao.value) fd.append('anoConclusao', fc.anoConclusao.value);
+    fd.append('arquivo', arquivoCurso, arquivoCurso.name || 'certificado.jpg');
+    const b = $('[type="submit"]', fc); b.disabled = true; b.textContent = 'Enviando…';
+    try {
+      const { qualificacao } = await chamar('POST', '/api/profissionais/eu/qualificacoes', fd);
+      cursos.unshift(qualificacao); desenhaCursos();
+      fc.reset(); arquivoCurso = null; $('[data-curso-escolhido]').hidden = true; fc.hidden = true; $('[data-novo-curso]').hidden = false;
+    } catch (e) {
+      let algum = false;
+      Object.entries(e.campos || {}).forEach(([k, msg]) => { const p = $(`[data-erro-curso="${k}"]`, fc); if (p) { p.textContent = msg; p.hidden = false; algum = true; } });
+      if (!algum) { geral.textContent = e.message; geral.hidden = false; }
+    } finally { b.disabled = false; b.textContent = 'Enviar para validação'; }
+  });
+
   // --- início: com API, confere a sessão; sem API, usa o exemplo com a sessão de demonstração ---
   const fora = () => { $('[data-gestao]').remove(); $('[data-fora]').hidden = false; $('.topo-conta').hidden = true; };
   const comeca = async (nome, sair) => {
@@ -360,8 +501,10 @@
     $('[data-sair]').addEventListener('click', sair);
     try {
       v = (await chamar('GET', '/api/profissionais/eu/verificacao')).verificacao;
-      preenche(); desenha();
+      preenche(); desenha(); marcaVeiculo();
+      $('[data-extras]').hidden = false;
     } catch (e) { $('[data-achado]').textContent = e.message; return; }
+    try { cursos = (await chamar('GET', '/api/profissionais/eu/qualificacoes')).qualificacoes; desenhaCursos(); } catch (_) { /* cursos aparecem quando a API responder */ }
     try { indica(await chamar('GET', '/api/indicacoes/eu')); } catch (_) { /* indicações aparecem quando a API responder */ }
   };
   (async () => {

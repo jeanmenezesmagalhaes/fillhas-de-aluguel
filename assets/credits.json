@@ -70,28 +70,6 @@
     "saved": "2026-10-20T14:13:55.328Z"
   },
   {
-    "file": "assets/ipe-rei-3831844709.jpg",
-    "media": "image",
-    "ref": "commons:63651639",
-    "title": "Ipê rei (3831844709)",
-    "creator": "Cássio Abreu from CAMPINAS, Brasil",
-    "creatorUrl": null,
-    "date": "2009-08-16",
-    "license": "CC BY 2.0",
-    "licenseCode": "by",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
-    "creditRequired": true,
-    "page": "https://commons.wikimedia.org/wiki/File:Ip%C3%AA_rei_(3831844709).jpg",
-    "via": "Wikimedia Commons",
-    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Ip%C3%AA_rei_%283831844709%29.jpg/1920px-Ip%C3%AA_rei_%283831844709%29.jpg",
-    "width": 1920,
-    "height": 1280,
-    "bytes": 1187200,
-    "credit": "\"Ipê rei (3831844709)\" by Cássio Abreu from CAMPINAS, Brasil, CC BY 2.0, via Wikimedia Commons",
-    "notes": [],
-    "saved": "2026-10-20T14:13:56.154Z"
-  },
-  {
     "file": "assets/bosque-dos-jequitibas.jpg",
     "media": "image",
     "ref": "commons:61342529",
@@ -158,5 +136,18 @@
       "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
     ],
     "saved": "2026-10-20T15:30:21.727Z"
+  },
+  {
+    "file": "assets/ipe-amarelo-campo-1024.webp",
+    "media": "image",
+    "ref": "openverse:44ac9ddf-b46c-4701-9acc-ff97782604e7",
+    "title": "Paisagem com ipê amarelo florido",
+    "creator": "renalteix",
+    "license": "Public Domain Mark 1.0",
+    "licenseCode": "pdm",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "creditRequired": false,
+    "page": "https://www.flickr.com/photos/40124183@N02/6330129969",
+    "via": "Flickr"
   }
 ]

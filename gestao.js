@@ -3,6 +3,23 @@
 (() => {
   const comApi = location.protocol === 'http:' || location.protocol === 'https:';
 
+  // a tela e o convite para entrar começam escondidos; quando a página tira um dos dois, o outro aparece
+  // (a classe "carregando" já vem do <head>, para nada piscar antes deste script rodar)
+  const raiz = document.documentElement;
+  if (!(document.querySelector('[data-gestao]') && document.querySelector('[data-fora]'))) raiz.classList.remove('carregando');
+  else {
+    raiz.classList.add('carregando');
+    const pronto = () => { raiz.classList.remove('carregando'); obs.disconnect(); };
+    // pronto quando sobra só o convite, ou quando a tela da conta já está visível (dados carregados)
+    const decidiu = () => {
+      const g = document.querySelector('[data-gestao]'); const f = document.querySelector('[data-fora]');
+      return (!g && f) || (g && !f && !g.hidden);
+    };
+    const obs = new MutationObserver(() => { if (decidiu()) pronto(); });
+    obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'] });
+    setTimeout(pronto, 4000);
+  }
+
   // tudo o que veio de pessoas (nomes, tarefas, recados) entra na página escapado
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
@@ -17,6 +34,7 @@
     if (!r.ok) {
       const e = new Error((dados && dados.erro && dados.erro.mensagem) || 'Não foi possível concluir. Tente de novo.');
       e.status = r.status;
+      e.campos = (dados && dados.erro && dados.erro.campos) || null;
       throw e;
     }
     return dados;
@@ -37,6 +55,14 @@
     return h.getFullYear() - a - (h.getMonth() + 1 < m || (h.getMonth() + 1 === m && h.getDate() < d) ? 1 : 0);
   };
   const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+  // prazo de resposta: "hoje, 20h", "amanhã, 9h30" ou "qua, 22/10, 9h"
+  const prazo = (iso) => {
+    const d = new Date(iso);
+    const h = new Date(); h.setHours(0, 0, 0, 0);
+    const dias = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - h) / 86400000);
+    return `${dias === 0 ? 'hoje' : dias === 1 ? 'amanhã' : dia(d).toLowerCase()}, ${hora(d)}`;
+  };
+  const urgente = (iso) => new Date(iso) - Date.now() < 6 * 3600000;
 
   const ESTRELA = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg>';
   const estrelas = (n) => `<span class="estrelas" role="img" aria-label="Você avaliou com ${n} de 5">${ESTRELA.repeat(n)}${ESTRELA.replace('<svg', '<svg class="apagada"').repeat(5 - n)}</span>`;
@@ -93,5 +119,5 @@
     return eu;
   }
 
-  window.mc = { comApi, esc, api, dia, hora, faixa, dataCurta, brl, primeiro, idade, plural, estrelas, doisToques, abrirAvaliacao, sair, entrar };
+  window.mc = { comApi, esc, api, dia, hora, faixa, dataCurta, brl, primeiro, idade, plural, prazo, urgente, estrelas, doisToques, abrirAvaliacao, sair, entrar };
 })();

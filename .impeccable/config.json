@@ -20,6 +20,15 @@
         ],
         "createdAt": "2026-10-20T19:36:40.650Z",
         "reason": "Claude triage: .pro-banner and .pro-decide inset their text by clamp(24px,4vw,64px) on desktop and 16px on phone; the only flush children are the brand's folder layers (shapes, no text) bleeding on purpose"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "perfil.html"
+        ],
+        "createdAt": "2026-10-21T00:19:44.516Z",
+        "reason": "Claude triage: .com-sufixo/.com-prefixo are the bordered box of a text field (input plus 'horas'/'R$' label); the input text is vertically centered in a 44px box with 4px block padding and 12px side padding, so nothing sits flush"
       }
     ]
   }

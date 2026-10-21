@@ -28,7 +28,7 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
 
 - Uso no celular e no computador; contrato exige as duas representações.
 - Fluxos: busca → resultados → portfólio → WhatsApp ilustrativo; portfólio → identificação → solicitação → resumo → aguardando aceite → confirmação; solicitação → alteração da cuidadora → novo aceite; cadastro da cuidadora → documentos → aprovação → portfólio publicado; contratação realizada → avaliação; denúncia → análise administrativa.
-- 16 telas mapeadas em `docs/MAPA-DE-TELAS.md`; `mapa.html` é a navegação de revisão.
+- Telas listadas no README; as do primeiro protótipo (cadastro, login, pagamento e mapa) foram apagadas em 20/10/2026.
 - Trabalho passa entre agentes; cada passagem registra estado em `docs/PASSAGEM.md` e continua sem reiniciar.
 
 ## Capabilities and Constraints
@@ -92,7 +92,7 @@ Dados canônicos fictícios, consistentes entre telas (fonte: `docs/PASSAGEM.md`
   Os dados ficam em `docs/gera_busca.py`. Três são homens. Só Ana tem perfil publicado.
 - Cláudia: 4,8 em 7 avaliações, revisão 05/10/2026, Taquaral, 4 anos.
 - Mariana Costa contrata Ana para levar Helena Costa (78) a uma consulta, 28/10/2026, 9h–13h: 4 h × R$70 = R$280 (hora com desconto); taxa da plataforma em definição, fora do total.
-- Dados anteriores (R$330 com deslocamento R$20, acompanhamento externo R$15 e taxa R$15; visão da cuidadora R$315) seguem nas telas ainda não revisadas (valores.html, pagamento.html).
+- Dados anteriores (R$330 com deslocamento R$20, acompanhamento externo R$15 e taxa R$15; visão da cuidadora R$315) ficaram só no histórico: valores.html virou redirecionamento e pagamento.html foi apagada.
 
 Retratos são ilustrações locais, não fotografias de pessoas reais. Não existem clientes, depoimentos, métricas ou parcerias reais; não inventar.
 

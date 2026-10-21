@@ -227,3 +227,24 @@ button { font: inherit; }
 .entrar-pro { margin-top: 20px; color: var(--muted); font-size: var(--fs-small); text-align: center; }
 .entrar-pro a { color: var(--text); font-weight: 500; }
 @media (max-width: 640px) { .cartao-entrar { padding: 24px 20px; } }
+
+/* topo das páginas da família (pedidos, resumo, entrar): igual ao da home, mesmo tamanho de letra,
+   largura total e o botão "Área profissional" em forma de aba de pasta */
+.topo.topo-site { height: auto; border-bottom: 0; background: #ffffff; }
+.topo-site .topo-dentro { max-width: none; min-height: 72px; margin: 0; padding: 0 clamp(16px, 3vw, 48px); }
+.topo-site .marca { gap: 10px; font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem); letter-spacing: -0.01em; }
+.topo-site .marca svg { width: 32px; height: 22px; }
+.topo-site .topo-nav { gap: 4px 28px; }
+.topo-site .topo-nav a, .topo-site .topo-conta { min-height: 44px; font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem); }
+.topo-site .topo-nav a:hover, .topo-site .topo-nav a[aria-current] { text-underline-offset: 6px; text-decoration-thickness: 2px; }
+.topo-site .topo-nav a[aria-current] { text-decoration-color: #f28cb1; }
+.topo-site .topo-nav .topo-pro { margin-left: 8px; padding: 0 20px; border-radius: 0; background: #dce8e0; font-size: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem); clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 100%, 0 100%); }
+.topo-site .topo-nav .topo-pro:hover { background: #c3d6ca; text-decoration: none; }
+.topo-site .menu-botao { min-height: 44px; padding: 0 14px; border-radius: 0; background: #dce8e0; font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem); }
+@media (max-width: 900px) {
+  .topo-site .topo-dentro { min-height: 64px; }
+  .topo-site .topo-nav { padding: 8px clamp(16px, 3vw, 48px) 20px; border-bottom: 0; }
+  .topo-site .topo-nav a:not(.topo-pro) { min-height: 52px; font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem); }
+  .topo-site .topo-nav .topo-pro { margin: 12px 0 0; }
+}
+@media (max-width: 640px) { .topo.topo-site { height: auto; } .topo-site .topo-dentro { margin: 0; } }

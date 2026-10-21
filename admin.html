@@ -1,35 +1,59 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<script>document.documentElement.classList.add('js')</script>
+<script>document.documentElement.classList.add('js', 'carregando')</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<title>Lista de espera · Administração · Minha companhia</title>
+<title>Conferência · Administração · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="resumo.css?v=6">
-<link rel="stylesheet" href="gestao.css?v=12">
-<link rel="stylesheet" href="verificacao.css?v=1">
+<link rel="stylesheet" href="gestao.css?v=24">
+<link rel="stylesheet" href="verificacao.css?v=4">
 </head>
 <body class="pagina-gestao">
 
 <header class="topo" data-topo>
   <div class="topo-dentro">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
-    <nav class="topo-nav" aria-label="Administração"><a href="admin.html" aria-current="page">Lista de espera</a><span class="topo-conta"><span data-nome-conta>Equipe</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+    <nav class="topo-nav" aria-label="Administração"><a href="admin.html" aria-current="page">Conferência</a><span class="topo-conta"><span data-nome-conta>Equipe</span><button class="link" type="button" data-sair>Sair</button></span></nav>
   </div>
 </header>
 
 <main class="tela gestao adm" data-gestao hidden>
   <div class="titulo">
     <div>
-      <h1>Lista de espera</h1>
+      <h1>Conferência</h1>
       <p class="achado" data-achado></p>
     </div>
   </div>
 
-  <div class="adm-grade">
+  <div class="segmentos adm-abas" role="tablist" aria-label="O que conferir">
+    <button type="button" role="tab" aria-selected="true" aria-controls="aba-fila" data-aba="fila">Cadastros <span class="num" data-n-fila></span></button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="aba-cursos" data-aba="cursos">Cursos para validar <span class="num" data-n-cursos></span></button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="aba-docs" data-aba="docs">Documentos avulsos <span class="num" data-n-docs></span></button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="aba-fotos" data-aba="fotos">Fotos <span class="num" data-n-fotos></span></button>
+  </div>
+
+  <section class="cartao adm-cursos" id="aba-cursos" role="tabpanel" hidden aria-labelledby="t-cursos-adm">
+    <div class="cartao-cab"><h2 id="t-cursos-adm">Cursos para validar</h2><span class="meta">do mais antigo ao mais novo</span></div>
+    <ul class="cursos-adm" data-cursos-adm></ul>
+  </section>
+
+  <section class="cartao adm-cursos" id="aba-docs" role="tabpanel" hidden aria-labelledby="t-docs-adm">
+    <div class="cartao-cab"><h2 id="t-docs-adm">Documentos avulsos</h2><span class="meta">de quem já saiu da lista de espera</span></div>
+    <p class="adm-sub">Por exemplo, a CNH de uma profissional aprovada que quer passar a atender com veículo. Ao aprovar, ela pode ligar o veículo no perfil.</p>
+    <ul class="cursos-adm" data-docs-adm></ul>
+  </section>
+
+  <section class="cartao adm-cursos" id="aba-fotos" role="tabpanel" hidden aria-labelledby="t-fotos-adm">
+    <div class="cartao-cab"><h2 id="t-fotos-adm">Fotos do perfil</h2><span class="meta">do mais antigo ao mais novo</span></div>
+    <p class="adm-sub">Aprove se o rosto aparece inteiro, de frente e sem outras pessoas. A foto aprovada vai para o perfil público.</p>
+    <ul class="fotos-adm" data-fotos-adm></ul>
+  </section>
+
+  <div class="adm-grade" id="aba-fila" role="tabpanel">
     <section class="cartao adm-fila" aria-labelledby="t-fila">
       <div class="cartao-cab"><h2 id="t-fila">Em ordem de envio</h2><span class="meta num" data-conta-fila></span></div>
       <ol class="fila" data-fila></ol>
@@ -52,6 +76,6 @@
 </main>
 
 <script src="gestao.js"></script>
-<script src="admin.js?v=1"></script>
+<script src="admin.js?v=4"></script>
 </body>
 </html>

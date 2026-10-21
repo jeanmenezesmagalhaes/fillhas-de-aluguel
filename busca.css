@@ -183,3 +183,4 @@ a.botao.lp-breve:active { transform: none; }
 .faixa-trilho input:focus-visible::-moz-range-thumb { outline: 3px solid var(--tinta); outline-offset: 2px; }
 .faixa-limites { display: flex; justify-content: space-between; color: var(--salvia-texto); font-size: var(--step-small); }
 @media (prefers-reduced-motion: reduce) { .faixa-barras span { transition: none; } }
+.op-hora { color: var(--tinta-2); font-size: var(--step-small); }

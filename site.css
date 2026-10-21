@@ -503,3 +503,98 @@ section[id], .lista { scroll-margin-top: 140px; }
   .ft { justify-content: space-between; min-height: 44px; padding: 0 14px; }
   .ft[data-t="todas"] { grid-column: 1 / -1; }
 }
+
+/* portfólio: cursos validados pela equipe */
+.perfil-cursos { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 32px 5vw; align-items: start; margin: var(--gap-section) var(--margin) 0; }
+.perfil-cursos-cab p { max-width: 36ch; margin-top: 16px; font-size: var(--step-lead); line-height: 1.4; }
+.cursos-lista { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cursos-lista li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 24px; padding: 24px 28px; background: var(--salvia); }
+.cursos-lista strong { font-size: var(--step-lead); line-height: 1.2; }
+.cursos-lista span { color: var(--salvia-texto); }
+.cursos-lista .curso-ok { grid-column: 2; grid-row: 1 / span 3; align-self: center; padding: 6px 12px; background: var(--papel); color: var(--folha-2); font-weight: 500; white-space: nowrap; }
+@media (max-width: 760px) {
+  .perfil-cursos { grid-template-columns: 1fr; margin-left: 20px; margin-right: 20px; }
+  .cursos-lista li { grid-template-columns: 1fr; padding: 20px; }
+  .cursos-lista .curso-ok { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 8px; }
+}
+
+/* portfólio: condições da capa numa linha cada */
+.condicoes { width: min(100%, 680px); }
+.condicoes strong { font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem); white-space: nowrap; }
+.condicoes span { white-space: nowrap; }
+
+/* retrato da profissional no lugar da foto do bairro */
+.perfil-retrato-grande { background: var(--rosa); clip-path: polygon(0 var(--tab-h), 10% var(--tab-h), calc(10% + var(--tab-cut)) 0, 42% 0, calc(42% + var(--tab-cut)) var(--tab-h), 100% var(--tab-h), 100% 100%, 0 100%); }
+.perfil-retrato-grande svg { position: absolute; left: 50%; bottom: 0; width: auto; height: 84%; max-width: 92%; transform: translateX(-50%); }
+
+/* tarefas e onde/quando: ícone na aba da pasta, sem foto */
+.icone-tarefa { display: grid; place-items: center; width: 64px; height: 52px; margin-top: 2px; padding-top: 8px; background: var(--salvia); color: var(--folha-2); clip-path: polygon(0 12px, 12px 0, 34px 0, 46px 12px, 100% 12px, 100% 100%, 0 100%); }
+.icone-tarefa svg { width: 28px; height: 28px; }
+
+/* avaliações: três na página, todas na janela */
+.perfil-avaliacoes { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 32px 5vw; align-items: start; margin: var(--gap-section) var(--margin) 0; }
+.perfil-avaliacoes[hidden] { display: none; }
+.av-media { margin-top: 20px; color: var(--tinta-2); font-size: var(--step-lead); }
+.av-media strong { color: var(--tinta); font-size: var(--step-head); line-height: 1; letter-spacing: -0.03em; margin-right: 6px; }
+.av-total { margin-top: 6px; color: var(--tinta-2); }
+.av-ver { margin-top: 28px; }
+.av-lista { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.av-lista { gap: 40px; }
+.av-lista li { display: grid; gap: 10px; }
+.av-lista-toda { gap: 8px; }
+.av-lista-toda li { background: var(--salvia); }
+.av-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.estrelas-av { display: inline-flex; gap: 2px; color: var(--ipe-2); }
+.estrelas-av svg { width: 18px; height: 18px; }
+.estrelas-av .apagada { color: var(--salvia-2); }
+.av-quem { color: var(--salvia-texto); }
+.av-texto { font-size: var(--step-lead); line-height: 1.35; }
+.av-sem { color: var(--salvia-texto); font-size: var(--step-body); }
+.av-resposta { color: var(--salvia-texto); }
+.av-resposta strong { color: var(--tinta); font-weight: 600; }
+.av-janela { width: min(720px, calc(100% - 32px)); max-height: min(86svh, 900px); padding: 0; border: 0; background: var(--papel); color: var(--tinta); box-shadow: 0 24px 64px rgba(16, 37, 30, 0.28); } /* taste-skill-ignore: a janela flutua sobre a página */
+.av-janela[open] { display: flex; flex-direction: column; }
+.av-janela::backdrop { background: rgba(16, 37, 30, 0.55); }
+.av-janela-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 24px 28px 12px; }
+.av-janela-cab h2 { font-size: var(--step-lead); }
+.av-janela-cab p { margin-top: 2px; color: var(--tinta-2); }
+.av-fechar { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border: 0; background: var(--salvia); color: var(--tinta); cursor: pointer; }
+.av-fechar svg { width: 18px; height: 18px; }
+.av-ordem { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 28px 16px; }
+.av-ordem button { min-height: 40px; padding: 0 14px; border: 0; background: var(--salvia); color: var(--tinta); font: inherit; font-weight: 500; cursor: pointer; }
+.av-ordem [aria-pressed="true"] { background: var(--copa); color: #fff; }
+.av-lista-toda { flex: 1; overflow-y: auto; padding: 0 28px 28px; }
+.av-lista-toda li { padding: 18px 20px; }
+.av-lista-toda .av-texto { font-size: var(--step-body); }
+.janela-aberta { overflow: hidden; }
+@media (max-width: 760px) {
+  .condicoes { grid-template-columns: 1fr; }
+  .condicoes li { flex-direction: row; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .perfil-retrato-grande { height: 36svh !important; }
+  .perfil-retrato-grande svg { height: 90%; }
+  .icone-tarefa { width: 52px; height: 44px; padding-top: 6px; }
+  .icone-tarefa svg { width: 24px; height: 24px; }
+  .perfil-avaliacoes { grid-template-columns: 1fr; margin-left: 20px; margin-right: 20px; }
+  .av-janela { width: 100%; max-width: none; max-height: 92svh; margin: auto 0 0; }
+  .av-janela-cab { padding: 20px 20px 10px; }
+  .av-ordem { padding: 0 20px 12px; }
+  .av-lista-toda { padding: 0 20px 20px; }
+}
+
+.pagina-perfil .orc { align-items: start; }
+@media (max-width: 760px) { .perfil-servicos .cardapio + .cardapio { margin-top: 32px; } }
+
+/* orçamento: a tarefa vem antes das horas, e cada uma tem o seu mínimo */
+.tarefa-escolha { margin: 0 0 24px; padding: 0; border: 0; }
+.tarefa-ops { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tarefa-ops label { position: relative; cursor: pointer; }
+.tarefa-ops input { position: absolute; opacity: 0; }
+.tarefa-ops span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; background: var(--ipe-2); color: var(--tinta); font-weight: 500; }
+.tarefa-ops input:checked + span { background: var(--copa); color: #fff; }
+.tarefa-ops input:focus-visible + span { outline: 3px solid var(--tinta); outline-offset: 2px; }
+.tarefa-outra { display: grid; gap: 6px; margin-top: 12px; max-width: 420px; }
+.tarefa-outra[hidden] { display: none; }
+.tarefa-outra label { font-size: var(--step-small); font-weight: 500; }
+.tarefa-outra input { height: 48px; padding: 0 14px; border: 0; background: var(--papel); color: var(--tinta); font: inherit; }
+.cardapio-itens li[hidden] { display: none; }
+.perfil-retrato-grande.com-foto img { width: 100%; height: 100%; object-fit: cover; }

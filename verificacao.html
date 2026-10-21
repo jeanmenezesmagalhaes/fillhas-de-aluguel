@@ -9,7 +9,7 @@
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="resumo.css?v=6">
 <link rel="stylesheet" href="gestao.css?v=12">
-<link rel="stylesheet" href="verificacao.css?v=1">
+<link rel="stylesheet" href="verificacao.css?v=2">
 </head>
 <body class="pagina-gestao">
 
@@ -17,7 +17,7 @@
   <div class="topo-dentro">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="verificacao.html" aria-current="page">Seu cadastro</a><a href="#indicacoes">Indicar</a><a href="profissional.html">Como funciona</a><span class="topo-conta"><span data-nome-conta></span><button class="link" type="button" data-sair>Sair</button></span></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="verificacao.html" aria-current="page">Seu cadastro</a><a href="#cursos">Cursos</a><a href="#indicacoes">Indicar</a><a href="profissional.html">Como funciona</a><span class="topo-conta"><span data-nome-conta></span><button class="link" type="button" data-sair>Sair</button></span></nav>
   </div>
 </header>
 
@@ -163,6 +163,51 @@
     </aside>
   </div>
 
+  <!-- veículo e cursos: valem em qualquer fase do cadastro -->
+  <div class="extras" data-extras hidden>
+    <section class="cartao" id="veiculo" aria-labelledby="t-veiculo">
+      <div class="cartao-cab"><h2 id="t-veiculo">Atende com veículo?</h2><span class="pill" data-veiculo-pill></span></div>
+      <p class="ex-sub">Quem busca a pessoa em casa e leva no próprio carro precisa enviar a CNH. A família vê no seu perfil que o veículo está incluso.</p>
+      <div class="sim-nao" role="radiogroup" aria-labelledby="t-veiculo">
+        <label><input type="radio" name="veiculo" value="sim"><span>Sim, levo de carro</span></label>
+        <label><input type="radio" name="veiculo" value="nao"><span>Não, sem veículo</span></label>
+      </div>
+      <p class="ex-msg" data-veiculo-msg role="status"></p>
+      <div class="doc doc-cnh" data-cnh-avulsa hidden>
+        <div class="doc-cab"><p class="doc-nome">CNH</p><span class="pill" data-cnh-pill>Falta enviar</span></div>
+        <p class="doc-arquivo num" data-cnh-arquivo hidden></p>
+        <div class="doc-acoes">
+          <label class="btn btn-primario doc-botao"><input type="file" accept="image/*" capture="environment" data-cnh-arquivo-input>Tirar foto</label>
+          <label class="btn btn-secundario doc-botao"><input type="file" accept="application/pdf,image/jpeg,image/png,image/heic,.heic,.pdf" data-cnh-arquivo-input>Escolher arquivo</label>
+        </div>
+        <p class="campo-erro" data-cnh-erro hidden></p>
+      </div>
+    </section>
+
+    <section class="cartao" id="cursos" aria-labelledby="t-cursos">
+      <div class="cartao-cab"><h2 id="t-cursos">Cursos e treinamentos</h2><span class="meta num" data-cursos-conta></span></div>
+      <p class="ex-sub">Envie o certificado de cada curso. A equipe confere e, validado, ele aparece no seu perfil para as famílias.</p>
+      <ul class="cursos" data-cursos></ul>
+      <button class="btn btn-secundario" type="button" data-novo-curso>Adicionar curso</button>
+      <form class="form-curso" data-form-curso hidden novalidate>
+        <div class="campos-grade">
+          <div class="campo c-titulo"><label for="curso-titulo">Nome do curso</label><input id="curso-titulo" name="titulo" placeholder="Ex.: Cuidador de idosos"><p class="campo-erro" data-erro-curso="titulo" hidden></p></div>
+          <div class="campo c-inst"><label for="curso-inst">Onde fez</label><input id="curso-inst" name="instituicao" placeholder="Ex.: Senac Campinas"><p class="campo-erro" data-erro-curso="instituicao" hidden></p></div>
+          <div class="campo c-carga"><label for="curso-carga">Carga horária <span class="opcional">(opcional)</span></label><input id="curso-carga" name="cargaHorariaHoras" inputmode="numeric" placeholder="Em horas"><p class="campo-erro" data-erro-curso="cargaHorariaHoras" hidden></p></div>
+          <div class="campo c-ano"><label for="curso-ano">Ano em que terminou <span class="opcional">(opcional)</span></label><input id="curso-ano" name="anoConclusao" inputmode="numeric" maxlength="4" placeholder="2024"><p class="campo-erro" data-erro-curso="anoConclusao" hidden></p></div>
+        </div>
+        <p class="form-sub">Certificado</p>
+        <div class="doc-acoes">
+          <label class="btn btn-secundario doc-botao"><input type="file" accept="image/*" capture="environment" data-curso-arquivo>Tirar foto</label>
+          <label class="btn btn-secundario doc-botao"><input type="file" accept="application/pdf,image/jpeg,image/png,image/heic,.heic,.pdf" data-curso-arquivo>Escolher arquivo</label>
+        </div>
+        <p class="doc-arquivo num" data-curso-escolhido hidden></p>
+        <p class="campo-erro" data-erro-curso="geral" hidden></p>
+        <div class="doc-acoes"><button class="btn btn-primario" type="submit">Enviar para validação</button><button class="link" type="button" data-cancelar-curso>Cancelar</button></div>
+      </form>
+    </section>
+  </div>
+
   <!-- indicações -->
   <section class="cartao indicacoes" id="indicacoes" data-indicacoes hidden aria-labelledby="t-indicacoes">
     <div class="cartao-cab"><h2 id="t-indicacoes">Indique quem você conhece</h2></div>
@@ -191,6 +236,6 @@
 </main>
 
 <script src="gestao.js"></script>
-<script src="verificacao.js?v=1"></script>
+<script src="verificacao.js?v=2"></script>
 </body>
 </html>

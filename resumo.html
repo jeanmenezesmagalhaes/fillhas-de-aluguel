@@ -7,15 +7,15 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>Revise o pedido · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="resumo.css?v=6">
+<link rel="stylesheet" href="resumo.css?v=7">
 </head>
 <body>
 
-<header class="topo" data-topo>
+<header class="topo topo-site" data-topo>
   <div class="topo-dentro">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="pedidos.html">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a></nav>
   </div>
 </header>
 <main class="tela tela-pedido">
@@ -43,8 +43,8 @@
 
     <section class="cartao cartao-total" aria-labelledby="t-total">
       <h2 id="t-total">Total</h2>
-      <p class="total-valor num" data-total>R$ 240,00</p>
-      <p class="total-conta num" data-conta>4 horas × R$ 60,00, com veículo incluso</p>
+      <p class="total-valor num" data-total>R$ 280,00</p>
+      <p class="total-conta num" data-conta>4 horas × R$ 70,00, com veículo incluso</p>
 
       <div class="envio" data-estado="sem-conta">
         <a class="btn btn-primario btn-largo" href="entrar.html" data-entrar>Entrar para enviar</a>
@@ -76,7 +76,7 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { topo.classList.remove('menu-aberto'); botao.setAttribute('aria-expanded', 'false'); } });
   })();
   // horas vindas do orçamento do portfólio (?horas=N); sem parâmetro, vale o exemplo de 4 horas
-  const ana = { valor: 70, minimo: 2, desconto: { aPartir: 4, valor: 60 } };
+  const ana = { valor: 80, minimo: 2, desconto: { aPartir: 4, valor: 70 } };
   const brl2 = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const pedidas = Math.floor(Number(new URLSearchParams(location.search).get('horas')));
   const h = Number.isFinite(pedidas) && pedidas >= ana.minimo ? pedidas : 4;

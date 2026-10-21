@@ -151,7 +151,7 @@ Rejeições confirmadas: nada de hospital ou clínica (branco frio, azul hospita
 
 O resumo da solicitação é uma tela de trabalho e segue regras próprias: chão de sálvia, cartões brancos com borda de 1px, título de 24px e uma cor só nos dados (as horas de Ana em rosa escurecido).
 
-Aplicado hoje em `index.html`, `portfolio.html` (`site.css`, `site.js`) e `resumo.html` (`resumo.css`). As telas de valores, login, cadastro, pagamento e mapa ainda usam o sistema anterior (`styles.css`, sálvia e terracota com Georgia) até serem migradas.
+Aplicado hoje em `index.html`, `portfolio.html` (`site.css`, `site.js`) e `resumo.html` (`resumo.css`). As telas do primeiro protótipo (login, cadastro, pagamento e mapa), que usavam o sistema anterior (`styles.css`), foram apagadas.
 
 **Key Characteristics:**
 - Chão branco e tinta verde-copa; campos de cor separam as seções.
@@ -346,6 +346,12 @@ Seguem o estilo livro-caixa do resumo: chão sálvia, cartões brancos e coluna 
 - **Estrelas:** desenhadas em SVG.
 - **Sem entrada:** um cartão de entrar no lugar da tela.
 
+### Portfólio (portfolio.html)
+- **Capa:** a ficha sálvia à esquerda e, à direita, o retrato da profissional numa pasta rosa. As condições ficam em três quadros brancos, cada texto numa linha.
+- **Orçamento:** só o campo de horas, o mais e o menos e os atalhos 2, 4, 6 e 8 h. A leitura do total fica ao lado.
+- **Tarefas e onde/quando:** um ícone de linha na aba sálvia, o título, a duração ou o valor à direita e uma frase curta.
+- **Avaliações:** a média grande, as três mais recentes em lista e "Ver todas" numa janela com quatro ordens.
+
 ### Ganhos (ganhos.html)
 Extrato para a profissional não precisar do suporte.
 - **Título:** a frase diz quanto já caiu e o próximo depósito.
@@ -378,11 +384,17 @@ O celular vem primeiro, com uma coluna só e etapas numeradas pela posição. A 
 
 **Indicações:** o código, os links para profissionais e para famílias (copiar ou enviar no WhatsApp), três contagens e as pessoas indicadas com a etapa. Uma nota diz que as regras de recompensa ainda estão sendo definidas.
 
+- **Veículo e cursos:** dois cartões abaixo das etapas, que valem em qualquer fase.
+  - "Atende com veículo?" tem duas opções e salva na hora. Ligar o veículo põe a CNH na etapa 3. Na fila, ligar dá aviso. Aprovada e sem CNH, abre um cartão para enviar a CNH.
+  - "Cursos e treinamentos" lista cada curso com Em validação, Validado ou Recusado (com o motivo), "Ver certificado" e "Tirar do perfil" (pede confirmação). O formulário pede nome, onde fez, carga horária, ano e certificado.
+
 ### Administração (admin.html, admin.js)
 - **Fila:** à esquerda, em ordem de envio, com posição, nome, cidade, quem indicou e há quanto tempo.
 - **Ficha:** à direita, com contatos (confirmado ou não), CPF e CNPJ completos, endereço e os documentos atuais com "Abrir documento", "Aprovar" e "Recusar" (pede o motivo).
 - **Envios anteriores:** ficam num details.
 - **Decisão:** "Aprovar perfil" só libera com todos os documentos aprovados; "Pedir correção" pede o motivo.
+- **Abas:** "Cadastros", "Cursos para validar" e "Documentos avulsos" (por exemplo, a CNH de quem já foi aprovada), cada uma com a contagem. Antes, eram só "Cadastros" e "Cursos para validar", cada uma com a contagem. A segunda mostra os cursos do mais antigo ao mais novo, com Validar e Recusar (pede o motivo). A ficha mostra se a profissional atende com veículo e os cursos dela.
+- **Portfólio:** a seção "Cursos validados" fica depois dos documentos, com um campo sálvia por curso (nome, instituição, horas e ano) e o selo "Validado em…". Com a API, a lista vem de /api/profissionais/:slug.
 - **No celular:** a fila vem antes da ficha.
 
 ## Do's and Don'ts

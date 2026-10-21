@@ -183,3 +183,47 @@
   .adm-fila { position: static; }
   .ficha-blocos { grid-template-columns: 1fr; }
 }
+
+/* veículo e cursos */
+.extras { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 24px; align-items: start; margin-top: 24px; }
+.extras[hidden] { display: none; }
+.ex-sub { margin-top: -8px; color: var(--muted); }
+.sim-nao { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+.sim-nao label { position: relative; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 14px; border: 1px solid var(--control); border-radius: 8px; cursor: pointer; font-weight: 500; }
+.sim-nao input { width: 18px; height: 18px; accent-color: var(--text); }
+.sim-nao label:has(input:checked) { border-color: var(--text); background: var(--raised); }
+.ex-msg { min-height: 20px; margin-top: 12px; color: var(--muted); }
+.ex-msg:empty { min-height: 0; margin: 0; }
+.ex-aviso { color: #8a1f4c; }
+.doc-cnh { margin-top: 12px; }
+.doc-cnh[hidden], .doc-cnh .doc-acoes[hidden] { display: none; }
+.cursos { display: grid; gap: 10px; margin: 16px 0; }
+.curso { display: grid; gap: 4px; padding: 14px 16px; border-radius: 8px; background: var(--raised); }
+.curso-det { color: var(--muted); }
+.curso-tirar { color: var(--muted); font-size: var(--fs-small); }
+.curso-tirar[data-confirmar] { color: #8a1f4c; }
+.form-curso { display: grid; gap: 14px; margin-top: 4px; }
+.form-curso[hidden], .form-curso [hidden] { display: none; }
+.form-curso .campos-grade { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.c-titulo, .c-inst { grid-column: span 4; }
+.c-carga, .c-ano { grid-column: span 2; }
+.form-curso .campo input { width: 100%; }
+.form-curso .link { min-height: 40px; color: var(--text); }
+@media (max-width: 900px) { .extras { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .sim-nao { grid-template-columns: 1fr; } .c-carga, .c-ano { grid-column: span 4; } }
+.adm-abas { margin-top: 24px; }
+.adm-abas [aria-selected="true"] { border-color: var(--border); background: var(--surface); color: var(--text); }
+.adm-cursos { margin-top: 20px; }
+.adm-cursos[hidden], .adm-grade[hidden] { display: none; }
+.cursos-adm { display: grid; gap: 10px; }
+.curso-de { color: var(--muted); font-weight: 400; }
+.ficha-veiculo { display: flex; align-items: center; gap: 8px; margin-top: 16px; color: var(--muted); }
+.adm-sub { margin: -8px 0 16px; color: var(--muted); max-width: 70ch; }
+
+/* conferência: fotos do perfil, a foto grande ao lado das ações */
+.fotos-adm { display: grid; }
+.foto-adm { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 20px; align-items: start; padding: 20px 0; border-top: 1px solid var(--rule); }
+.foto-adm:first-child { border-top: 0; padding-top: 0; }
+.foto-adm img { width: 160px; height: 160px; border-radius: 8px; object-fit: cover; background: var(--raised); }
+.foto-adm-info { display: grid; gap: 8px; }
+@media (max-width: 640px) { .foto-adm { grid-template-columns: 96px minmax(0, 1fr); } .foto-adm img { width: 96px; height: 96px; } }
