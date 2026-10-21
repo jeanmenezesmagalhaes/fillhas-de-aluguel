@@ -13,6 +13,7 @@ import { mensageiroIndisponivel, mensageiroNoLog, type Mensageiro } from './mens
 import { rotasAdmin } from './rotas/admin.js';
 import { rotasAgenda } from './rotas/agenda.js';
 import { rotasBloqueios } from './rotas/bloqueios.js';
+import { rotasBusca } from './rotas/busca.js';
 import { rotasFotos } from './rotas/fotos.js';
 import { rotasContas } from './rotas/contas.js';
 import { rotasIndicacoes } from './rotas/indicacoes.js';
@@ -83,6 +84,7 @@ export async function criarApp(op: OpcoesApp) {
   rotasQualificacoes(app, ctx);
   rotasBloqueios(app, ctx);
   rotasFotos(app, ctx);
+  rotasBusca(app, ctx);
   rotasAgenda(app, ctx, op.segredoAgenda !== undefined ? op.segredoAgenda : producao ? null : 'segredo-de-desenvolvimento-da-agenda');
 
   app.get('/api/saude', async () => ({ ok: true }));
