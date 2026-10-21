@@ -169,7 +169,7 @@ await banco.db.transaction(async (tx) => {
 
   // valor da hora congelado em cada pedido: Cláudia R$ 70; Ana R$ 80, ou R$ 70 a partir de 4 h
   const base = { valorHoraCentavos: 7000 };
-  const daAna = (horas: number) => ({ profissionalId: ana, valorHoraCentavos: horas >= 4 ? 7000 : 8000 });
+  const daAna = (horas: number) => ({ profissionalId: ana, valorHoraCentavos: horas >= 4 ? 7000 : 8000, valorHoraCheioCentavos: horas >= 4 ? 8000 : null });
   const doMariana = { contratanteId: mariana, pessoaAcompanhadaId: helena!.id };
   const doRafael = { contratanteId: rafael, pessoaAcompanhadaId: dirce!.id };
   const feitos = await tx

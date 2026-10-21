@@ -193,6 +193,10 @@ export const servicos = pgTable(
     propostaRecado: text('proposta_recado'),
     // congelado no pedido: mudar o preço depois não altera serviços já pedidos
     valorHoraCentavos: integer('valor_hora_centavos').notNull(),
+    // a hora sem desconto, quando o desconto por volume foi aplicado (para mostrar quanto foi)
+    valorHoraCheioCentavos: integer('valor_hora_cheio_centavos'),
+    canceladoEm: quando('cancelado_em'),
+    canceladoPor: text('cancelado_por'),
     situacao: situacaoServico('situacao').notNull().default('solicitado'),
     // até quando a outra parte pode responder; passado o prazo, o pedido expira
     respondaAte: quando('responda_ate'),

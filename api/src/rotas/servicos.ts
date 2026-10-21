@@ -197,6 +197,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
         respondaAte: prazoDeResposta(ctx.agora(), inicio),
         // a partir de N horas vale a hora com desconto, se ela oferece
         valorHoraCentavos: p.descontoAPartir && p.valorDesconto && dados.horas >= p.descontoAPartir ? p.valorDesconto : p.valor,
+        valorHoraCheioCentavos: p.descontoAPartir && p.valorDesconto && dados.horas >= p.descontoAPartir ? p.valor : null,
       })
       .returning({ id: servicos.id });
     return reply.status(201).send({ servico: await servicoCompleto(ctx, u, novo!.id) });
@@ -240,7 +241,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
     para: Situacao,
     op: {
       validar?: (s: Awaited<ReturnType<typeof servicoDaParte>>, corpo: unknown) => void | Promise<void>;
-      campos?: (agora: Date, corpo: unknown) => PgUpdateSetSource<typeof servicos>;
+      campos?: (agora: Date, corpo: unknown, s: Awaited<ReturnType<typeof servicoDaParte>>) => PgUpdateSetSource<typeof servicos>;
       depois?: (s: Awaited<ReturnType<typeof servicoDaParte>>, agora: Date) => Promise<void>;
     } = {},
   ) =>
@@ -255,7 +256,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
       const agora = ctx.agora();
       const mudou = await ctx.db
         .update(servicos)
-        .set({ situacao: para, atualizadoEm: agora, ...op.campos?.(agora, req.body) })
+        .set({ situacao: para, atualizadoEm: agora, ...op.campos?.(agora, req.body, s) })
         .where(and(eq(servicos.id, id), inArray(servicos.situacao, de)))
         .returning({ id: servicos.id });
       if (!mudou.length) throw conflito('situacao_mudou', 'Este serviço mudou de situação. Atualize a página.');
@@ -302,7 +303,11 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
     }),
   });
   transicao('recusar-proposta', 'contratante', ['proposta_alterada'], 'recusado');
-  transicao('cancelar', 'qualquer', ['solicitado', 'proposta_alterada', 'confirmado'], 'cancelado', { validar: antesDoInicio });
+  // quem cancelou e quando: cancelamento da família em cima da hora entra nos ganhos dela
+  transicao('cancelar', 'qualquer', ['solicitado', 'proposta_alterada', 'confirmado'], 'cancelado', {
+    validar: antesDoInicio,
+    campos: (agora, _corpo, s) => ({ canceladoEm: agora, canceladoPor: s.papel }),
+  });
   transicao('concluir', 'profissional', ['confirmado'], 'realizado', {
     validar: (s) => {
       if (s.inicio > ctx.agora()) throw new ErroApi(422, 'ainda_nao_comecou', 'O serviço só pode ser concluído depois do horário de início.');

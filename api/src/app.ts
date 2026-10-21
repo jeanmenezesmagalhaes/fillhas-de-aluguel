@@ -15,6 +15,7 @@ import { rotasAgenda } from './rotas/agenda.js';
 import { rotasBloqueios } from './rotas/bloqueios.js';
 import { rotasBusca } from './rotas/busca.js';
 import { rotasFotos } from './rotas/fotos.js';
+import { rotasGanhos } from './rotas/ganhos.js';
 import { rotasContas } from './rotas/contas.js';
 import { rotasIndicacoes } from './rotas/indicacoes.js';
 import { rotasProfissionais } from './rotas/profissionais.js';
@@ -85,6 +86,7 @@ export async function criarApp(op: OpcoesApp) {
   rotasBloqueios(app, ctx);
   rotasFotos(app, ctx);
   rotasBusca(app, ctx);
+  rotasGanhos(app, ctx);
   rotasAgenda(app, ctx, op.segredoAgenda !== undefined ? op.segredoAgenda : producao ? null : 'segredo-de-desenvolvimento-da-agenda');
 
   app.get('/api/saude', async () => ({ ok: true }));

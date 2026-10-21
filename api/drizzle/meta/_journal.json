@@ -71,6 +71,13 @@
       "when": 1792541473426,
       "tag": "0009_fotos_perfil",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792544059216,
+      "tag": "0010_cancelamento_e_desconto",
+      "breakpoints": true
     }
   ]
 }

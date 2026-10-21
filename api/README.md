@@ -68,6 +68,25 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
   - Cada evento tem UID estável, lembrete 1 hora antes e não traz telefone nem CPF.
   - Limite de 60 leituras por minuto por link.
   - Em produção, sem `SEGREDO_AGENDA`, as rotas respondem 503. Trocar o segredo muda todos os links.
+- **Busca:**
+  - `GET /api/profissionais` lista só perfis no ar.
+  - Filtros:
+    - `cidade` e `bairro`: sem diferenciar acento nem maiúscula;
+    - `uf`;
+    - `tarefa`: `consulta`, `banco`, `mercado`, `passeio` ou `outra` (quem aceita outras a combinar);
+    - `veiculo`: `true` ou `false`;
+    - `dia` (0 = domingo) ou `data` (AAAA-MM-DD): com `data`, quem está de folga naquele dia fica de fora;
+    - `turno`: `m` (7h às 12h), `t` (12h às 18h) ou `n` (18h às 22h).
+  - Quem não definiu dias e horários aparece em qualquer dia.
+  - `ordem`: `relevancia` (nota revelada), `preco` ou `experiencia`; e `pagina` e `porPagina` (até 50).
+  - A resposta traz `total`, a faixa `valorHora` de todas as encontradas e, para cada profissional, tarefas, disponibilidade, `turnos` por dia, nota, foto e datas da revisão. Nunca vai CPF, e-mail ou celular.
+  - `GET /api/cidades?q=` lista as cidades atendidas, com o total de profissionais e os bairros de cada uma.
+- **Ganhos:**
+  - `GET /api/profissionais/eu/ganhos?de=&ate=` traz o extrato da profissional pela data do atendimento. Sem datas, vai dos últimos 30 dias até os próximos 60; o máximo é 13 meses.
+  - Cada lançamento traz bruto, desconto dado, taxa, líquido, estado (`previsto`, `aguardando_conclusao`, `programado`, `depositado`) e a data do depósito. A resposta também traz o resumo e os próximos depósitos por dia.
+  - Entra também o cancelamento em cima da hora feito pela família: menos de `CANCELAMENTO_TARDIO_HORAS` antes paga `CANCELAMENTO_TARDIO_PERCENT` do serviço.
+  - Regras: `TAXA_PLATAFORMA_PERCENT` (12), `PRAZO_DEPOSITO_DIAS_UTEIS` (2, contando os feriados bancários nacionais), `CANCELAMENTO_TARDIO_HORAS` (24) e `CANCELAMENTO_TARDIO_PERCENT` (50).
+  - São propostas: a resposta traz `regras.definitivas: false` e `simulado: true`. Enquanto não houver gateway, é uma projeção, e `pagamento` vem null.
 - **Mensagens:** a interface `Mensageiro` (`src/mensagens.ts`) envia e-mail e WhatsApp. Fora de produção, a mensagem só vai para o log do servidor. Em produção sem provedor, o envio responde 503.
 - **Arquivos:** a interface `Armazenamento` (`src/armazenamento.ts`). Em desenvolvimento, os arquivos ficam em disco (`api/.data/arquivos`). Em produção, precisa de um bucket privado (S3 ou R2).
 - **Tarefas e mínimo de horas:**
@@ -131,6 +150,9 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET | `/api/admin/qualificacoes` | administração: cursos esperando validação |
 | GET | `/api/admin/qualificacoes/:id/arquivo` | administração: baixa o comprovante |
 | POST | `/api/admin/qualificacoes/:id/aprovar` · `recusar` | administração (`recusar` pede `motivo`) |
+| GET | `/api/profissionais` | público: busca com filtros, ordem e página |
+| GET | `/api/cidades` | público: cidades atendidas e seus bairros |
+| GET | `/api/profissionais/eu/ganhos` | profissional: extrato, resumo e próximos depósitos |
 | GET | `/api/agenda/link` | link de assinatura da agenda (`url` e `webcal`) |
 | POST | `/api/agenda/link/novo` | troca o link; o antigo deixa de funcionar |
 | GET | `/api/agenda/:token.ics` | público com o token: o arquivo da agenda |
