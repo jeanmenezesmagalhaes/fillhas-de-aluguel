@@ -69,8 +69,10 @@ describe('arquivo da agenda', () => {
     expect(daFamilia).toContain('TRIGGER:-PT1H');
     expect(daFamilia).toMatch(/DTSTART:20261021T120000Z/);
     expect(daFamilia).toMatch(/DTEND:20261021T140000Z/);
-    // sem telefone nem CPF
-    expect(daFamilia).not.toMatch(/\d{10,11}/);
+    // sem telefone nem CPF. As linhas UID levam o id do serviço, que é aleatório e pode
+    // ter dígitos seguidos; as dobras de 75 bytes são desfeitas para não partir um número.
+    const semUid = daFamilia.replaceAll('\r\n ', '').split('\r\n').filter((linha) => !linha.startsWith('UID:')).join('\n');
+    expect(semUid).not.toMatch(/\d{10,11}/);
     for (const linha of daFamilia.split('\r\n')) expect(Buffer.byteLength(linha)).toBeLessThanOrEqual(75);
     expect(daFamilia.endsWith('END:VCALENDAR\r\n')).toBe(true);
   });

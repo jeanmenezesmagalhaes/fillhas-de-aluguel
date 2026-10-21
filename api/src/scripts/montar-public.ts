@@ -1,5 +1,6 @@
 // Copia as telas estáticas (as mesmas que a API serve em desenvolvimento) para public/,
-// que a Vercel entrega pela CDN. Lá a API não serve arquivos.
+// que a Vercel entrega pela CDN. A API também aponta para public/ (src/iniciar.ts), para
+// quando o pedido chega à função.
 // Uso: npm run montar-public
 import { cpSync, readdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
