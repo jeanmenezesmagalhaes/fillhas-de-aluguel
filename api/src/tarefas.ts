@@ -1,5 +1,6 @@
 import { asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { temContato, MSG_CONTATO } from './validacao.js';
 import type { Db } from './db/index.js';
 import { tarefasProfissional } from './db/schema.js';
 
@@ -41,6 +42,7 @@ export const listaDeTarefas = z
           c.addIssue({ code: 'custom', path: [i, 'nome'], message: 'Dê um nome à atividade, com 2 a 60 caracteres.' });
           return;
         }
+        if (temContato(nome)) c.addIssue({ code: 'custom', path: [i, 'nome'], message: MSG_CONTATO });
         const chave = nome.toLocaleLowerCase('pt-BR');
         if (nomes.has(chave)) c.addIssue({ code: 'custom', path: [i, 'nome'], message: 'Você já tem uma atividade com este nome.' });
         nomes.add(chave);

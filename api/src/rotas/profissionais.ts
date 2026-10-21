@@ -15,7 +15,11 @@ import type { Db } from '../db/index.js';
 
 const perfil = z
   .object({
-    apresentacao: z.string().trim().max(2000, 'Use no máximo 2000 caracteres.').nullable(),
+    apresentacao: v.semContato(z.string().trim().max(2000, 'Use no máximo 2000 caracteres.').nullable()),
+    anosExperiencia: z.number().int('Use anos inteiros.').min(0, 'Informe de 0 a 60 anos.').max(60, 'Informe de 0 a 60 anos.').nullable(),
+    // desconto por volume: os dois juntos, ou os dois null para tirar
+    descontoAPartirHoras: z.number().int('Use horas inteiras.').min(2, 'O desconto vale a partir de 2 a 12 horas.').max(12, 'O desconto vale a partir de 2 a 12 horas.').nullable(),
+    valorHoraDescontoCentavos: v.valorHoraCentavos.nullable(),
     bairros: z.array(z.string().trim().min(2).max(80)).max(30, 'Liste no máximo 30 bairros.'),
     valorHoraCentavos: v.valorHoraCentavos,
     horasMinimas: z.number().int().min(1, 'O mínimo é 1 hora.').max(12, 'O mínimo pode ser de até 12 horas.'),
@@ -57,6 +61,26 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
       }
     }
     const { tarefas, ...campos } = dados;
+    if (campos.descontoAPartirHoras !== undefined || campos.valorHoraDescontoCentavos !== undefined || campos.valorHoraCentavos !== undefined) {
+      const [atual] = await ctx.db
+        .select({ aPartir: profissionais.descontoAPartirHoras, desconto: profissionais.valorHoraDescontoCentavos, valor: profissionais.valorHoraCentavos })
+        .from(profissionais)
+        .where(eq(profissionais.usuarioId, u.id));
+      const aPartir = campos.descontoAPartirHoras !== undefined ? campos.descontoAPartirHoras : atual!.aPartir;
+      const desconto = campos.valorHoraDescontoCentavos !== undefined ? campos.valorHoraDescontoCentavos : atual!.desconto;
+      const valor = campos.valorHoraCentavos ?? atual!.valor;
+      if ((aPartir == null) !== (desconto == null)) {
+        const falta = aPartir == null ? 'descontoAPartirHoras' : 'valorHoraDescontoCentavos';
+        throw new ErroApi(422, 'desconto_incompleto', 'Informe a partir de quantas horas e o valor da hora com desconto.', {
+          [falta]: falta === 'descontoAPartirHoras' ? 'A partir de quantas horas?' : 'Qual o valor da hora com desconto?',
+        });
+      }
+      if (desconto != null && (valor == null || desconto >= valor)) {
+        throw new ErroApi(422, 'desconto_maior', 'A hora com desconto precisa ser menor que o valor da hora.', {
+          valorHoraDescontoCentavos: 'Precisa ser menor que o valor da hora.',
+        });
+      }
+    }
     if (tarefas !== undefined || campos.aceitaOutras !== undefined) {
       const [atual] = await ctx.db.select({ aceitaOutras: profissionais.aceitaOutras }).from(profissionais).where(eq(profissionais.usuarioId, u.id));
       const lista = tarefas ?? (await tarefasDe(ctx.db, u.id));
@@ -97,6 +121,9 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
         horasMinimas: profissionais.horasMinimas,
         veiculoIncluso: profissionais.veiculoIncluso,
         aceitaOutras: profissionais.aceitaOutras,
+        descontoAPartirHoras: profissionais.descontoAPartirHoras,
+        valorHoraDescontoCentavos: profissionais.valorHoraDescontoCentavos,
+        anosExperiencia: profissionais.anosExperiencia,
         situacao: profissionais.situacao,
         revisadoEm: profissionais.revisadoEm,
         proximaRevisao: profissionais.proximaRevisao,

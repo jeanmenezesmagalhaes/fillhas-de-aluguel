@@ -88,3 +88,17 @@ export const uf = z
 // "123.456.789-09" vira "***.456.789-**": basta para a pessoa reconhecer o próprio CPF
 export const mascararCpf = (c: string) => `***.${c.slice(3, 6)}.${c.slice(6, 9)}-**`;
 export const mascararCnpj = (c: string) => `${c.slice(0, 2)}.***.***/${c.slice(8, 12)}-**`;
+
+// Telefone, e-mail ou link em texto livre que a outra parte lê: barrado para que ninguém
+// combine o serviço por fora da plataforma.
+export const MSG_CONTATO = 'Não coloque telefone, e-mail ou link aqui.';
+const RE_EMAIL = /[^\s@]+@[^\s@]+\.[a-z]{2,}/i;
+const RE_LINK = /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|br|io|me|app|link|ly|site|info)\b)/i;
+export function temContato(t: string): boolean {
+  if (RE_EMAIL.test(t) || RE_LINK.test(t)) return true;
+  // 8 dígitos ou mais seguidos, aceitando espaço, ponto, hífen, parênteses e +
+  for (const m of t.matchAll(/[\d()+\-.\s]{8,}/g)) if (m[0].replace(/\D/g, '').length >= 8) return true;
+  return false;
+}
+export const semContato = <T extends z.ZodType<string | undefined | null>>(s: T) =>
+  s.refine((t) => !t || !temContato(t), MSG_CONTATO);

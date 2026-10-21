@@ -59,6 +59,8 @@ export const pessoasAcompanhadas = pgTable(
       .references(() => contratantes.usuarioId, { onDelete: 'cascade' }),
     nome: text('nome').notNull(),
     dataNascimento: date('data_nascimento', { mode: 'string' }),
+    // como a família se apresenta para ela ("filha", "neto"); aparece nas avaliações
+    parentesco: text('parentesco'),
     observacoes: text('observacoes'),
     criadoEm: quando('criado_em').notNull().defaultNow(),
   },
@@ -87,6 +89,10 @@ export const profissionais = pgTable(
     // valor em centavos; definido depois do cadastro, no painel
     valorHoraCentavos: integer('valor_hora_centavos'),
     horasMinimas: smallint('horas_minimas').notNull().default(1),
+    // desconto por volume (hipótese ainda não validada): a partir de N horas, a hora sai por menos
+    descontoAPartirHoras: smallint('desconto_a_partir_horas'),
+    valorHoraDescontoCentavos: integer('valor_hora_desconto_centavos'),
+    anosExperiencia: smallint('anos_experiencia'),
     veiculoIncluso: boolean('veiculo_incluso').notNull().default(false),
     // aceita pedidos de tarefas fora da lista dela ("Outra tarefa · a combinar"), com mínimo de 1 h
     aceitaOutras: boolean('aceita_outras').notNull().default(false),
@@ -119,6 +125,11 @@ export const profissionais = pgTable(
     check('cnpj_formato', sql`${t.cnpj} is null or ${t.cnpj} ~ '^[0-9]{14}$'`),
     check('cep_formato', sql`${t.cep} is null or ${t.cep} ~ '^[0-9]{8}$'`),
     index('profissionais_fila').on(t.situacao, t.enviadoAnaliseEm),
+    check('desconto_completo', sql`(${t.descontoAPartirHoras} is null) = (${t.valorHoraDescontoCentavos} is null)`),
+    check('desconto_faixa', sql`${t.descontoAPartirHoras} is null or ${t.descontoAPartirHoras} between 2 and 12`),
+    check('desconto_valor_minimo', sql`${t.valorHoraDescontoCentavos} is null or ${t.valorHoraDescontoCentavos} >= 7000`),
+    check('desconto_menor_que_hora', sql`${t.valorHoraDescontoCentavos} is null or ${t.valorHoraDescontoCentavos} < ${t.valorHoraCentavos}`),
+    check('anos_experiencia_faixa', sql`${t.anosExperiencia} is null or ${t.anosExperiencia} between 0 and 60`),
     check('valor_hora_minimo', sql`${t.valorHoraCentavos} is null or ${t.valorHoraCentavos} >= 7000`),
     check('horas_minimas_faixa', sql`${t.horasMinimas} between 1 and 12`),
     check('uf_formato', sql`${t.uf} ~ '^[A-Z]{2}$'`),
@@ -224,6 +235,9 @@ export const avaliacoes = pgTable(
     sentido: sentidoAvaliacao('sentido').notNull(),
     nota: smallint('nota').notNull(),
     comentario: text('comentario'),
+    // resposta pública da profissional à avaliação que recebeu, uma vez
+    resposta: text('resposta'),
+    respondidoEm: quando('respondido_em'),
     criadoEm: quando('criado_em').notNull().defaultNow(),
   },
   (t) => [

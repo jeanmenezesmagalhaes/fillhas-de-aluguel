@@ -17,26 +17,28 @@ type Papel = 'contratante' | 'profissional';
 const inicioFuturo = z.iso.datetime({ offset: true, error: 'Informe data e horário de início.' });
 const horas = z.number({ error: 'Informe quantas horas.' }).int('Use horas inteiras.').min(1, 'O mínimo é 1 hora.').max(24);
 const textoCurto = (max: number) => z.string().trim().max(max, `Use no máximo ${max} caracteres.`).optional();
+// texto que a outra parte lê: sem telefone, e-mail ou link
+const textoLivre = (max: number) => v.semContato(textoCurto(max));
 
 const pedido = z.object({
   profissional: z.string({ error: 'Escolha a profissional.' }).min(1).max(80),
-  tarefa: z.string({ error: 'Conte qual é a tarefa.' }).trim().min(2, 'Conte qual é a tarefa.').max(200),
+  tarefa: v.semContato(z.string({ error: 'Conte qual é a tarefa.' }).trim().min(2, 'Conte qual é a tarefa.').max(200)),
   // tarefa da lista da profissional; 'outra' é a combinar, se ela aceitar
   tipoTarefa: z.enum([...TIPOS_FIXOS, 'personalizada', 'outra'], { error: 'Escolha a tarefa.' }).optional(),
   // nome da atividade personalizada, como está no perfil dela
   nomeTarefa: z.string().trim().max(60).optional(),
   local: textoCurto(200),
-  observacoes: textoCurto(1000),
+  observacoes: textoLivre(1000),
   inicio: inicioFuturo,
   horas,
   pessoaAcompanhadaId: v.uuid.optional(),
 });
 
-const proposta = z.object({ inicio: inicioFuturo, horas, recado: textoCurto(500) });
+const proposta = z.object({ inicio: inicioFuturo, horas, recado: textoLivre(500) });
 
 const avaliacao = z.object({
   nota: z.number({ error: 'Escolha uma nota de 1 a 5.' }).int().min(1, 'Escolha uma nota de 1 a 5.').max(5, 'Escolha uma nota de 1 a 5.'),
-  comentario: z.string().trim().max(1000, 'Use no máximo 1000 caracteres.').optional(),
+  comentario: v.semContato(z.string().trim().max(1000, 'Use no máximo 1000 caracteres.').optional()),
 });
 
 const idParam = z.object({ id: v.uuid });
@@ -126,6 +128,8 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
         valor: profissionais.valorHoraCentavos,
         horasMinimas: profissionais.horasMinimas,
         aceitaOutras: profissionais.aceitaOutras,
+        descontoAPartir: profissionais.descontoAPartirHoras,
+        valorDesconto: profissionais.valorHoraDescontoCentavos,
       })
       .from(profissionais)
       .where(eq(profissionais.slug, dados.profissional));
@@ -183,7 +187,8 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
         observacoes: dados.observacoes || null,
         inicio,
         horas: dados.horas,
-        valorHoraCentavos: p.valor,
+        // a partir de N horas vale a hora com desconto, se ela oferece
+        valorHoraCentavos: p.descontoAPartir && p.valorDesconto && dados.horas >= p.descontoAPartir ? p.valorDesconto : p.valor,
       })
       .returning({ id: servicos.id });
     return reply.status(201).send({ servico: await servicoCompleto(ctx, u, novo!.id) });

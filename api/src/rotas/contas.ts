@@ -21,6 +21,7 @@ import { tarefasDe } from '../tarefas.js';
 const pessoa = z.object({
   nome: v.nome,
   dataNascimento: v.dataIso.optional(),
+  parentesco: z.string().trim().min(2).max(40, 'Use no máximo 40 caracteres.').optional(),
   observacoes: z.string().trim().max(1000, 'Use no máximo 1000 caracteres.').optional(),
 });
 
@@ -106,6 +107,11 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
         horasMinimas: profissionais.horasMinimas,
         veiculoIncluso: profissionais.veiculoIncluso,
         aceitaOutras: profissionais.aceitaOutras,
+        descontoAPartirHoras: profissionais.descontoAPartirHoras,
+        valorHoraDescontoCentavos: profissionais.valorHoraDescontoCentavos,
+        anosExperiencia: profissionais.anosExperiencia,
+        apresentacao: profissionais.apresentacao,
+        bairros: profissionais.bairros,
       },
     })
     .from(usuarios)
@@ -223,6 +229,7 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
         id: pessoasAcompanhadas.id,
         nome: pessoasAcompanhadas.nome,
         dataNascimento: pessoasAcompanhadas.dataNascimento,
+        parentesco: pessoasAcompanhadas.parentesco,
         observacoes: pessoasAcompanhadas.observacoes,
       })
       .from(pessoasAcompanhadas)
@@ -241,6 +248,7 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
         id: pessoasAcompanhadas.id,
         nome: pessoasAcompanhadas.nome,
         dataNascimento: pessoasAcompanhadas.dataNascimento,
+        parentesco: pessoasAcompanhadas.parentesco,
         observacoes: pessoasAcompanhadas.observacoes,
       });
     return reply.status(201).send({ pessoa: p });
