@@ -10,6 +10,7 @@ import { fotosPerfil, profissionais, usuarios } from '../db/schema.js';
 import { conflito, ErroApi, naoEncontrado } from '../erros.js';
 import * as v from '../validacao.js';
 import { lerEnvio } from './verificacao.js';
+import { dadosDaConta } from './contas.js';
 
 const LADO_MAXIMO = 1200;
 const idParam = z.object({ id: v.uuid });
@@ -91,7 +92,8 @@ export function rotasFotos(app: FastifyInstance, ctx: Contexto) {
       return saem;
     });
     for (const a of antigas) await ctx.armazenamento.remover(a.chave);
-    return reply.status(201).send(await fotoDaConta(ctx.db, u.id));
+    // como o PATCH do perfil: a conta inteira em `usuario`, e a foto também no topo
+    return reply.status(201).send({ ...(await fotoDaConta(ctx.db, u.id)), usuario: await dadosDaConta(ctx.db, u.id) });
   });
 
   // A foto aprovada e no ar é pública (o endereço muda a cada foto, então pode ficar em

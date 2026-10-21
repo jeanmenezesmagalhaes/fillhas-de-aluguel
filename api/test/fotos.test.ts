@@ -30,6 +30,7 @@ describe('foto do perfil', () => {
     const r = await pro.c.enviarArquivo('/api/profissionais/eu/foto', {}, { nome: 'IMG_0001.jpg', dados: original });
     expect(r.status).toBe(201);
     expect(r.corpo).toMatchObject({ foto: { situacao: 'enviada', motivoRecusa: null }, fotoUrl: null });
+    expect(r.corpo.usuario.profissional.foto).toEqual(r.corpo.foto);
     const url = r.corpo.foto.url as string;
 
     // só a dona e a administração veem a foto em conferência
