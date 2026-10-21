@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script>document.documentElement.classList.add('js')</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Seu cadastro · Área profissional · Minha companhia</title>
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="resumo.css?v=6">
+<link rel="stylesheet" href="gestao.css?v=12">
+<link rel="stylesheet" href="verificacao.css?v=2">
+</head>
+<body class="pagina-gestao">
+
+<header class="topo" data-topo>
+  <div class="topo-dentro">
+    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
+    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="verificacao.html" aria-current="page">Seu cadastro</a><a href="#cursos">Cursos</a><a href="#indicacoes">Indicar</a><a href="profissional.html">Como funciona</a><span class="topo-conta"><span data-nome-conta></span><button class="link" type="button" data-sair>Sair</button></span></nav>
+  </div>
+</header>
+
+<main class="tela gestao verif" data-gestao hidden>
+  <div class="titulo">
+    <div>
+      <h1 data-titulo>Seu cadastro</h1>
+      <p class="achado" data-achado></p>
+    </div>
+  </div>
+
+  <!-- correção pedida pela equipe -->
+  <section class="aviso-correcao" data-correcao hidden aria-labelledby="t-correcao">
+    <h2 id="t-correcao">Precisamos que você corrija algumas coisas</h2>
+    <p data-motivo-correcao></p>
+    <p class="aviso-correcao-pe">Corrija abaixo e envie de novo. Você volta para a lista de espera no lugar da nova data de envio.</p>
+  </section>
+
+  <!-- na lista de espera -->
+  <section class="cartao espera" data-espera hidden aria-labelledby="t-espera">
+    <div class="espera-topo">
+      <div>
+        <h2 id="t-espera">Você está na lista de espera</h2>
+        <p class="espera-sub num" data-espera-desde></p>
+      </div>
+      <p class="espera-posicao num" data-espera-posicao aria-live="polite"></p>
+    </div>
+    <ol class="espera-passos">
+      <li class="feito"><strong>Cadastro enviado</strong><span>Recebemos seus dados e documentos.</span></li>
+      <li class="agora"><strong>Conferência da equipe</strong><span>Olhamos cada documento com cuidado. Se faltar algo, avisamos por e-mail e WhatsApp.</span></li>
+      <li><strong>Perfil no ar</strong><span>Com tudo aprovado, seu perfil aparece para as famílias e os pedidos começam a chegar.</span></li>
+    </ol>
+    <p class="espera-nota">Enquanto espera, seus dados ficam travados para a conferência. Se precisar mudar algo, escreva para <a href="mailto:ajuda@minhacompanhia.com.br">ajuda@minhacompanhia.com.br</a>.</p>
+  </section>
+
+  <!-- aprovada -->
+  <section class="cartao aprovada" data-aprovada hidden aria-labelledby="t-aprovada">
+    <h2 id="t-aprovada">Seu perfil foi aprovado</h2>
+    <p>Boas-vindas à Minha companhia. Defina seu valor da hora e seus horários para começar a receber pedidos.</p>
+    <a class="btn btn-primario" href="painel.html">Ir para o painel</a>
+  </section>
+
+  <div class="verif-grade" data-etapas-area>
+    <div class="verif-principal">
+      <!-- progresso -->
+      <div class="progresso" data-progresso-area>
+        <p class="progresso-rot num" data-progresso-rot>0 de 4 etapas</p>
+        <div class="progresso-barra" aria-hidden="true"><span data-progresso></span></div>
+      </div>
+
+      <ol class="etapas-verif">
+        <!-- 1. contatos -->
+        <li class="etapa-v" data-etapa="contatos">
+          <div class="ev-cab"><span class="ev-marca" aria-hidden="true"></span><div><h2>Confirme seu e-mail e WhatsApp</h2><p class="ev-sub">Mandamos um código de 6 números para cada um.</p></div></div>
+          <div class="ev-corpo">
+            <div class="canal" data-canal="email">
+              <div class="canal-cab"><p><strong>E-mail</strong> <span class="num" data-destino></span></p><span class="pill" data-estado-canal></span></div>
+              <div class="canal-acao" data-canal-acao>
+                <button class="btn btn-secundario" type="button" data-enviar-codigo>Enviar código</button>
+              </div>
+              <form class="codigo" data-form-codigo hidden novalidate>
+                <label for="codigo-email">Código que chegou no seu e-mail</label>
+                <div class="codigo-linha">
+                  <input id="codigo-email" name="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="\d{6}" placeholder="000000">
+                  <button class="btn btn-primario" type="submit">Confirmar</button>
+                </div>
+                <p class="campo-erro" data-erro hidden></p>
+                <p class="codigo-ajuda num"><span data-codigo-info></span> <button class="link" type="button" data-reenviar disabled>Reenviar código</button></p>
+              </form>
+            </div>
+            <div class="canal" data-canal="whatsapp">
+              <div class="canal-cab"><p><strong>WhatsApp</strong> <span class="num" data-destino></span></p><span class="pill" data-estado-canal></span></div>
+              <div class="canal-acao" data-canal-acao>
+                <button class="btn btn-secundario" type="button" data-enviar-codigo>Enviar código</button>
+              </div>
+              <form class="codigo" data-form-codigo hidden novalidate>
+                <label for="codigo-whatsapp">Código que chegou no seu WhatsApp</label>
+                <div class="codigo-linha">
+                  <input id="codigo-whatsapp" name="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="\d{6}" placeholder="000000">
+                  <button class="btn btn-primario" type="submit">Confirmar</button>
+                </div>
+                <p class="campo-erro" data-erro hidden></p>
+                <p class="codigo-ajuda num"><span data-codigo-info></span> <button class="link" type="button" data-reenviar disabled>Reenviar código</button></p>
+              </form>
+            </div>
+          </div>
+        </li>
+
+        <!-- 2. dados -->
+        <li class="etapa-v" data-etapa="dados">
+          <div class="ev-cab"><span class="ev-marca" aria-hidden="true"></span><div><h2>Seus dados e endereço</h2><p class="ev-sub">Usamos para conferir sua identidade. Ninguém mais vê.</p></div></div>
+          <div class="ev-corpo">
+            <div class="dados-resumo" data-dados-resumo hidden></div>
+            <form class="form-dados" data-form-dados novalidate>
+              <div class="campo"><label for="cpf">CPF</label><input id="cpf" name="cpf" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14"><p class="campo-erro" data-erro-campo="cpf" hidden></p></div>
+              <label class="opcao-caixa"><input type="checkbox" name="temCnpj" data-tem-cnpj><span>Também trabalho com CNPJ (MEI, por exemplo)</span></label>
+              <div class="cnpj-campos" data-cnpj-campos hidden>
+                <div class="campo"><label for="cnpj">CNPJ</label><input id="cnpj" name="cnpj" inputmode="numeric" autocomplete="off" placeholder="00.000.000/0000-00" maxlength="18"><p class="campo-erro" data-erro-campo="cnpj" hidden></p></div>
+                <div class="campo"><label for="razaoSocial">Razão social</label><input id="razaoSocial" name="razaoSocial" autocomplete="organization"><p class="campo-erro" data-erro-campo="razaoSocial" hidden></p></div>
+              </div>
+              <p class="form-sub">Endereço onde você mora</p>
+              <div class="campos-grade">
+                <div class="campo c-cep"><label for="cep">CEP</label><input id="cep" name="cep" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9"><p class="campo-erro" data-erro-campo="endereco.cep" hidden></p></div>
+                <div class="campo c-rua"><label for="logradouro">Rua</label><input id="logradouro" name="logradouro" autocomplete="address-line1"><p class="campo-erro" data-erro-campo="endereco.logradouro" hidden></p></div>
+                <div class="campo c-num"><label for="numero">Número</label><input id="numero" name="numero" inputmode="numeric"><p class="campo-erro" data-erro-campo="endereco.numero" hidden></p></div>
+                <div class="campo c-comp"><label for="complemento">Complemento <span class="opcional">(opcional)</span></label><input id="complemento" name="complemento" autocomplete="address-line2"></div>
+                <div class="campo c-bairro"><label for="bairro">Bairro</label><input id="bairro" name="bairro"><p class="campo-erro" data-erro-campo="endereco.bairro" hidden></p></div>
+                <div class="campo c-cidade"><label for="cidade">Cidade</label><input id="cidade" name="cidade" autocomplete="address-level2"><p class="campo-erro" data-erro-campo="endereco.cidade" hidden></p></div>
+                <div class="campo c-uf"><label for="uf">UF</label><input id="uf" name="uf" maxlength="2" autocapitalize="characters" autocomplete="address-level1" placeholder="SP"><p class="campo-erro" data-erro-campo="endereco.uf" hidden></p></div>
+              </div>
+              <p class="campo-erro" data-erro-geral hidden></p>
+              <button class="btn btn-primario" type="submit">Salvar dados</button>
+            </form>
+          </div>
+        </li>
+
+        <!-- 3. documentos -->
+        <li class="etapa-v" data-etapa="documentos">
+          <div class="ev-cab"><span class="ev-marca" aria-hidden="true"></span><div><h2>Seus documentos</h2><p class="ev-sub">Foto pela câmera ou arquivo PDF, JPG, PNG ou HEIC, até 10 MB.</p></div></div>
+          <div class="ev-corpo">
+            <ul class="docs" data-docs></ul>
+            <p class="docs-dica">Para a foto sair boa: documento inteiro na imagem, sem reflexo de luz e com as letras legíveis.</p>
+          </div>
+        </li>
+
+        <!-- 4. enviar -->
+        <li class="etapa-v" data-etapa="enviar">
+          <div class="ev-cab"><span class="ev-marca" aria-hidden="true"></span><div><h2>Enviar para a conferência</h2><p class="ev-sub" data-enviar-sub>Quando as etapas acima estiverem prontas, você entra na lista de espera.</p></div></div>
+          <div class="ev-corpo">
+            <ul class="falta" data-falta></ul>
+            <p class="campo-erro" data-erro-enviar hidden></p>
+            <button class="btn btn-primario btn-largo" type="button" data-enviar-analise>Entrar na lista de espera</button>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <aside class="verif-lado">
+      <section class="cartao" aria-labelledby="t-porque">
+        <h2 id="t-porque">Por que pedimos isso</h2>
+        <p class="ajuda-texto">As famílias confiam a mãe ou o pai a você. Conferir a identidade de cada profissional é o que faz essa confiança existir. Seus documentos ficam guardados com segurança e só a equipe de conferência vê.</p>
+      </section>
+    </aside>
+  </div>
+
+  <!-- veículo e cursos: valem em qualquer fase do cadastro -->
+  <div class="extras" data-extras hidden>
+    <section class="cartao" id="veiculo" aria-labelledby="t-veiculo">
+      <div class="cartao-cab"><h2 id="t-veiculo">Atende com veículo?</h2><span class="pill" data-veiculo-pill></span></div>
+      <p class="ex-sub">Quem busca a pessoa em casa e leva no próprio carro precisa enviar a CNH. A família vê no seu perfil que o veículo está incluso.</p>
+      <div class="sim-nao" role="radiogroup" aria-labelledby="t-veiculo">
+        <label><input type="radio" name="veiculo" value="sim"><span>Sim, levo de carro</span></label>
+        <label><input type="radio" name="veiculo" value="nao"><span>Não, sem veículo</span></label>
+      </div>
+      <p class="ex-msg" data-veiculo-msg role="status"></p>
+      <div class="doc doc-cnh" data-cnh-avulsa hidden>
+        <div class="doc-cab"><p class="doc-nome">CNH</p><span class="pill" data-cnh-pill>Falta enviar</span></div>
+        <p class="doc-arquivo num" data-cnh-arquivo hidden></p>
+        <div class="doc-acoes">
+          <label class="btn btn-primario doc-botao"><input type="file" accept="image/*" capture="environment" data-cnh-arquivo-input>Tirar foto</label>
+          <label class="btn btn-secundario doc-botao"><input type="file" accept="application/pdf,image/jpeg,image/png,image/heic,.heic,.pdf" data-cnh-arquivo-input>Escolher arquivo</label>
+        </div>
+        <p class="campo-erro" data-cnh-erro hidden></p>
+      </div>
+    </section>
+
+    <section class="cartao" id="cursos" aria-labelledby="t-cursos">
+      <div class="cartao-cab"><h2 id="t-cursos">Cursos e treinamentos</h2><span class="meta num" data-cursos-conta></span></div>
+      <p class="ex-sub">Envie o certificado de cada curso. A equipe confere e, validado, ele aparece no seu perfil para as famílias.</p>
+      <ul class="cursos" data-cursos></ul>
+      <button class="btn btn-secundario" type="button" data-novo-curso>Adicionar curso</button>
+      <form class="form-curso" data-form-curso hidden novalidate>
+        <div class="campos-grade">
+          <div class="campo c-titulo"><label for="curso-titulo">Nome do curso</label><input id="curso-titulo" name="titulo" placeholder="Ex.: Cuidador de idosos"><p class="campo-erro" data-erro-curso="titulo" hidden></p></div>
+          <div class="campo c-inst"><label for="curso-inst">Onde fez</label><input id="curso-inst" name="instituicao" placeholder="Ex.: Senac Campinas"><p class="campo-erro" data-erro-curso="instituicao" hidden></p></div>
+          <div class="campo c-carga"><label for="curso-carga">Carga horária <span class="opcional">(opcional)</span></label><input id="curso-carga" name="cargaHorariaHoras" inputmode="numeric" placeholder="Em horas"><p class="campo-erro" data-erro-curso="cargaHorariaHoras" hidden></p></div>
+          <div class="campo c-ano"><label for="curso-ano">Ano em que terminou <span class="opcional">(opcional)</span></label><input id="curso-ano" name="anoConclusao" inputmode="numeric" maxlength="4" placeholder="2024"><p class="campo-erro" data-erro-curso="anoConclusao" hidden></p></div>
+        </div>
+        <p class="form-sub">Certificado</p>
+        <div class="doc-acoes">
+          <label class="btn btn-secundario doc-botao"><input type="file" accept="image/*" capture="environment" data-curso-arquivo>Tirar foto</label>
+          <label class="btn btn-secundario doc-botao"><input type="file" accept="application/pdf,image/jpeg,image/png,image/heic,.heic,.pdf" data-curso-arquivo>Escolher arquivo</label>
+        </div>
+        <p class="doc-arquivo num" data-curso-escolhido hidden></p>
+        <p class="campo-erro" data-erro-curso="geral" hidden></p>
+        <div class="doc-acoes"><button class="btn btn-primario" type="submit">Enviar para validação</button><button class="link" type="button" data-cancelar-curso>Cancelar</button></div>
+      </form>
+    </section>
+  </div>
+
+  <!-- indicações -->
+  <section class="cartao indicacoes" id="indicacoes" data-indicacoes hidden aria-labelledby="t-indicacoes">
+    <div class="cartao-cab"><h2 id="t-indicacoes">Indique quem você conhece</h2></div>
+    <p class="ind-sub">Conhece outras profissionais de confiança ou famílias que precisam de companhia para os pais? Mande seu código ou o link.</p>
+    <div class="ind-codigo">
+      <div><p class="ind-rot">Seu código</p><p class="ind-valor num" data-codigo-ind></p></div>
+      <button class="btn btn-secundario" type="button" data-copiar="codigo">Copiar código</button>
+    </div>
+    <div class="ind-links">
+      <div class="ind-link"><p><strong>Para profissionais</strong><span class="num" data-link-pro></span></p><div class="ind-botoes"><button class="btn btn-secundario" type="button" data-copiar="pro">Copiar link</button><a class="btn btn-primario" data-whats="pro" target="_blank" rel="noopener">Enviar no WhatsApp</a></div></div>
+      <div class="ind-link"><p><strong>Para famílias</strong><span class="num" data-link-familia></span></p><div class="ind-botoes"><button class="btn btn-secundario" type="button" data-copiar="familia">Copiar link</button><a class="btn btn-primario" data-whats="familia" target="_blank" rel="noopener">Enviar no WhatsApp</a></div></div>
+    </div>
+    <div class="ind-resumo num" data-ind-resumo></div>
+    <ul class="ind-lista" data-ind-lista></ul>
+    <p class="ind-nota">As regras de recompensa por indicação ainda estão sendo definidas. Cada indicação feita agora fica registrada com o seu código, e avisamos você quando elas estiverem prontas.</p>
+  </section>
+</main>
+
+<main class="tela gestao-fora" data-fora hidden>
+  <section class="cartao cartao-entrar">
+    <h1>Entre para continuar seu cadastro</h1>
+    <p class="achado">Use o e-mail e a senha que você criou na área profissional.</p>
+    <a class="btn btn-primario btn-largo" href="entrar.html?perfil=pro&amp;volta=verificacao.html">Entrar</a>
+    <p class="entrar-pro">Ainda não tem cadastro? <a href="entrar.html?perfil=pro&amp;modo=criar">Criar meu cadastro</a></p>
+  </section>
+</main>
+
+<script src="gestao.js"></script>
+<script src="verificacao.js?v=2"></script>
+</body>
+</html>

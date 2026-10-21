@@ -1,22 +1,22 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<script>document.documentElement.classList.add('js')</script>
+<script>document.documentElement.classList.add('js', 'carregando')</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>Meus pedidos · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="resumo.css?v=6">
-<link rel="stylesheet" href="gestao.css?v=12">
+<link rel="stylesheet" href="resumo.css?v=7">
+<link rel="stylesheet" href="gestao.css?v=24">
 </head>
 <body class="pagina-gestao">
 
-<header class="topo" data-topo>
+<header class="topo topo-site" data-topo>
   <div class="topo-dentro">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="pedidos.html" aria-current="page">Meus pedidos</a><span class="topo-conta"><span data-nome-conta>Mariana Costa</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="pedidos.html" aria-current="page">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a><span class="topo-conta"><span data-nome-conta>Mariana Costa</span><button class="link" type="button" data-sair>Sair</button></span></nav>
   </div>
 </header>
 
@@ -52,7 +52,7 @@
             <p class="pn-tarefa">Para Helena · Clínica Viva Mais, Centro</p>
             <p class="pn-quando num">Qua, 28/10 · 9h às 13h · com veículo</p>
             <div class="pn-pe">
-              <p class="pn-valor num"><span>4 h × R$ 60</span><strong>R$ 240</strong></p>
+              <p class="pn-valor num"><span>4 h × R$ 70</span><strong>R$ 280</strong></p>
               <div class="pn-acoes"><p class="pn-prazo">Ana responde até amanhã, 18h.</p><button class="link pn-recusar" type="button" data-cancelar>Cancelar pedido</button></div>
             </div>
           </li>
@@ -191,7 +191,7 @@
       const p = s.proposta;
       const quem = esc(primeiro(s.profissional.nome));
       return `<li class="pn pn-proposta-recebida" data-id="${s.id}">
-        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.tarefa)}</strong> com ${esc(s.profissional.nome)}</p><span class="pill pill-aviso">Responda à proposta</span></div>
+        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.tarefa)}</strong> com ${esc(s.profissional.nome)}</p><span class="pill pill-aviso">${s.respondaAte ? `Responda até ${mc.prazo(s.respondaAte)}` : 'Responda à proposta'}</span></div>
         ${para(s) ? `<p class="pn-tarefa">${para(s)}</p>` : ''}
         <div class="troca num" aria-label="Horário pedido e horário proposto">
           <p><span>Você pediu</span><s>${dia(s.inicio)} · ${faixa(s.inicio, s.horas)}</s></p>
@@ -205,7 +205,7 @@
       </li>`;
     };
     const linhaEspera = (s) => `<li class="pn" data-id="${s.id}">
-        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.tarefa)}</strong> com ${esc(s.profissional.nome)}</p><span class="pill">Esperando a resposta de ${esc(primeiro(s.profissional.nome))}</span></div>
+        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.tarefa)}</strong> com ${esc(s.profissional.nome)}</p><span class="pill">${s.respondaAte ? `${esc(primeiro(s.profissional.nome))} responde até ${mc.prazo(s.respondaAte)}` : `Esperando a resposta de ${esc(primeiro(s.profissional.nome))}`}</span></div>
         ${para(s) ? `<p class="pn-tarefa">${para(s)}</p>` : ''}
         <p class="pn-quando num">${dia(s.inicio)} · ${faixa(s.inicio, s.horas)} · ${veiculo(s)}</p>
         <div class="pn-pe">
@@ -217,6 +217,7 @@
     const acaoAnterior = (s) => {
       if (s.situacao === 'recusado') return '<span class="ag-acao traco">Recusado</span>';
       if (s.situacao === 'cancelado') return '<span class="ag-acao traco">Cancelado</span>';
+      if (s.situacao === 'expirado') return '<span class="ag-acao traco">Sem resposta no prazo</span>';
       if (s.minhaNota) return `<span class="ag-acao ag-nota">${mc.estrelas(s.minhaNota)}</span>`;
       if (s.podeAvaliar) return '<span class="ag-acao"><button class="btn btn-secundario" type="button" data-avaliar>Avaliar</button></span>';
       return '<span class="ag-acao traco">Sem avaliação</span>';
@@ -228,7 +229,7 @@
       const esperando = lista.filter((s) => s.situacao === 'solicitado');
       const andamento = [...propostas, ...esperando];
       const confirmados = lista.filter((s) => s.situacao === 'confirmado').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
-      const anteriores = lista.filter((s) => ['realizado', 'recusado', 'cancelado'].includes(s.situacao));
+      const anteriores = lista.filter((s) => ['realizado', 'recusado', 'cancelado', 'expirado'].includes(s.situacao));
 
       $('[data-andamento]').innerHTML = [...propostas.map(linhaProposta), ...esperando.map(linhaEspera)].join('');
       $('[data-sem-andamento]').hidden = andamento.length > 0;

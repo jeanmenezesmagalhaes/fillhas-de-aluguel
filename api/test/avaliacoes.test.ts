@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { ambiente, cliente, DIA, familia, HORA, profissionalAprovada, type Ambiente } from './ajuda.js';
 
@@ -11,7 +12,7 @@ afterAll(() => amb.fechar());
 async function servicoRealizado() {
   const pro = await profissionalAprovada(amb);
   const fam = cliente(amb.app);
-  const conta = await fam.post('/api/contas', familia({ pessoaAcompanhada: { nome: 'Helena Costa' } }));
+  const conta = await fam.post('/api/contas', familia({ pessoaAcompanhada: { nome: 'Helena Costa', parentesco: 'filha' } }));
   const [pessoa] = (await fam.get('/api/pessoas')).corpo.pessoas;
   const inicio = new Date(amb.relogio.agora.getTime() + DIA).toISOString();
   const pedido = await fam.post('/api/servicos', { profissional: pro.slug, tarefa: 'Consulta', inicio, horas: 4, pessoaAcompanhadaId: pessoa.id });
@@ -163,5 +164,28 @@ describe('avaliação nos dois sentidos', () => {
     const r = await fam.post(`/api/servicos/${id}/avaliacoes`, { nota: 6 });
     expect(r.status).toBe(400);
     expect(r.corpo.erro.campos.nota).toBe('Escolha uma nota de 1 a 5.');
+  });
+});
+
+describe('resposta da profissional', () => {
+  it('responde uma vez, só depois de a avaliação aparecer, e mostra a relação da família', async () => {
+    const { pro, fam, id } = await servicoRealizado();
+    const pessoa = (await fam.get('/api/pessoas')).corpo.pessoas[0];
+    expect(pessoa).toHaveProperty('parentesco');
+    await fam.post(`/api/servicos/${id}/avaliacoes`, { nota: 5, comentario: 'Muito cuidadosa.' });
+    // ainda escondida: a profissional não avaliou
+    const lista = async () => (await cliente(amb.app).get(`/api/profissionais/${pro.slug}/avaliacoes`)).corpo.avaliacoes;
+    expect(await lista()).toEqual([]);
+    const { rows } = await amb.banco.db.execute<{ id: string }>(sql`select id from avaliacoes where servico_id = ${id}`) as unknown as { rows: { id: string }[] };
+    const avaliacaoId = rows[0]!.id;
+    expect((await pro.c.post(`/api/avaliacoes/${avaliacaoId}/resposta`, { resposta: 'Obrigada!' })).status).toBe(409);
+
+    await pro.c.post(`/api/servicos/${id}/avaliacoes`, { nota: 5 });
+    expect((await fam.post(`/api/avaliacoes/${avaliacaoId}/resposta`, { resposta: 'Oi' })).status).toBe(404);
+    expect((await pro.c.post(`/api/avaliacoes/${avaliacaoId}/resposta`, { resposta: 'Me chame no 19 99999-0000' })).status).toBe(400);
+    const r = await pro.c.post(`/api/avaliacoes/${avaliacaoId}/resposta`, { resposta: 'Obrigada, foi um prazer acompanhar a Helena.' });
+    expect(r.status).toBe(200);
+    expect((await pro.c.post(`/api/avaliacoes/${avaliacaoId}/resposta`, { resposta: 'De novo' })).status).toBe(409);
+    expect((await lista())[0]).toMatchObject({ resposta: 'Obrigada, foi um prazer acompanhar a Helena.', relacao: 'Filha' });
   });
 });

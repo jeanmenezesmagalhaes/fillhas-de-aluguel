@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<script>document.documentElement.classList.add('js')</script>
+<script>document.documentElement.classList.add('js', 'carregando')</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>Ganhos · Área profissional · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="resumo.css?v=6">
-<link rel="stylesheet" href="gestao.css?v=12">
+<link rel="stylesheet" href="gestao.css?v=25">
 </head>
 <body class="pagina-gestao">
 
@@ -16,7 +16,7 @@
   <div class="topo-dentro">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="painel.html">Painel</a><a href="ganhos.html" aria-current="page">Ganhos</a><a href="painel.html#agenda">Agenda</a><a href="valores.html">Valores</a><a href="portfolio.html">Meu perfil público</a><span class="topo-conta"><span data-nome-conta>Ana Oliveira</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="painel.html">Painel</a><a href="perfil.html">Meu perfil</a><a href="ganhos.html" aria-current="page">Ganhos</a><span class="topo-conta"><span data-nome-conta>Ana Oliveira</span><button class="link" type="button" data-sair>Sair</button></span></nav>
   </div>
 </header>
 
@@ -24,7 +24,8 @@
   <div class="titulo">
     <div>
       <h1>Seus ganhos</h1>
-      <p class="achado num" data-achado>R$ 827,20 já estão na sua conta. Próximo depósito: R$ 61,60 amanhã, 21/10.</p>
+      <p class="achado num" data-achado>R$ 1.196,80 caíram na sua conta nos últimos 30 dias. Próximo depósito: R$ 70,40 amanhã, 21/10.</p>
+      <p class="simulacao" data-simulacao hidden>Valores de simulação: a taxa e os prazos ainda podem mudar.</p>
     </div>
     <button class="btn btn-secundario" type="button" data-baixar>Baixar extrato</button>
   </div>
@@ -73,11 +74,11 @@
   <section class="cartao duvidas" aria-labelledby="t-duvidas">
     <h2 id="t-duvidas">Dúvidas sobre pagamento</h2>
     <div class="duvidas-lista">
-      <details><summary>Quando o dinheiro cai na minha conta?</summary><p>Dois dias úteis depois do atendimento, por Pix, na chave cadastrada. Fins de semana e feriados não contam. Em outubro, o feriado de 12/10 empurrou um depósito de 13 para 14/10.</p></details>
-      <details><summary>Por que recebo menos do que a família pagou?</summary><p>A família paga o valor do serviço: as horas vezes o seu valor da hora, já com o seu desconto, se houver. Desse valor sai a taxa da plataforma, de 12%. O resto é seu.</p></details>
+      <details><summary>Quando o dinheiro cai na minha conta?</summary><p><span data-r-prazo>Dois</span> dias úteis depois do atendimento, por Pix, na chave cadastrada. Fins de semana e feriados não contam. Em outubro, o feriado de 12/10 empurrou um depósito de 13 para 14/10.</p></details>
+      <details><summary>Por que recebo menos do que a família pagou?</summary><p>A família paga o valor do serviço: as horas vezes o seu valor da hora, já com o seu desconto, se houver. Desse valor sai a taxa da plataforma, de <span data-r-taxa>12</span>%. O resto é seu.</p></details>
       <details><summary>A família parcelou no cartão. Eu recebo parcelado?</summary><p>Não. Você recebe o valor inteiro de uma vez, no prazo normal. As parcelas e os juros, se houver, ficam entre a família e o cartão e não mudam o que você recebe.</p></details>
-      <details><summary>E se a família cancelar?</summary><p>Se cancelar com 24 horas ou mais de antecedência, não há custo e o pedido não entra no extrato. Se cancelar com menos de 24 horas, você recebe metade do valor do serviço, e a taxa vale só sobre essa metade.</p></details>
-      <details><summary>De onde sai o desconto para mais horas?</summary><p>Do seu valor da hora. É o desconto que você mesma definiu no perfil: a partir de 4 horas, a hora sai por R$ 60 em vez de R$ 70. Ele aparece separado no extrato para você ver quanto deixou de cobrar.</p></details>
+      <details><summary>E se a família cancelar?</summary><p>Se cancelar com <span data-r-horas>24</span> horas ou mais de antecedência, não há custo e o pedido não entra no extrato. Se cancelar com menos de <span data-r-horas>24</span> horas, você recebe <span data-r-pct>metade</span> do valor do serviço, e a taxa vale só sobre essa parte.</p></details>
+      <details><summary>De onde sai o desconto para mais horas?</summary><p>Do seu valor da hora. É o desconto que você mesma definiu no perfil: a partir de 4 horas, a hora sai por R$ 70 em vez de R$ 80. Ele aparece separado no extrato para você ver quanto deixou de cobrar.</p></details>
       <details><summary>Como guardo o comprovante do mês?</summary><p>Use “Baixar extrato”. O arquivo traz cada atendimento com data, família, forma de pagamento, valor, taxa, o que você recebeu e a data do depósito.</p></details>
     </div>
     <p class="duvidas-contato">Não achou a resposta? <a href="mailto:ajuda@minhacompanhia.com.br?subject=D%C3%BAvida%20sobre%20pagamento%20-%20outubro%202026">Escreva para ajuda@minhacompanhia.com.br</a> e diga a data do atendimento.</p>
@@ -89,7 +90,7 @@
     <h1>Entre para ver seus ganhos</h1>
     <p class="achado">Veja o extrato do mês, os próximos depósitos e como cada valor foi calculado.</p>
     <a class="btn btn-primario btn-largo" href="entrar.html?perfil=pro&amp;volta=ganhos.html">Entrar</a>
-    <p class="entrar-pro">Ainda não tem cadastro? <a href="cadastro.html">Quero me cadastrar</a></p>
+    <p class="entrar-pro">Ainda não tem cadastro? <a href="entrar.html?perfil=pro&amp;modo=criar">Quero me cadastrar</a></p>
   </section>
 </main>
 
@@ -106,7 +107,7 @@
   // Ganhos da profissional. Com a API (api/), os números saem dos atendimentos dela; sem a API
   // (a tela aberta como arquivo ou num servidor só de páginas), mostra o mês de exemplo abaixo.
   // A taxa, o prazo do depósito e a regra de cancelamento ainda são propostas.
-  const TAXA = 0.12;
+  const REGRAS_EXEMPLO = { taxaPercentual: 12, prazoDepositoDiasUteis: 2, cancelamentoTardioHoras: 24, cancelamentoTardioPercentual: 50, definitivas: false };
   const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   // feriados nacionais de 2026 em que o banco não abre (contam para o prazo do depósito)
   const FERIADOS = ['2025-09-07', '2025-10-12', '2025-11-02', '2025-11-15', '2025-11-20', '2025-12-25', '2026-01-01', '2026-02-16', '2026-02-17', '2026-04-03', '2026-04-21', '2026-05-01', '2026-06-04', '2026-09-07', '2026-10-12', '2026-11-02', '2026-11-20', '2026-12-25'];
@@ -122,62 +123,71 @@
     mes: 'outubro',
     nome: 'Ana Oliveira',
     chave: 'Chave CPF •••.482.391-•• · Ana Oliveira',
-    desconto: 'a partir de 4 horas, a hora sai por R$ 60',
+    desconto: 'a partir de 4 horas, a hora sai por R$ 70',
     linhas: [
-      { id: 'a1', dia: '2026-10-02', inicio: 9, horas: 3, valorHora: 70, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Exame de sangue', pag: 'Pix', aceito: '2026-09-29', pago: '2026-09-30', deposito: '2026-10-06' },
-      { id: 'a2', dia: '2026-10-07', inicio: 10, horas: 2, valorHora: 70, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Cartão de crédito em 1x', aceito: '2026-10-04', pago: '2026-10-05', deposito: '2026-10-09' },
-      { id: 'a3', dia: '2026-10-09', inicio: 8, horas: 4, valorHora: 70, desconto: 40, familia: 'Rafael Souza', para: 'Dirce, 82 anos', tarefa: 'Consulta médica', pag: 'Cartão de crédito em 3x', parcelas: 3, aceito: '2026-10-05', pago: '2026-10-06', deposito: '2026-10-14' },
-      { id: 'a4', dia: '2026-10-14', inicio: 10, horas: 2, valorHora: 70, desconto: 0, familia: 'Mariana Costa', para: 'Helena, 78 anos', tarefa: 'Banco', pag: 'Pix', aceito: '2026-10-11', pago: '2026-10-12', deposito: '2026-10-16' },
-      { id: 'a5', dia: '2026-10-16', inicio: 14, horas: 3, valorHora: 70, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Passeio no Taquaral', pag: 'Cartão de crédito em 2x', parcelas: 2, aceito: '2026-10-12', pago: '2026-10-13', deposito: '2026-10-20' },
-      { id: 'a6', dia: '2026-10-19', inicio: 9, horas: 2, valorHora: 70, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Pix', aceito: '2026-10-14', pago: '2026-10-15', deposito: '2026-10-21', cancelado: '2026-10-18T21:00' },
-      { id: 'a7', dia: '2026-10-22', inicio: 8, horas: 3, valorHora: 70, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Exame de imagem', pag: 'Pix', aceito: '2026-10-18', pago: '2026-10-19', deposito: '2026-10-26', previsto: true },
-      { id: 'a8', dia: '2026-10-26', inicio: 10, horas: 2, valorHora: 70, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Cartão de crédito em 1x', aceito: '2026-10-19', pago: '2026-10-20', deposito: '2026-10-28', previsto: true },
-      { id: 's1', dia: '2026-09-08', inicio: 9, horas: 3, valorHora: 70, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Consulta médica', pag: 'Pix', aceito: '2026-09-04', pago: '2026-09-05' },
-      { id: 's2', dia: '2026-09-15', inicio: 10, horas: 2, valorHora: 70, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Cartão de crédito em 1x', aceito: '2026-09-11', pago: '2026-09-12' },
-      { id: 's3', dia: '2026-09-23', inicio: 8, horas: 4, valorHora: 70, desconto: 40, familia: 'Rafael Souza', para: 'Dirce, 82 anos', tarefa: 'Exame de imagem', pag: 'Cartão de crédito em 2x', parcelas: 2, aceito: '2026-09-18', pago: '2026-09-19' },
-      { id: 's4', dia: '2026-07-14', inicio: 10, horas: 2, valorHora: 70, desconto: 0, familia: 'Mariana Costa', para: 'Helena, 78 anos', tarefa: 'Banco', pag: 'Pix', aceito: '2026-07-10', pago: '2026-07-11' },
-      { id: 's5', dia: '2026-03-10', inicio: 14, horas: 3, valorHora: 70, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Passeio no Taquaral', pag: 'Cartão de crédito em 3x', parcelas: 3, aceito: '2026-03-05', pago: '2026-03-06' },
-      { id: 's6', dia: '2025-11-18', inicio: 9, horas: 2, valorHora: 70, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Pix', aceito: '2025-11-14', pago: '2025-11-14' },
-      { id: 's7', dia: '2025-08-15', inicio: 9, horas: 2, valorHora: 70, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Exame de sangue', pag: 'Pix', aceito: '2025-08-12', pago: '2025-08-13' },
+      { id: 'a1', dia: '2026-10-02', inicio: 9, horas: 3, valorHora: 80, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Exame de sangue', pag: 'Pix', aceito: '2026-09-29', pago: '2026-09-30', deposito: '2026-10-06' },
+      { id: 'a2', dia: '2026-10-07', inicio: 10, horas: 2, valorHora: 80, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Cartão de crédito em 1x', aceito: '2026-10-04', pago: '2026-10-05', deposito: '2026-10-09' },
+      { id: 'a3', dia: '2026-10-09', inicio: 8, horas: 4, valorHora: 80, desconto: 40, familia: 'Rafael Souza', para: 'Dirce, 82 anos', tarefa: 'Consulta médica', pag: 'Cartão de crédito em 3x', parcelas: 3, aceito: '2026-10-05', pago: '2026-10-06', deposito: '2026-10-14' },
+      { id: 'a4', dia: '2026-10-14', inicio: 10, horas: 2, valorHora: 80, desconto: 0, familia: 'Mariana Costa', para: 'Helena, 78 anos', tarefa: 'Banco', pag: 'Pix', aceito: '2026-10-11', pago: '2026-10-12', deposito: '2026-10-16' },
+      { id: 'a5', dia: '2026-10-16', inicio: 14, horas: 3, valorHora: 80, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Passeio no Taquaral', pag: 'Cartão de crédito em 2x', parcelas: 2, aceito: '2026-10-12', pago: '2026-10-13', deposito: '2026-10-20' },
+      { id: 'a6', dia: '2026-10-19', inicio: 9, horas: 2, valorHora: 80, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Pix', aceito: '2026-10-14', pago: '2026-10-15', deposito: '2026-10-21', cancelado: '2026-10-18T21:00' },
+      { id: 'a7', dia: '2026-10-22', inicio: 8, horas: 3, valorHora: 80, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Exame de imagem', pag: 'Pix', aceito: '2026-10-18', pago: '2026-10-19', deposito: '2026-10-26', previsto: true },
+      { id: 'a8', dia: '2026-10-26', inicio: 10, horas: 2, valorHora: 80, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Cartão de crédito em 1x', aceito: '2026-10-19', pago: '2026-10-20', deposito: '2026-10-28', previsto: true },
+      { id: 's1', dia: '2026-09-08', inicio: 9, horas: 3, valorHora: 80, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Consulta médica', pag: 'Pix', aceito: '2026-09-04', pago: '2026-09-05' },
+      { id: 's2', dia: '2026-09-15', inicio: 10, horas: 2, valorHora: 80, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Cartão de crédito em 1x', aceito: '2026-09-11', pago: '2026-09-12' },
+      { id: 's3', dia: '2026-09-23', inicio: 8, horas: 4, valorHora: 80, desconto: 40, familia: 'Rafael Souza', para: 'Dirce, 82 anos', tarefa: 'Exame de imagem', pag: 'Cartão de crédito em 2x', parcelas: 2, aceito: '2026-09-18', pago: '2026-09-19' },
+      { id: 's4', dia: '2026-07-14', inicio: 10, horas: 2, valorHora: 80, desconto: 0, familia: 'Mariana Costa', para: 'Helena, 78 anos', tarefa: 'Banco', pag: 'Pix', aceito: '2026-07-10', pago: '2026-07-11' },
+      { id: 's5', dia: '2026-03-10', inicio: 14, horas: 3, valorHora: 80, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Passeio no Taquaral', pag: 'Cartão de crédito em 3x', parcelas: 3, aceito: '2026-03-05', pago: '2026-03-06' },
+      { id: 's6', dia: '2025-11-18', inicio: 9, horas: 2, valorHora: 80, desconto: 0, familia: 'Beatriz Melo', para: 'Teresa, 75 anos', tarefa: 'Mercado e farmácia', pag: 'Pix', aceito: '2025-11-14', pago: '2025-11-14' },
+      { id: 's7', dia: '2025-08-15', inicio: 9, horas: 2, valorHora: 80, desconto: 0, familia: 'Lúcia Prado', para: 'Antônio, 80 anos', tarefa: 'Exame de sangue', pag: 'Pix', aceito: '2025-08-12', pago: '2025-08-13' },
     ],
   };
 
-  // da API: atendimentos feitos e confirmados do mês corrente; pedidos sem resposta, recusados e cancelados não geram pagamento
-  const daApi = (eu, servicos) => {
-    const agora = new Date();
-    const hoje = isoLocal(agora);
-    const idade = (iso) => (window.mc && iso ? mc.idade(iso) : null);
-    const linhas = servicos
-      .filter((s) => s.papel === 'profissional' && (s.situacao === 'realizado' || s.situacao === 'confirmado'))
-      .map((s) => {
-        const ini = new Date(s.inicio);
-        const dia = isoLocal(ini);
-        const fim = s.realizadoEm ? isoLocal(new Date(s.realizadoEm)) : dia;
-        const p = s.pessoaAcompanhada;
-        const anos = p ? idade(p.dataNascimento) : null;
-        return {
-          id: s.id, dia, inicio: ini.getHours(), horas: s.horas, valorHora: s.valorHoraCentavos / 100, desconto: 0,
-          familia: s.contratante.nome, para: p ? `${mc.primeiro(p.nome)}${anos != null ? `, ${anos} anos` : ''}` : 'a pessoa acompanhada',
-          tarefa: s.tarefa, pag: null, deposito: diasUteisDepois(s.situacao === 'confirmado' && dia < hoje ? hoje : fim, 2), previsto: s.situacao === 'confirmado',
-          // confirmado e já passado: o depósito só sai depois que ela marcar como feito no painel
-          concluir: s.situacao === 'confirmado' && dia < hoje,
-        };
-      })
-      .sort((a, b) => a.dia.localeCompare(b.dia) || a.inicio - b.inicio);
-    return { hoje, mes: MESES[agora.getMonth()], nome: eu.nome, chave: null, desconto: null, linhas };
+  // da API: o extrato já vem calculado (GET /api/profissionais/eu/ganhos); aqui só muda o formato
+  const ESTADO = { depositado: 'recebido', programado: 'programado', previsto: 'previsto', aguardando_conclusao: 'previsto' };
+  const daApi = (eu, extrato) => {
+    const hoje = isoLocal(new Date());
+    const p = eu.profissional || {};
+    const linhas = extrato.lancamentos.map((x) => {
+      const ini = new Date(x.inicio);
+      const cancelado = x.tipo === 'cancelamento_tardio';
+      // bruto é o valor do serviço, já com o desconto; a hora cheia volta somando o desconto
+      const servico = x.brutoCentavos / 100;
+      const base = cancelado ? Math.round(servico * 100 / extrato.regras.cancelamentoTardioPercentual * 100) / 100 : (x.brutoCentavos + x.descontoCentavos) / 100;
+      return {
+        id: x.servicoId, dia: isoLocal(ini), inicio: ini.getHours(), horas: x.horas,
+        valorHora: Math.round(base / x.horas * 100) / 100, desconto: cancelado ? 0 : x.descontoCentavos / 100,
+        familia: x.familia, para: x.para, tarefa: x.tarefa, pag: x.pagamento || null, cancelado,
+        base, servico, taxa: x.taxaCentavos / 100, liquido: x.liquidoCentavos / 100,
+        deposito: x.depositoEm, estado: ESTADO[x.estado] || 'previsto', concluir: x.estado === 'aguardando_conclusao', pronto: true,
+      };
+    }).sort((a, b) => a.dia.localeCompare(b.dia) || a.inicio - b.inicio);
+    const desconto = p.descontoAPartirHoras && p.valorHoraDescontoCentavos
+      ? `a partir de ${p.descontoAPartirHoras} horas, a hora sai por R$ ${(p.valorHoraDescontoCentavos / 100).toLocaleString('pt-BR')}` : null;
+    return { hoje, mes: MESES[new Date().getMonth()], nome: eu.nome, chave: null, desconto, linhas, regras: extrato.regras, simulado: extrato.simulado, rotuloTudo: 'dos últimos 13 meses' };
   };
 
   const mostrar = (dados) => {
     const { hoje: HOJE, linhas } = dados;
+    const R = dados.regras || REGRAS_EXEMPLO;
     const centavos = (v) => Math.round(v * 100) / 100;
     linhas.forEach((l) => {
-      l.deposito = l.deposito || diasUteisDepois(l.dia, 2);
+      if (l.pronto) return;
+      l.deposito = l.deposito || diasUteisDepois(l.dia, R.prazoDepositoDiasUteis);
       l.base = l.horas * l.valorHora;
-      l.servico = l.cancelado ? centavos(l.base * 0.5) : l.base - l.desconto;
-      l.taxa = centavos(l.servico * TAXA);
+      l.servico = l.cancelado ? centavos(l.base * R.cancelamentoTardioPercentual / 100) : l.base - l.desconto;
+      l.taxa = centavos(l.servico * R.taxaPercentual / 100);
       l.liquido = centavos(l.servico - l.taxa);
       l.estado = l.previsto ? 'previsto' : l.deposito <= HOJE ? 'recebido' : 'programado';
     });
+    // textos que dependem das regras
+    const fica = R.cancelamentoTardioPercentual === 50 ? 'metade' : `${R.cancelamentoTardioPercentual}%`;
+    const tardio = `Cancelado com menos de ${R.cancelamentoTardioHoras} h de antecedência`;
+    document.querySelectorAll('[data-r-prazo]').forEach((e) => { e.textContent = R.prazoDepositoDiasUteis === 2 ? 'Dois' : String(R.prazoDepositoDiasUteis); });
+    document.querySelectorAll('[data-r-taxa]').forEach((e) => { e.textContent = R.taxaPercentual; });
+    document.querySelectorAll('[data-r-horas]').forEach((e) => { e.textContent = R.cancelamentoTardioHoras; });
+    document.querySelectorAll('[data-r-pct]').forEach((e) => { e.textContent = fica; });
+    document.querySelector('[data-simulacao]').hidden = !(dados.simulado || R.definitivas === false) || !dados.regras;
     linhas.sort((a, b) => b.dia.localeCompare(a.dia) || b.inicio - a.inicio);
 
     const brl = (v) => `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -193,16 +203,16 @@
     const quando = (iso) => (iso === HOJE ? 'hoje' : iso === amanha ? 'amanhã' : dia(iso));
     const maiusc = (t) => t.replace(/^./, (c) => c.toUpperCase());
     const menosDias = (n) => isoLocal(new Date(new Date(`${HOJE}T12:00:00`).getTime() - n * 86400000));
-    const ROTULO = { 1: 'do último dia', 7: 'dos últimos 7 dias', 30: 'dos últimos 30 dias', 365: 'dos últimos 365 dias', tudo: 'de todo o período' };
+    const ROTULO = { 1: 'do último dia', 7: 'dos últimos 7 dias', 30: 'dos últimos 30 dias', 365: 'dos últimos 365 dias', tudo: dados.rotuloTudo || 'de todo o período' };
 
     document.querySelector('[data-nome-conta]').textContent = dados.nome;
     const chave = document.querySelector('.conta-deposito');
     if (dados.chave) chave.querySelector('.cd-val').textContent = dados.chave; else chave.hidden = true;
 
     // próximos depósitos e a frase do topo não dependem do período
-    const proximos = linhas.filter((l) => l.estado !== 'recebido').sort((a, b) => a.deposito.localeCompare(b.deposito));
+    const proximos = linhas.filter((l) => l.estado !== 'recebido').sort((a, b) => (a.deposito || '9999').localeCompare(b.deposito || '9999'));
     document.querySelector('[data-depositos]').innerHTML = proximos.length
-      ? proximos.map((l) => `<li><span class="dp-dia">${l.concluir ? 'Depois de você concluir' : `${maiusc(quando(l.deposito))}${quando(l.deposito).includes(',') ? '' : `, ${dd(l.deposito)}`}`}</span><span class="dp-oque">${esc(l.tarefa)}<small>${esc(l.familia)} · ${l.concluir ? `atendimento de ${dd(l.dia)} ainda não marcado como feito` : l.estado === 'previsto' ? `depois do atendimento de ${dd(l.dia)}` : l.cancelado ? 'cancelado com menos de 24 h' : `atendimento de ${dd(l.dia)}`}</small></span><span class="dp-val">${brl(l.liquido)}</span></li>`).join('')
+      ? proximos.map((l) => `<li><span class="dp-dia">${l.concluir ? 'Depois de você concluir' : `${maiusc(quando(l.deposito))}${quando(l.deposito).includes(',') ? '' : `, ${dd(l.deposito)}`}`}</span><span class="dp-oque">${esc(l.tarefa)}<small>${esc(l.familia)} · ${l.concluir ? `atendimento de ${dd(l.dia)} ainda não marcado como feito` : l.estado === 'previsto' ? `depois do atendimento de ${dd(l.dia)}` : l.cancelado ? `cancelado com menos de ${R.cancelamentoTardioHoras} h de antecedência` : `atendimento de ${dd(l.dia)}`}</small></span><span class="dp-val">${brl(l.liquido)}</span></li>`).join('')
       : '<li class="vazio">Nenhum depósito programado. Os próximos aparecem quando você tiver atendimentos confirmados.</li>';
     const prox = proximos.find((l) => !l.concluir);
     const aConcluir = linhas.filter((l) => l.concluir).length;
@@ -214,7 +224,7 @@
 
     const pill = (l) => (l.concluir ? '<span class="pill pill-aviso">Marque como feito no painel</span>'
       : l.estado === 'recebido' ? `<span class="pill pill-ok">Na conta em ${ddAno(l.deposito)}</span>`
-        : l.estado === 'programado' ? `<span class="pill pill-aviso">Cai ${quando(l.deposito)}</span>` : `<span class="pill">Previsto para ${dd(l.deposito)}</span>`);
+        : l.estado === 'programado' ? `<span class="pill pill-aviso">Cai ${quando(l.deposito)}</span>` : l.deposito ? `<span class="pill">Previsto para ${dd(l.deposito)}</span>` : '<span class="pill">Previsto</span>');
     const pagamento = (l) => (!l.pag ? '<span class="traco">—</span>' : l.parcelas ? `Cartão, ${l.parcelas}x<small>${l.parcelas} × ${brl(l.servico / l.parcelas)}</small>` : l.pag.startsWith('Pix') ? 'Pix' : 'Cartão, à vista');
 
     // tudo o que depende do período: a conta, as três caixas e a tabela
@@ -237,8 +247,8 @@
       document.querySelector('[data-conta-mes]').innerHTML = [
         ['Atendimentos feitos', `${normais.length} ${normais.length === 1 ? 'atendimento' : 'atendimentos'}, ${horas} h${valores.length === 1 ? ` × ${brl(valores[0])}` : ''}`, brl(brutoNormais), ''],
         descontos ? ['Desconto que você oferece', dados.desconto || 'para pedidos mais longos', `− ${brl(descontos)}`, ''] : null,
-        cancelados.length ? ['Cancelado com menos de 24 h de antecedência', `${cancelados.length} ${cancelados.length === 1 ? 'pedido' : 'pedidos'}: você recebe metade do valor`, `+ ${brl(cancel)}`, ''] : null,
-        ['Taxa da plataforma', `12% do valor do serviço (${brl(centavos(brutoNormais - descontos + cancel))})`, `− ${brl(taxa)}`, ''],
+        cancelados.length ? [tardio, `${cancelados.length} ${cancelados.length === 1 ? 'pedido' : 'pedidos'}: você recebe ${fica} do valor`, `+ ${brl(cancel)}`, ''] : null,
+        ['Taxa da plataforma', `${R.taxaPercentual}% do valor do serviço (${brl(centavos(brutoNormais - descontos + cancel))})`, `− ${brl(taxa)}`, ''],
         ['Você recebe', `pelos atendimentos ${ROTULO[periodo]}`, brl(liquido), 'total'],
       ].filter(Boolean).map(([t, s2, v, c]) => `<div class="${c}"><dt>${t}<small>${s2}</small></dt><dd>${v}</dd></div>`).join('');
       const recebido = soma(feitos.filter((l) => l.estado === 'recebido'), 'liquido');
@@ -263,15 +273,15 @@
             <div class="det-caixa"><h3>A conta</h3><dl class="det-conta">
               <div><dt>${l.horas} horas de ${brl(l.valorHora)}</dt><dd>${brl(l.base)}</dd></div>
               ${l.desconto ? `<div><dt>Seu desconto para 4 h ou mais</dt><dd>− ${brl(l.desconto)}</dd></div>` : ''}
-              ${l.cancelado ? `<div><dt>Cancelado com menos de 24 h (fica a metade)</dt><dd>− ${brl(l.base - l.servico)}</dd></div>` : ''}
-              <div><dt>Taxa da plataforma (12%)</dt><dd>− ${brl(l.taxa)}</dd></div>
+              ${l.cancelado ? `<div><dt>${tardio} (você recebe ${fica})</dt><dd>− ${brl(l.base - l.servico)}</dd></div>` : ''}
+              <div><dt>Taxa da plataforma (${R.taxaPercentual}%)</dt><dd>− ${brl(l.taxa)}</dd></div>
               <div class="total"><dt>Fica para você</dt><dd>${brl(l.liquido)}</dd></div>
             </dl></div>
             <div class="det-caixa"><h3>O caminho do dinheiro</h3><ol class="det-tempo">
               ${l.aceito ? `<li><span>${dd(l.aceito)}</span>Você aceitou o pedido.</li>` : ''}
               ${l.pago ? `<li><span>${dd(l.pago)}</span>A família pagou ${brl(l.cancelado ? l.base : l.servico)} ${l.pag.startsWith('Pix') ? 'por Pix' : l.parcelas ? `no cartão, em ${l.parcelas}x. Você recebe tudo de uma vez` : 'no cartão, à vista'}.</li>` : ''}
-              ${l.cancelado ? `<li><span>${dd(l.cancelado)}</span>A família cancelou com menos de 24 h. Metade voltou para ela.</li>` : `<li><span>${dd(l.dia)}</span>${l.estado === 'previsto' ? 'Atendimento marcado' : 'Atendimento feito'}: ${l.inicio}h às ${l.inicio + l.horas}h.</li>`}
-              ${l.concluir ? `<li class="previsto"><span>Agora</span>Marque como feito no <a href="painel.html">painel</a> para receber.</li>` : `<li class="${l.estado}"><span>${dd(l.deposito)}</span>${l.estado === 'recebido' ? `Caiu ${brl(l.liquido)} no seu Pix.` : `${brl(l.liquido)} vai cair no seu Pix.`}</li>`}
+              ${l.cancelado ? `<li><span>${typeof l.cancelado === 'string' ? dd(l.cancelado) : dd(l.dia)}</span>A família cancelou com menos de ${R.cancelamentoTardioHoras} h de antecedência. Você fica com ${fica} do valor.</li>` : `<li><span>${dd(l.dia)}</span>${l.estado === 'previsto' ? 'Atendimento marcado' : 'Atendimento feito'}: ${l.inicio}h às ${l.inicio + l.horas}h.</li>`}
+              ${l.concluir ? `<li class="previsto"><span>Agora</span>Marque como feito no <a href="painel.html">painel</a> para receber.</li>` : l.deposito ? `<li class="${l.estado}"><span>${dd(l.deposito)}</span>${l.estado === 'recebido' ? `Caiu ${brl(l.liquido)} no seu Pix.` : `${brl(l.liquido)} vai cair no seu Pix.`}</li>` : ''}
             </ol></div>
           </div>
         </td></tr>`).join('') : `<tr><td colspan="8" class="ex-vazio">Nenhum atendimento ${ROTULO[periodo]}.</td></tr>`;
@@ -298,7 +308,7 @@
     document.querySelector('[data-baixar]').addEventListener('click', () => {
       const n = (v) => v.toFixed(2).replace('.', ',');
       const cab = ['Data do atendimento', 'Horário', 'Serviço', 'Família', 'Pagamento da família', 'Valor das horas', 'Desconto', 'Valor do serviço', 'Taxa da plataforma', 'Você recebe', 'Situação', 'Data do depósito'];
-      const rows = atual.map((l) => [dma(l.dia), `${l.inicio}h-${l.inicio + l.horas}h`, l.tarefa + (l.cancelado ? ' (cancelado)' : ''), l.familia, l.pag || 'Não registrado', n(l.base), n(l.cancelado ? l.base - l.servico : l.desconto), n(l.servico), n(l.taxa), n(l.liquido), { recebido: 'Na conta', programado: 'Programado', previsto: 'Previsto' }[l.estado], dma(l.deposito)]);
+      const rows = atual.map((l) => [dma(l.dia), `${l.inicio}h-${l.inicio + l.horas}h`, l.tarefa + (l.cancelado ? ' (cancelado)' : ''), l.familia, l.pag || 'Não registrado', n(l.base), n(l.cancelado ? l.base - l.servico : l.desconto), n(l.servico), n(l.taxa), n(l.liquido), l.concluir ? 'Aguardando você marcar como feito' : { recebido: 'Na conta', programado: 'Programado', previsto: 'Previsto' }[l.estado], l.deposito ? dma(l.deposito) : '']);
       const csv = [cab, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\r\n');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
@@ -330,8 +340,16 @@
     if (!eu || !eu.papeis.includes('profissional')) { fora(); return; }
     dentro(() => mc.sair('mc-pro', 'profissional.html'));
     try {
-      const { servicos } = await mc.api('GET', '/api/servicos');
-      mostrar(daApi(eu, servicos));
+      const hoje = new Date(); hoje.setHours(12, 0, 0, 0);
+      const desloca = (dias) => isoLocal(new Date(hoje.getTime() + dias * 86400000));
+      const treze = new Date(hoje); treze.setMonth(treze.getMonth() - 13); treze.setDate(treze.getDate() + 1);
+      const [passado, futuro] = await Promise.all([
+        mc.api('GET', `/api/profissionais/eu/ganhos?de=${isoLocal(treze)}&ate=${desloca(0)}`),
+        mc.api('GET', `/api/profissionais/eu/ganhos?de=${desloca(1)}&ate=${desloca(60)}`),
+      ]);
+      const vistos = new Set();
+      const lancamentos = [...passado.lancamentos, ...futuro.lancamentos].filter((x) => !vistos.has(x.servicoId + x.tipo) && vistos.add(x.servicoId + x.tipo));
+      mostrar(daApi(eu, { ...passado, lancamentos }));
     } catch (e) {
       document.querySelector('[data-achado]').textContent = `${e.message} Os ganhos não puderam ser carregados agora.`;
     }

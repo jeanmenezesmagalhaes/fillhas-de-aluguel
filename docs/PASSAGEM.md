@@ -273,3 +273,280 @@ O usuário preferiu a tabela à lista em frases, mas com mais respiro e com filt
 - **Texto saindo da caixa:** era um white-space: nowrap da primeira célula. O detalhe agora são duas caixas brancas lado a lado ("A conta" e "O caminho do dinheiro"), uma embaixo da outra no celular.
 - **Linha do tempo mais curta:** "Você aceitou o pedido.", "A família pagou R$ X por Pix.", "Atendimento feito: 9h às 11h." e "Caiu R$ X no seu Pix." ou "R$ X vai cair no seu Pix.".
 - **"Em cima da hora" saiu da tela.** No lugar entrou "Cancelado com menos de 24 h de antecedência" (no resumo, "você recebe metade do valor"). No detalhe e nos depósitos ficou "cancelado com menos de 24 h".
+
+## Verificação da profissional, lista de espera e indicações (backend) — 20/10/2026
+- **Pedido do usuário:** para atender, a profissional manda os documentos que comprovam quem ela é: comprovante de endereço, CPF ou CNPJ para receber, WhatsApp e e-mail. Depois espera a aprovação, e enquanto espera pode indicar outras pessoas (bônus a definir). A tela de cadastro fica para depois, com a sessão Impeccable.
+- **Feito na API (migration `0002_verificacao_documentos_indicacoes.sql`):**
+  - código de 6 dígitos para confirmar e-mail e WhatsApp;
+  - CPF e CNPJ com dígitos conferidos, CPF único, e endereço;
+  - upload de documentos (RG ou CNH, comprovante, cartão CNPJ), com tipo conferido pelo conteúdo e limite de 10 MB;
+  - checklist do que falta, entrada na fila com posição, dados travados durante a análise;
+  - administração: fila, ficha completa, aprovar ou recusar documento com motivo, aprovar perfil ou pedir correção;
+  - indicações com código, links e as etapas cadastro → aprovação → primeiro serviço.
+- **Ainda sem provedor:** e-mail e WhatsApp só aparecem no log do servidor, e os arquivos ficam em `api/.data/arquivos`. Para produção faltam provedor de mensagens e bucket privado.
+- **Seed:** Joana Prado na fila, com dois documentos e indicada pela Ana (código ANA-DEMO). Conta de administração equipe@demo.minhacompanhia.test.
+- **Testes:** 34 passando (`cd api && npm test`).
+- **Decidido:** o documento com foto (RG ou CNH) é obrigatório.
+- **A decidir com o cliente:**
+  - regras do bônus de indicação;
+  - se indicar faz a pessoa subir na fila;
+  - se a profissional aprovada pode indicar famílias também (hoje pode).
+
+## Telas de verificação, lista de espera, indicações e administração — 20/10/2026
+Pedido da sessão do backend, em nome do usuário, sobre a API do commit fb524cc.
+- **verificacao.html, verificacao.js e verificacao.css** (profissional):
+  - confirmação de e-mail e WhatsApp por código;
+  - CPF, CNPJ opcional com razão social, e endereço;
+  - documentos, com foto pela câmera ou arquivo de até 10 MB;
+  - envio para a lista de espera, posição na fila, correção pedida e aprovada;
+  - indicações com código, links, contagens e pessoas indicadas.
+- **admin.html e admin.js** (equipe): fila e ficha, aprovar ou recusar cada documento com motivo, aprovar o perfil e pedir correção.
+- **Modo de cada tela:** com a API, usam as rotas /api/profissionais/eu/verificacao, /api/eu/verificacoes, /api/indicacoes/eu e /api/admin/*. Sem a API, rodam o mesmo fluxo com dados de exemplo em memória. Na verificação, ?exemplo=espera e ?exemplo=correcao mostram esses estados.
+- **entrar.html:** a profissional que cria a conta vai para verificacao.html. O texto de voltar só diz "pedido" quando volta para o resumo.
+- **Links de cadastro:** "Quero me cadastrar" (área profissional, rodapés e ganhos) agora abre entrar.html?perfil=pro&modo=criar, no lugar do cadastro.html antigo. O rodapé da área profissional deixou de apontar para login.html.
+- **Testado com a API em PORT=4174:**
+  - a equipe recusou o RG da Joana e pediu correção;
+  - a Joana viu o aviso e o motivo, reenviou uma imagem e voltou para a fila (1º);
+  - uma conta nova foi criada com ?indicacao=ANA-DEMO e caiu na verificação;
+  - o código errado deu erro, e o código do log confirmou o e-mail.
+- **Dados de teste:** a conta de teste (teste.verificacao@exemplo.test) ficou no banco local api/.data. O seed não a apaga.
+- **Não commitado.** O checkout está no branch backend-contas-avaliacoes.
+
+## Cursos com comprovante e CNH para quem tem veículo (backend) — 20/10/2026
+- **Pedido do usuário:**
+  - No perfil, a profissional adiciona cursos e treinamentos com comprovante; a plataforma valida, e o que foi validado aparece no portfólio.
+  - A CNH é obrigatória para quem atende com veículo.
+- **Feito na API:**
+  - migration `0003_cnh_e_qualificacoes.sql`, com a tabela `qualificacoes` e o tipo de documento `cnh`;
+  - rotas da profissional e da administração para os cursos;
+  - o portfólio público traz `qualificacoes` (só as aprovadas);
+  - com `veiculoIncluso`, a CNH entra nos documentos exigidos;
+  - aprovada sem veículo, ela manda a CNH e só oferece veículo depois de a CNH ser aprovada;
+  - na fila, não dá para ligar o veículo.
+- **Outros ajustes:**
+  - o portfólio público só aparece aprovado e com o valor da hora definido;
+  - o painel leva para verificacao.html quem está em rascunho, na fila ou em correção.
+- **Seed:** a Ana tem CNH aprovada e dois cursos validados. A Joana tem um curso esperando validação.
+- **Testes:** 40 passando.
+- **Telas ainda não feitas:** cursos no perfil (painel ou verificação), cursos no portfolio.html, fila de cursos no admin.html, e a pergunta "Atende com veículo?" com a CNH em verificacao.html.
+
+## Veículo com CNH e cursos validados nas telas — 20/10/2026
+Pedido da sessão do backend, sobre a API do commit 860fa6f.
+- **verificacao.html:**
+  - "Atende com veículo?" salva com PATCH /api/profissionais/eu. Antes da fila, a CNH entra nos documentos. Na fila, aparece o 409. Aprovada e sem CNH, aparece o 422, com um cartão para enviar a CNH (tipo=cnh).
+  - "Cursos e treinamentos": lista, envio com certificado (multipart) e tirar do perfil.
+- **admin.html:** abas Cadastros e Cursos para validar, com validar e recusar com motivo. Na ficha, o veículo e os cursos. O título virou "Conferência".
+- **portfolio.html:** seção "Cursos validados", com os dois cursos da Ana. Com a API, a lista vem do perfil público. Os ladrilhos trocaram os cursos por comprovante de endereço e CNH, e o texto "Experiência e qualificações" agora bate com os cursos.
+- **Testado com a API em 4174, depois do seed:**
+  - portfólio da Ana com os dois cursos da API;
+  - a equipe validou o curso da Joana;
+  - a Joana, na fila, recebeu o aviso ao ligar o veículo e enviou um curso novo;
+  - a Cláudia, aprovada, recebeu o 422, enviou a CNH e, ao tentar de novo, viu "Sua CNH ainda está em análise".
+- **Lacuna na API:** a CNH enviada por uma profissional já aprovada não aparece em nenhuma fila da administração. A fila só lista quem está em análise, e a ficha só mostra os documentos exigidos.
+
+## Documentos avulsos na administração — 20/10/2026
+- **admin.html:** ganhou a aba "Documentos avulsos", que usa GET /api/admin/documentos (do commit b807440 do backend). A aba mostra só os documentos com avulso: true, como a CNH de uma profissional aprovada. Tem Aprovar e Recusar com motivo.
+- **Testado com a API em 4174, depois do seed:**
+  1. A Cláudia, aprovada, enviou a CNH.
+  2. A equipe a aprovou na aba nova.
+  3. A Cláudia marcou "Sim, levo de carro", e o perfil passou a mostrar "Veículo incluso".
+
+## Portfólio mais simples, retrato da Ana e avaliações em janela — 20/10/2026
+- **Capa:** as condições ficam numa linha cada ("R$ 60/h a partir de 4 h" não quebra mais), e "por atendimento" virou "por pedido". A foto da Lagoa do Taquaral deu lugar a um retrato grande da Ana, em ilustração e fundo rosa, com a legenda "Ana Oliveira · 6 anos acompanhando pessoas idosas". O cabelo do retrato ficou mais longo, para não parecer de homem em tamanho grande. Quando houver foto real da profissional, ela entra nesse lugar.
+- **Orçamento:** saíram os blocos e a legenda "Cada bloco é uma hora…". Ficaram o campo de horas, o mais e o menos, e os atalhos 2, 4, 6 e 8 h. O de 12 h saiu.
+- **"O que Ana faz" e "Onde e quando":** ícones em SVG no lugar das fotos (menos peso no servidor), com textos curtos. Os bairros, os dias e horários e o veículo viraram três itens.
+- **Avaliações:** a seção traz a média e o total, as três mais recentes e o botão "Ver todas as avaliações". Ele abre uma janela (dialog) com todas as avaliações, ordenadas por mais recentes, mais antigas, melhores notas ou piores notas. O exemplo tem 12 avaliações: 11 de 5 e 1 de 4, média 4,9. Com a API, vêm de /api/profissionais/:slug/avaliacoes.
+- **Créditos:** como a página ficou só com a foto do ipê, os créditos citam só essa foto. A verificação da taste-skill acusa few-pictures, por escolha do usuário (preferiu ícones e o retrato).
+
+## Mínimo de horas por tarefa — 20/10/2026
+- **portfolio.html, "O que Ana faz":** saíram as durações ("2 a 4 h" e outras). Cada tarefa mostra o mínimo que a Ana aceita: consulta ou exame 2 h, banco ou cartório 2 h, mercado e farmácia 1 h, passeio 2 h. Entrou "Outra tarefa · A combinar", para pedidos fora da lista.
+- **Capa:** "Mínimo 2 h · por pedido" virou "A partir de 1 h · mínimo varia por tarefa".
+- **Orçamento:** antes das horas vem "Para qual tarefa?", com as cinco opções. O mínimo segue a tarefa escolhida, e as horas abaixo dele sobem sozinhas. "Outra tarefa" abre o campo "O que precisa?" e avisa que a Ana confirma o tempo e o valor ao aceitar. O link leva `&tarefa=` para o resumo.
+- **Dados de exemplo:** `#profissionais` ganhou `tarefas: {consulta, banco, mercado, passeio, outra}`, cada uma com `nome` e `minimo` (a "outra" tem `aCombinar: true`).
+- **Falta:**
+  - um lugar para a profissional cadastrar o mínimo de cada tarefa e as outras atividades que faz;
+  - na API, o campo para guardar isso. Hoje só existe `horasMinimas`, um único mínimo.
+  - o resumo.html ainda não lê `tarefa`.
+
+## Valores e tarefas da profissional — 20/10/2026
+- **valores.html** (refeita no estilo das telas de gestão, com valores.js):
+  - valor da hora, a partir de R$ 70;
+  - as quatro tarefas fixas, cada uma com marcar e o mínimo de 1 a 12 h;
+  - "Outras atividades": ela cria, dá nome e define o mínimo, até 20 tarefas no total;
+  - "Aceito outros pedidos, a combinar";
+  - ao lado, "Como a família vê", que atualiza enquanto ela mexe.
+- **Com a API:** lê `usuario.profissional` de /api/eu e salva com PATCH /api/profissionais/eu {valorHoraCentavos, tarefas, aceitaOutras}, no contrato do commit 567428a do backend. Os erros por campo (`tarefas.N.nome`) aparecem na linha certa.
+- **Sem a API:** usa a conta de exemplo e guarda em localStorage `mc-valores`.
+- **portfolio.html:** com a API, "O que Ana faz", o "A partir de N h" do topo e as opções do orçamento seguem as tarefas cadastradas, incluindo as atividades próprias. O orçamento recebe as tarefas pelo evento `mc:tarefas`.
+- **gestao.js:** os erros da API agora trazem `e.campos`.
+- **Testado na 4175**, com a conta da Ana do seed: salvar, nome inválido (400) e lista vazia (422). Também o portfólio com tarefas trocadas. Ao final, a Ana voltou ao seed.
+
+## Agenda da profissional — 20/10/2026
+- **agenda.html** (com agenda.js): os atendimentos confirmados, separados em "Esta semana", "Semana que vem" e "Mais para a frente". Cada um tem "Salvar na agenda", que abre um menu:
+  - Google Agenda: abre o evento já preenchido;
+  - Apple (iPhone e Mac): baixa um arquivo .ics;
+  - Outlook: abre o evento já preenchido.
+- Cada evento leva um lembrete uma hora antes.
+- **agenda-salvar.js:** peça comum (`mcAgenda.menu`, `ics`, `baixar`), para usar também nos pedidos da família.
+- **"Na agenda do seu celular":**
+  - Com GET /api/agenda/link: Google, Apple (webcal://) e Outlook assinam o link e se atualizam sozinhos. Tem também "copiar link" e "gere um novo", que invalida o antigo.
+  - As rotas estão no commit e640b95 do backend: /api/agenda/link devolve {url, webcal}, /api/agenda/link/novo troca o token e /api/agenda/:token.ics entrega o arquivo. O arquivo traz os atendimentos confirmados e os feitos dos últimos 30 dias.
+  - Sem as rotas (404, ou 503 em produção sem SEGREDO_AGENDA), fica "Baixar todos" (.ics).
+  - Testado na 4175: a tela mostra os três botões, o arquivo traz os eventos e o link antigo dá 404 depois de "gere um novo".
+  - O navegador guarda o .ics por 5 minutos (max-age=300). Por isso, logo depois de trocar o link, o antigo ainda pode abrir do cache.
+- Corrigido: entrando pela API, valores.html e agenda.html ficavam em branco, porque `mc.entrar` esconde a tela e nada a mostrava de novo.
+- **Menus:** painel.html e ganhos.html apontam "Agenda" para agenda.html, e o painel ganhou "Ver agenda e salvar no celular".
+- **Falta:**
+  - resumo.html ainda não lê `?tarefa=` nem envia `tipoTarefa`;
+  - os pedidos da família ainda não têm "Salvar na agenda";
+  - os dias e horários em que a profissional atende ainda não têm onde ser editados.
+- **Agenda refeita a pedido do usuário:**
+  - Cada linha destaca a atividade, com data e horário juntos ("Qui, 22/10 · 8h às 11h") e, abaixo, a família, a pessoa e o local.
+  - À direita fica o status (Confirmado, Novo pedido ou Esperando a família) e, abaixo dele, a ação. No confirmado é "Salvar na agenda". No pedido novo são Aceitar e Recusar (este com dois toques), por POST /api/servicos/:id/aceitar e /recusar.
+  - Saíram os avisos da coluna da direita. "Na agenda do seu celular" ficou só com os botões, ou só com "Baixar todos os confirmados" quando não há o link.
+- **Saiu o quadro "Na agenda do seu celular"**, a pedido do usuário, junto com a assinatura e o "Baixar todos". A agenda ficou numa coluna só, e salvar no Google, na Apple ou no Outlook continua em cada atendimento. As rotas /api/agenda/link do backend seguem prontas, mas o front não usa mais.
+
+## Área profissional em três abas — 20/10/2026
+- **Menu:** Painel, Meu perfil e Ganhos. Saíram as abas Agenda, Valores e Meu perfil público.
+- **painel.html:** "Próximos atendimentos" virou "Agenda", no formato novo:
+  - separada por semana;
+  - em cada item, a atividade em destaque, dia, horário e valor numa linha, e o status com a ação.
+  - Antes de começar, o status é "Confirmado", com "Salvar na agenda". Depois do início, "Acontecendo agora" ou "Já passou", com "Marcar como feito".
+  - A lista é desenhada por `mcAgenda.lista`, em agenda-salvar.js.
+  - Os pedidos novos continuam no topo, com aceitar, propor mudança e recusar.
+- **perfil.html + perfil.js (Meu perfil):**
+  - foto, com tirar ou escolher arquivo;
+  - sobre você: apresentação e bairros em etiquetas;
+  - valor da hora;
+  - tarefas, até 10;
+  - veículo, com a CNH quando a API pedir;
+  - cursos.
+  - Ao lado, "Como a família vê", fixo na tela. No topo, "Ver como a família vê" abre o portfólio.
+  - Apresentação, bairros, valor e tarefas saem juntos no "Salvar", que fica preso no pé da tela. Foto, veículo e cursos salvam na hora.
+  - Testado na 4175 com a Ana: carregou os dados e salvou um bairro (desfeito depois).
+- **Foto:** o front chama POST /api/profissionais/eu/foto (multipart, campo `arquivo`) e lê `profissional.foto {url, situacao}` de /api/eu, ou `fotoUrl` do perfil público. A API ainda não tem essa rota. Até ela existir, a foto fica só na tela, no exemplo, e na API aparece "Não deu para enviar a foto agora".
+- **Arquivos:** agenda.html, agenda.js e valores.js foram apagados. valores.html agora só redireciona para perfil.html.
+- A verificação (verificacao.html) continua com veículo e cursos, para quem ainda está no cadastro.
+
+## Menu do site mais curto — 20/10/2026
+- **No topo das páginas das famílias** ficaram só "Encontrar profissional", "Meus pedidos" e o botão "Área profissional". Saíram "Como contratar" e "Por que confiar".
+- **Páginas mudadas:** index, busca (e docs/gera_busca.py), portfolio, profissional, resumo, pedidos e entrar.
+- **Continuam como estavam:** as seções "Como contratar" e "Por que confiar" na home, e os mesmos links no rodapé.
+- **"Meus pedidos"** leva para pedidos.html. Sem login, a página convida a entrar.
+
+## Perfil completo ligado à API — 20/10/2026 (backend 466c678 a ec1888c)
+- **perfil.html:**
+  - "Há quantos anos você acompanha pessoas idosas?" (anosExperiencia);
+  - "Cobrar menos em pedidos longos" (descontoAPartirHoras e valorHoraDescontoCentavos, ou os dois null);
+  - seção "Dias e horários": dia por dia, com até 2 horários, de meia em meia hora, das 6h às 22h (disponibilidade);
+  - foto: aceita JPG, PNG e WebP, mostra a situação (No perfil, Em conferência, Recusada) e o motivo da recusa.
+  - Tudo sai no mesmo "Salvar", e a prévia ao lado mostra o desconto e o resumo dos dias ("Seg a sex, 8h às 18h").
+- **painel.html e pedidos.html:**
+  - o selo mostra o prazo real (`respondaAte`): "Responda até amanhã, 18h" ou "Ana responde até…";
+  - o pedido 'expirado' vai para "Anteriores" como "Sem resposta no prazo" e some do painel;
+  - o "mc.prazo" fica em gestao.js.
+- **admin.html:** aba "Fotos" (GET /api/admin/fotos, aprovar, recusar com motivo).
+- **portfolio.html** (com a API): passa a ler do perfil a foto (no lugar do retrato desenhado), os anos na legenda, o valor e o desconto (no topo e no orçamento), o veículo, os bairros e os dias e horários. Nas avaliações, mostra o parentesco ("Rafael S., filho"), e as datas saem no horário daqui.
+- **Testado na 4175:**
+  - salvar valor, desconto, anos e horários (a Ana depois voltou ao seed);
+  - enviar uma foto de teste, que a equipe recusou;
+  - prazo no painel e nos pedidos;
+  - portfólio.
+- **Pendente de decisão:** no exemplo fixo do portfólio, "R$ 60/h a partir de 4 h" é impossível, porque o mínimo é R$ 70. Com a API, a Ana aparece sem desconto.
+- **Ainda sem tela:**
+  - folgas e bloqueios (/api/profissionais/eu/bloqueios);
+  - resposta da profissional a uma avaliação (POST /api/avaliacoes/:id/resposta);
+  - parentesco no cadastro da pessoa acompanhada.
+
+## Listagem mais leve — 20/10/2026
+- **busca.html** (gerada por `python3 docs/gera_busca.py .`):
+  - saiu a caixa "Para qual dia?", com os seis dias e as contagens; o dia fica só no campo da busca no topo, e "Trocar o dia" leva até ele;
+  - saíram os cartões de turno com contagem acima da lista. O turno virou o filtro "Horário" na coluna de filtros (Qualquer horário, Manhã, Tarde e Noite, com o horário ao lado e sem contagem);
+  - a frase do resultado encurtou: "23 profissionais verificadas." ou "10 profissionais livres no sábado, 24/10, para consulta ou exame.", sem a faixa de preço.
+- **Dados:** a Cláudia passou de R$ 65 para R$ 70, porque R$ 65 fica abaixo do mínimo da plataforma.
+
+## Ana a R$ 80, com R$ 70 a partir de 4 h — 20/10/2026 (decisão do usuário, repassada pelo backend)
+- **Exemplos atualizados:**
+  - portfólio: dados do orçamento, condições no topo e total inicial (4 h × R$ 70 = R$ 280);
+  - resumo;
+  - painel: pedidos novos, atendimentos, mês (R$ 1.080 feitos e R$ 1.480 com os confirmados) e o cartão "Seu perfil";
+  - pedidos da família;
+  - ganhos: R$ 80 a hora, com o desconto de R$ 40 nos pedidos de 4 h, e o texto das dúvidas;
+  - perfil.js (exemplo);
+  - home: cartão da Ana;
+  - listagem.
+- **Backend:** o seed é do commit 6d0ff02.
+
+## Topo igual ao da home em pedidos, resumo e entrar — 20/10/2026
+- **Problema:** pedidos.html, resumo.html e entrar.html usavam o topo das telas internas, com letra menor, altura de 60px e largura de 1100px. Em pedidos ainda faltava "Área profissional".
+- **Correção:**
+  - as três páginas usam `header class="topo topo-site"`, um modificador em resumo.css com os mesmos tamanhos da home: marca no step-lead, links no step-body, altura de 72px, largura total e "Área profissional" como aba de pasta;
+  - em pedidos, "Área profissional" voltou ao menu;
+  - resumo.css foi para v=7 nessas páginas.
+- As telas internas (painel, perfil, ganhos, admin) continuam com o topo compacto.
+- **Convite para entrar** (pedidos, painel, perfil, ganhos): o cartão "Entre para…" agora fica centralizado em qualquer largura. Antes, entre 640px e 1160px, ele encostava à esquerda.
+- **Pulo ao abrir:** essas telas mostravam por um instante o conteúdo de exemplo antes do convite para entrar. Agora gestao.js esconde a tela e o convite (classe `carregando`) até a página tirar um dos dois, com limite de 4 s.
+- **Ainda piscava com a API:** o navegador desenhava a página de exemplo antes de gestao.js rodar. Agora a classe `carregando` já vem no `<head>`, em pedidos, painel, ganhos, perfil e admin, e esconde também o nome da conta no topo. Com login, a tela aparece já com os dados da conta.
+- **Piscada com login:** a tela só aparece quando os dados da conta já chegaram (gestao.js espera o `[data-gestao]` deixar de ficar `hidden`). Se demorar mais de 0,3 s, aparece um "Carregando…" discreto no meio. Medido na 4175: de 50 a 90 ms até a tela pronta.
+
+## Foto do ipê sem crédito — 20/10/2026
+- **portfolio.html:** a foto "Ipê rei" (CC BY 2.0, que exigia crédito) foi trocada por "Paisagem com ipê amarelo florido", de renalteix no Flickr (https://www.flickr.com/photos/40124183@N02/6330129969). Ela tem a marca de domínio público, que não exige crédito.
+  - Arquivo: assets/ipe-amarelo-campo-1024.webp, com 1024 × 683 px.
+  - O texto alternativo passou a ser "Ipê-amarelo florido no meio de um campo"; o antigo citava Campinas, mas a foto nova não é de lá.
+- **Crédito:** a linha "Foto: …" saiu do rodapé do portfólio.
+- **Arquivos antigos:** os ipe-rei-3831844709* continuam em assets/, sem uso. Podem ser apagados.
+
+## Limpeza do primeiro protótipo — 20/10/2026
+- **Apagados a pedido do usuário:**
+  - cadastro.html, login.html, pagamento.html e mapa.html;
+  - o styles.css antigo;
+  - as fotos assets/ipe-rei-3831844709 (.jpg, -800.webp e -1600.webp).
+- Nenhuma tela atual apontava para eles.
+- **assets/credits.json:** saiu o ipê-rei e entrou a foto nova, de domínio público.
+- **README, PRODUCT e DESIGN:** atualizados. O README agora lista as telas atuais.
+- **Não mexi em docs/MAPA-DE-TELAS.md**, que descreve as 16 telas antigas. Ele ficou desatualizado.
+
+## Ganhos pelo extrato da API — 20/10/2026
+- **ganhos.html, com a API:** os números vêm de GET /api/profissionais/eu/ganhos. Antes, eram calculados no navegador a partir de /api/servicos.
+  - São duas chamadas: 13 meses para trás até hoje (o máximo da rota, que vira "Todo o período", rotulado "dos últimos 13 meses") e amanhã até daqui a 60 dias.
+  - Cada lançamento traz da API o valor do serviço (`bruto`, já com desconto), o desconto, a taxa, o líquido, o estado e a data do depósito. A tela só soma e filtra por período.
+  - Estados: depositado vira "Na conta em…"; programado, "Cai…"; previsto, "Previsto para…"; aguardando_conclusao, "Marque como feito no painel".
+- **Regras:** taxa, prazo e cancelamento com menos de N h vêm de `regras` (topo da conta, detalhe de cada linha e dúvidas).
+- **Simulação:** com `simulado` ou `definitivas: false`, aparece uma linha discreta: "Valores de simulação: a taxa e os prazos ainda podem mudar."
+- **Sem a API:** o exemplo continua igual, com regras de exemplo de 12%, D+2, 24 h e 50%.
+- **Testado na 4175 com a Ana:**
+  - os totais batem com a API (depositado R$ 387,20, previsto R$ 211,20, aguardando R$ 140,80);
+  - períodos 1, 7, 30 e 365 dias e 13 meses;
+  - CSV gerado;
+  - celular a 375 px, sem rolagem lateral.
+- **Não testado:** cancelamento tardio pela API, porque o seed não tem nenhum.
+
+## Resumo envia o pedido — 20/10/2026
+- **resumo.html com a API:**
+  - lê `?p=<slug>` (padrão ana-oliveira), `?horas`, `?tarefa` e `?data`, e busca o perfil público;
+  - troca o exemplo fixo por um formulário: tarefa (as do perfil, com o mínimo, e "Outra tarefa" se ela aceitar, que abre "O que precisa?"), dia (a partir de amanhã, começando no próximo dia em que ela atende), horário, horas (do mínimo da tarefa até 12), "Para quem" (pessoas de /api/pessoas), onde e recado;
+  - o total usa o valor e o desconto do perfil;
+  - envia POST /api/servicos com profissional, tarefa, tipoTarefa, nomeTarefa, inicio, horas, local, observacoes e pessoaAcompanhadaId.
+- **Erros no lugar certo:** fora_da_disponibilidade, horario_indisponivel e horario_ocupado aparecem em "quando"; abaixo_do_minimo, junto das horas; tarefa_nao_oferecida, na tarefa; os campos de 400, em cada campo; e o 401 volta para "Entrar para enviar". A sessão vem de GET /api/sessao. Conta sem papel de família vê o aviso para entrar com uma conta de família.
+- **Sem a API:** continua o exemplo da Ana (R$ 80, R$ 70 a partir de 4 h).
+- **Testado na 4175** (localhost, como Mariana):
+  - sábado deu fora_da_disponibilidade;
+  - 1 h de consulta deu abaixo_do_minimo;
+  - qua 28/10, das 9h às 13h, foi enviado (R$ 280);
+  - o pedido de teste foi cancelado depois.
+- O link "Perfil de …" já leva para `portfolio.html?p=<slug>`.
+
+## Portfólio pelo endereço, listagem e home pela API — 20/10/2026
+- **site.js, `mcSite`:** `temApi()` olha GET /api/sessao, que dá 404 no servidor só de páginas. `slug` vem de `?p=` (padrão ana-oliveira) e vai para todos os `[data-slug]`.
+- **portfolio.html?p=<slug>, com a API:** lê o perfil público inteiro.
+  - Troca "Ana"/"Ana Oliveira" nos textos fixos pelo nome dela e monta a frase de apoio a partir das tarefas, dos bairros e do veículo.
+  - Preenche a apresentação, a experiência (cursos validados e anos), a revisão dos documentos, a CNH (só para quem leva de carro) e a nota ("Nova na plataforma" sem avaliações).
+  - Sem foto e quando não é a Ana, as iniciais ficam no lugar do retrato.
+  - O orçamento leva `&p=<slug>` para o resumo. Um slug que não existe mostra "Não encontramos esta profissional".
+- **busca.html, com a API:** carrega todas as páginas de GET /api/profissionais e redesenha as linhas.
+  - Os retratos desenhados continuam valendo para quem tem o mesmo nome; quem não tem foto nem retrato ganha as iniciais.
+  - Os filtros continuam na tela. O filtro de gênero sai, porque a API não guarda gênero.
+  - "Ver perfil" leva a portfolio.html?p=<slug>.
+- **index.html, com a API:** os destaques atualizam valor, nota, bairros, mínimo, veículo, tarefas e o link. Quem não está no ar sai da lista: hoje a Joana, que está na lista de espera. As contagens dos botões de tarefa são recalculadas.
+- **Sem a API:** tudo continua com os dados de exemplo. A Cláudia da home foi para R$ 70.
+- **Testado na 4175:** portfólio da Adriana, da Cláudia, da Ana e de um slug inexistente; listagem com e sem filtros (22 profissionais); home com 3 destaques. Testado também sem API, na 4173.

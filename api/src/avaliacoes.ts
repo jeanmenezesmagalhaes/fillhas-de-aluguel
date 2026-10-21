@@ -1,7 +1,7 @@
 import { and, desc, eq, sql, type SQL } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { Db } from './db/index.js';
-import { avaliacoes, servicos, usuarios } from './db/schema.js';
+import { avaliacoes, pessoasAcompanhadas, servicos, usuarios } from './db/schema.js';
 
 // Avaliação às cegas: nenhuma das duas partes vê a nota da outra até as duas
 // avaliarem ou até o prazo acabar. Depois do prazo, não se avalia mais.
@@ -54,15 +54,24 @@ export async function avaliacoesRecebidas(db: Db, avaliadoId: string, sentido: S
       criadoEm: avaliacoes.criadoEm,
       tarefa: servicos.tarefa,
       autorNome: autor.nome,
+      parentesco: pessoasAcompanhadas.parentesco,
+      resposta: avaliacoes.resposta,
+      respondidoEm: avaliacoes.respondidoEm,
     })
     .from(avaliacoes)
     .innerJoin(servicos, eq(servicos.id, avaliacoes.servicoId))
     .innerJoin(autor, eq(autor.id, avaliacoes.autorId))
+    .leftJoin(pessoasAcompanhadas, eq(pessoasAcompanhadas.id, servicos.pessoaAcompanhadaId))
     .where(filtro)
     .orderBy(desc(avaliacoes.criadoEm))
     .limit(50);
   return {
     ...nota,
-    avaliacoes: lista.map(({ autorNome, ...a }) => ({ ...a, autor: nomeCurto(autorNome) })),
+    // `relacao` é como a família se apresenta ("Filha"), sem o nome de quem foi acompanhado
+    avaliacoes: lista.map(({ autorNome, parentesco, ...a }) => ({
+      ...a,
+      autor: nomeCurto(autorNome),
+      relacao: parentesco ? parentesco[0]!.toLocaleUpperCase('pt-BR') + parentesco.slice(1) : null,
+    })),
   };
 }

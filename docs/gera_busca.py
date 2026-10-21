@@ -30,9 +30,9 @@ def retrato(nome, roupa, pele, cabelo, cor):
 # dias: 0 = domingo … 6 = sábado. turnos: m (7h às 12h), t (12h às 18h), n (18h às 22h).
 # As quatro primeiras repetem os dados da home e do portfólio (PRODUCT.md).
 PROS = [
-    dict(id='ana', nome='Ana Oliveira', genero='f', bairros=['Cambuí', 'Taquaral'], valor=70, minimo=2, veiculo=True, nota=4.9, avaliacoes=12,
+    dict(id='ana', nome='Ana Oliveira', genero='f', bairros=['Cambuí', 'Taquaral'], valor=80, minimo=2, veiculo=True, nota=4.9, avaliacoes=12,
          dias=[1,2,3,4,5], turnos='mt', tarefas=['consulta','banco','mercado','passeio'], anos=6, link='portfolio.html', r=('#2d5e4b','#c68c68','lateral','#3d332b')),
-    dict(id='claudia', nome='Cláudia Ramos', genero='f', bairros=['Taquaral'], valor=65, minimo=1, veiculo=False, nota=4.8, avaliacoes=7,
+    dict(id='claudia', nome='Cláudia Ramos', genero='f', bairros=['Taquaral'], valor=70, minimo=1, veiculo=False, nota=4.8, avaliacoes=7,
          dias=[1,2,3,4,5,6], turnos='mt', tarefas=['consulta','mercado','passeio'], anos=4, r=('#f28cb1','#8d5a3b','cachos','#1f1a17')),
     dict(id='marta', nome='Marta Ferreira', genero='f', bairros=['Centro', 'Bosque'], valor=75, minimo=3, veiculo=True, nota=5.0, avaliacoes=4,
          dias=[1,2,3,4,5], turnos='m', tarefas=['consulta','banco'], anos=9, r=('#f2c94c','#e0b08f','grisalho','#b9b4ad')),
@@ -159,8 +159,10 @@ def radios(nome, itens):
     return '\n            '.join(out)
 
 hora_html = lambda h: f'<span class="turno-hora">, {h}</span>' if h else ''
-cartoes_turno = '\n          '.join(
-    f'<label class="turno"><input type="radio" name="turno" value="{v}" form="filtros"{" checked" if i == 0 else ""}><span class="turno-rot">{rot}{hora_html(hora)}</span><span class="turno-conta num" data-conta="turno:{v}">{contagem(f)} {"profissional" if contagem(f) == 1 else "profissionais"}</span></label>'
+# turno nos filtros, sem contagem: só o nome e o horário
+hora_turno = lambda h: f'<span class="op-hora">{h}</span>' if h else ''
+radios_turno = '\n            '.join(
+    f'<label class="op"><input type="radio" name="turno" value="{v}"{" checked" if i == 0 else ""}><span>{"Qualquer horário" if not v else rot}</span>{hora_turno(hora)}</label>'
     for i, (v, rot, hora, f) in enumerate(turnos))
 
 opcoes_bairro = '\n              '.join(f'<option value="{b}">{b}</option>' for b in bairros)
@@ -184,7 +186,7 @@ html = f'''<!doctype html>
 <meta name="description" content="Compare profissionais verificadas para acompanhar sua mãe ou seu pai em consultas, banco, mercado e passeios, em todo o Brasil.">
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="site.css">
-<link rel="stylesheet" href="busca.css">
+<link rel="stylesheet" href="busca.css?v=3">
 <script>document.documentElement.classList.add('js');setTimeout(function(){{if(!window.__fa)document.documentElement.classList.remove('js')}},2500)</script>
 </head>
 <body class="pagina-busca">
@@ -194,7 +196,7 @@ html = f'''<!doctype html>
   <div class="site-barra">
     {marca}
     {menu_botao}
-    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca.html" aria-current="page">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="botao-linha" href="profissional.html">Área profissional</a></nav>
+    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca.html" aria-current="page">Encontrar profissional</a><a href="pedidos.html">Meus pedidos</a><a class="botao-linha" href="profissional.html">Área profissional</a></nav>
   </div>
   <form class="busca-fixa" role="search" aria-label="Busca rápida" action="busca.html" method="get" data-busca>
     <label class="vh" for="cidade-fixa">Cidade</label><input id="cidade-fixa" name="cidade" type="search" placeholder="Sua cidade" list="cidades" autocomplete="address-level2">
@@ -216,7 +218,7 @@ html = f'''<!doctype html>
   <div class="res-cab">
     <div>
       <h1 data-titulo>Profissionais em todo o Brasil</h1>
-      <p class="res-achado num"><span data-achado aria-live="polite">{len(PROS)} profissionais verificadas em {len(cidades)} cidades, de R$ {vmin} a R$ {vmax} por hora.</span> <button class="trocar-dia so-js" type="button" data-trocar-dia hidden>Trocar o dia</button></p>
+      <p class="res-achado num"><span data-achado aria-live="polite">{len(PROS)} profissionais verificadas.</span> <button class="trocar-dia so-js" type="button" data-trocar-dia hidden>Trocar o dia</button></p>
     </div>
     <div class="res-acoes">
       <button class="filtros-abrir so-js" type="button" aria-controls="filtros" aria-expanded="false" data-abrir-filtros><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M6 11h10M9 16h4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Filtros<span class="filtros-qtd num" data-qtd-filtros hidden></span></button>
@@ -229,11 +231,6 @@ html = f'''<!doctype html>
       </select>
       </div>
     </div>
-  </div>
-
-  <div class="pede-dia so-js" data-pede-dia hidden>
-    <p><strong>Para qual dia?</strong> Escolha o dia do acompanhamento para ver só quem está livre.</p>
-    <div class="dias" role="group" aria-label="Dia do acompanhamento" data-dias></div>
   </div>
 
   <div class="res-corpo">
@@ -249,6 +246,12 @@ html = f'''<!doctype html>
               <option value="">Escolha a cidade antes</option>
           </select>
         </div>
+        <fieldset class="filtro-grupo">
+          <legend class="filtro-titulo">Horário</legend>
+          <div class="ops">
+            {radios_turno}
+          </div>
+        </fieldset>
         <fieldset class="filtro-grupo">
           <legend class="filtro-titulo">Valor da hora</legend>
           <p class="faixa-texto num" data-faixa-texto>De R$ {lim_min} a R$ {lim_max}</p>
@@ -281,10 +284,6 @@ html = f'''<!doctype html>
 
     <section class="res-lista" aria-labelledby="t-lista">
       <h2 class="vh" id="t-lista">Resultados</h2>
-      <fieldset class="turnos">
-        <legend class="vh">Turno</legend>
-          {cartoes_turno}
-      </fieldset>
       <ul class="lps" data-lista>
 {chr(10).join(linha(p) for p in PROS)}
       </ul>
@@ -304,7 +303,7 @@ html = f'''<!doctype html>
   <p class="vh">Minha companhia</p>
   <div class="rodape-colunas">
     <div><h2>Famílias</h2><ul><li><a href="busca.html">Encontrar profissional</a></li><li><a href="index.html#como-contratar">Como contratar</a></li><li><a href="index.html#confianca">Por que confiar</a></li><li><a href="pedidos.html">Meus pedidos</a></li></ul></div>
-    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="cadastro.html">Quero me cadastrar</a></li></ul></div>
+    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="entrar.html?perfil=pro&amp;modo=criar">Quero me cadastrar</a></li></ul></div>
     <div class="contato"><h2>Onde atendemos</h2><p>Em todo o Brasil, nas cidades com profissionais cadastradas.</p></div>
   </div>
   <div class="rodape-fim"><span>Minha companhia · 2026</span></div>

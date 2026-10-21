@@ -7,22 +7,22 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>Revise o pedido · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="resumo.css?v=6">
+<link rel="stylesheet" href="resumo.css?v=9">
 </head>
 <body>
 
-<header class="topo" data-topo>
+<header class="topo topo-site" data-topo>
   <div class="topo-dentro">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="pedidos.html">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a></nav>
   </div>
 </header>
 <main class="tela tela-pedido">
-  <a class="voltar" href="portfolio.html"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>Perfil de Ana</a>
+  <a class="voltar" href="portfolio.html" data-voltar><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg><span data-voltar-texto>Perfil de Ana</span></a>
   <div class="titulo">
     <h1>Revise o pedido</h1>
-    <p class="achado">Confira os dados antes de enviar para Ana.</p>
+    <p class="achado" data-achado>Confira os dados antes de enviar para Ana.</p>
   </div>
 
   <div class="grade">
@@ -30,21 +30,65 @@
       <h2 id="t-pedido" class="vh">Seu pedido</h2>
       <div class="pessoa">
         <span class="retrato"><svg viewBox="0 0 120 120" role="img" aria-label="Retrato de Ana Oliveira"><rect width="120" height="120" fill="#e2e8d9"/><path d="M22 120q0-48 38-48t38 48" fill="#376453"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#443c32"/><path d="M51 60q9 8 18 0" fill="none" stroke="#fff" stroke-width="3"/><circle cx="49" cy="47" r="2" fill="#403b32"/><circle cx="69" cy="47" r="2" fill="#403b32"/></svg></span>
-        <span><strong>Ana Oliveira</strong><span>Profissional verificada</span></span>
+        <span><strong data-pro-nome>Ana Oliveira</strong><span>Profissional verificada</span></span>
       </div>
-      <dl class="linhas">
+      <dl class="linhas" data-exemplo>
         <div><dt>Tarefa</dt><dd>Consulta médica<small>Clínica Viva Mais, Centro</small></dd></div>
         <div><dt>Quando</dt><dd class="num"><span>Quarta, 28/10</span><small data-horas-periodo>Das 9h às 13h</small></dd></div>
         <div><dt>Quem vai</dt><dd>Helena Costa, 78 anos</dd></div>
         <div><dt>Saída e volta</dt><dd>Rua Maria Monteiro, 120<small>Cambuí, Campinas</small></dd></div>
         <div><dt>Recado para Ana</dt><dd>Helena caminha devagar. Levar os exames anteriores, na pasta azul da sala.</dd></div>
       </dl>
+
+      <!-- com a API: a família escolhe a tarefa, o dia e o horário, e o pedido vai para a profissional -->
+      <form class="form-pedido" id="form-pedido" data-form-pedido hidden novalidate>
+        <div class="campo">
+          <label for="p-tarefa">Tarefa</label>
+          <select id="p-tarefa" name="tarefa"></select>
+          <p class="campo-erro" data-erro="tarefa" hidden></p>
+        </div>
+        <div class="campo" data-campo-outra hidden>
+          <label for="p-outra">O que precisa?</label>
+          <input id="p-outra" name="outra" maxlength="200" placeholder="Ex.: ir ao dentista, renovar a CNH">
+          <p class="campo-erro" data-erro="outra" hidden></p>
+        </div>
+        <div class="campos-dupla">
+          <div class="campo">
+            <label for="p-dia">Dia</label>
+            <input id="p-dia" name="dia" type="date">
+          </div>
+          <div class="campo">
+            <label for="p-hora">Começa às</label>
+            <select id="p-hora" name="hora"></select>
+          </div>
+          <div class="campo">
+            <label for="p-horas">Horas</label>
+            <select id="p-horas" name="horas"></select>
+          </div>
+        </div>
+        <p class="campo-ajuda" data-disponibilidade></p>
+        <p class="campo-erro" data-erro="quando" hidden></p>
+        <div class="campo" data-campo-pessoa hidden>
+          <label for="p-pessoa">Para quem</label>
+          <select id="p-pessoa" name="pessoa"></select>
+        </div>
+        <div class="campo">
+          <label for="p-local">Onde <span class="opcional">(opcional)</span></label>
+          <input id="p-local" name="local" maxlength="200" placeholder="Ex.: Clínica Viva Mais, Centro">
+          <p class="campo-erro" data-erro="local" hidden></p>
+        </div>
+        <div class="campo">
+          <label for="p-obs"><span data-recado-rotulo>Recado para Ana</span> <span class="opcional">(opcional)</span></label>
+          <textarea id="p-obs" name="observacoes" rows="3" maxlength="1000" placeholder="Ex.: Ela caminha devagar. Levar os exames anteriores."></textarea>
+          <p class="campo-erro" data-erro="observacoes" hidden></p>
+        </div>
+      </form>
     </section>
 
     <section class="cartao cartao-total" aria-labelledby="t-total">
       <h2 id="t-total">Total</h2>
-      <p class="total-valor num" data-total>R$ 240,00</p>
-      <p class="total-conta num" data-conta>4 horas × R$ 60,00, com veículo incluso</p>
+      <p class="total-valor num" data-total>R$ 280,00</p>
+      <p class="total-conta num" data-conta>4 horas × R$ 70,00, com veículo incluso</p>
 
       <div class="envio" data-estado="sem-conta">
         <a class="btn btn-primario btn-largo" href="entrar.html" data-entrar>Entrar para enviar</a>
@@ -54,10 +98,11 @@
       <div class="envio" data-estado="com-conta" hidden>
         <p class="envio-quem">Enviando como <strong data-nome>Mariana Costa</strong>. <button class="link" type="button" data-sair>Sair</button></p>
         <button class="btn btn-primario btn-largo" type="button" data-enviar>Enviar pedido</button>
-        <p class="total-nota">O pedido só vale depois que Ana aceitar. A resposta chega por e-mail.</p>
+        <p class="campo-erro envio-erro" data-erro-envio role="alert" hidden></p>
+        <p class="total-nota" data-nota-aceite>O pedido só vale depois que Ana aceitar. A resposta chega por e-mail.</p>
       </div>
       <div class="envio" data-estado="enviado" hidden aria-live="polite">
-        <p class="envio-ok"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2"/></svg>Pedido enviado para Ana</p>
+        <p class="envio-ok"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2"/></svg><span data-enviado-texto>Pedido enviado para Ana</span></p>
         <p class="total-nota">A resposta chega em <strong data-email>seu e-mail</strong>. Nada fica marcado sem o aceite dela.</p>
         <a class="btn btn-secundario btn-largo" href="pedidos.html">Ver meus pedidos</a>
       </div>
@@ -75,38 +120,226 @@
     botao.addEventListener('click', () => botao.setAttribute('aria-expanded', String(topo.classList.toggle('menu-aberto'))));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { topo.classList.remove('menu-aberto'); botao.setAttribute('aria-expanded', 'false'); } });
   })();
-  // horas vindas do orçamento do portfólio (?horas=N); sem parâmetro, vale o exemplo de 4 horas
-  const ana = { valor: 70, minimo: 2, desconto: { aPartir: 4, valor: 60 } };
-  const brl2 = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const pedidas = Math.floor(Number(new URLSearchParams(location.search).get('horas')));
-  const h = Number.isFinite(pedidas) && pedidas >= ana.minimo ? pedidas : 4;
-  const vh = h >= ana.desconto.aPartir ? ana.desconto.valor : ana.valor;
-  document.querySelector('[data-total]').textContent = brl2(h * vh);
-  document.querySelector('[data-conta]').textContent = `${h} horas × ${brl2(vh)}, com veículo incluso`;
-  document.querySelector('[data-horas-periodo]').textContent = 9 + h <= 18 ? `Das 9h às ${9 + h}h` : `${h} horas, a partir das 9h`;
 
-  // enviar exige conta: sem sessão, o botão leva para entrar e volta para este pedido
+  // Revisão e envio do pedido. Com a API: lê a profissional pelo ?p=<slug>, a família escolhe tarefa,
+  // dia, horário e horas, e o pedido vai em POST /api/servicos. Sem a API, fica o exemplo da Ana.
   (() => {
-    const chave = 'mc-conta';
-    const le = () => { try { return JSON.parse(localStorage.getItem(chave)); } catch (_) { return null; } };
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => [...document.querySelectorAll(s)];
+    const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const brl2 = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('p') || 'ana-oliveira';
     const volta = encodeURIComponent(location.pathname.split('/').pop() + location.search);
-    document.querySelector('[data-entrar]').href = `entrar.html?volta=${volta}`;
-    document.querySelector('[data-criar]').href = `entrar.html?modo=criar&volta=${volta}`;
-    const estados = document.querySelectorAll('[data-estado]');
-    const mostra = (nome) => estados.forEach((el) => { el.hidden = el.dataset.estado !== nome; });
-    const conta = le();
-    if (conta && conta.nome) {
-      document.querySelector('[data-nome]').textContent = conta.nome;
-      document.querySelector('[data-email]').textContent = conta.email;
-      mostra('com-conta');
-    }
-    document.querySelector('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem(chave); } catch (_) { /* sem armazenamento */ } mostra('sem-conta'); });
-    document.querySelector('[data-enviar]').addEventListener('click', () => {
-      mostra('enviado');
-      document.querySelector('[data-ajustar]').hidden = true;
-      document.querySelector('.titulo h1').textContent = 'Pedido enviado';
-      document.querySelector('.titulo .achado').textContent = 'Agora é com Ana. Você recebe a resposta por e-mail.';
-    });
+    $('[data-entrar]').href = `entrar.html?volta=${volta}`;
+    $('[data-criar]').href = `entrar.html?modo=criar&volta=${volta}`;
+    const mostra = (nome) => $$('[data-estado]').forEach((el) => { el.hidden = el.dataset.estado !== nome; });
+    const pedidas = Math.floor(Number(params.get('horas')));
+
+    // total: horas × valor da hora, com o desconto a partir de N horas
+    const total = (p, h) => {
+      const vh = p.desconto && h >= p.desconto.aPartir ? p.desconto.valor : p.valor;
+      $('[data-total]').textContent = brl2(h * vh);
+      $('[data-conta]').textContent = `${h} ${h === 1 ? 'hora' : 'horas'} × ${brl2(vh)}, ${p.veiculo ? 'com veículo incluso' : 'sem veículo'}`;
+    };
+
+    const demo = () => {
+      const ana = { valor: 80, minimo: 2, veiculo: true, desconto: { aPartir: 4, valor: 70 } };
+      const h = Number.isFinite(pedidas) && pedidas >= ana.minimo ? pedidas : 4;
+      total(ana, h);
+      $('[data-horas-periodo]').textContent = 9 + h <= 18 ? `Das 9h às ${9 + h}h` : `${h} horas, a partir das 9h`;
+      const chave = 'mc-conta';
+      let conta = null;
+      try { conta = JSON.parse(localStorage.getItem(chave)); } catch (_) { /* sem armazenamento */ }
+      if (conta && conta.nome) { $('[data-nome]').textContent = conta.nome; $('[data-email]').textContent = conta.email; mostra('com-conta'); }
+      $('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem(chave); } catch (_) { /* sem armazenamento */ } mostra('sem-conta'); });
+      $('[data-enviar]').addEventListener('click', () => {
+        mostra('enviado');
+        $('[data-ajustar]').hidden = true;
+        $('.titulo h1').textContent = 'Pedido enviado';
+        $('.titulo .achado').textContent = 'Agora é com Ana. Você recebe a resposta por e-mail.';
+      });
+    };
+
+    // chamada à API com o código do erro e os campos, para mostrar cada erro no lugar certo
+    const api = async (metodo, url, corpo) => {
+      const r = await fetch(url, { method: metodo, credentials: 'same-origin', headers: corpo ? { 'content-type': 'application/json' } : {}, body: corpo ? JSON.stringify(corpo) : undefined });
+      const dados = await r.json().catch(() => null);
+      if (!r.ok) {
+        const erro = (dados && dados.erro) || {};
+        const e = new Error(erro.mensagem || 'Não foi possível enviar agora. Tente de novo.');
+        e.status = r.status; e.codigo = erro.codigo; e.campos = erro.campos || null;
+        throw e;
+      }
+      return dados;
+    };
+
+    const DIAS = [[1, 'seg'], [2, 'ter'], [3, 'qua'], [4, 'qui'], [5, 'sex'], [6, 'sáb'], [0, 'dom']];
+    const hh = (t) => { const [h, m] = t.split(':'); return `${Number(h)}h${m === '00' ? '' : m}`; };
+    const resumoDias = (disp) => {
+      const grupos = [];
+      DIAS.forEach(([dia, curto]) => {
+        const txt = disp.filter((f) => f.dia === dia).map((f) => `das ${hh(f.inicio)} às ${hh(f.fim)}`).join(' e ');
+        const ult = grupos[grupos.length - 1];
+        if (txt && ult && ult.txt === txt && ult.seguido) { ult.fim = curto; return; }
+        if (txt) grupos.push({ ini: curto, fim: null, txt, seguido: true });
+        else if (ult) ult.seguido = false;
+      });
+      return grupos.map((g) => `${g.fim ? `de ${g.ini} a ${g.fim}` : g.ini}, ${g.txt}`).join('; ');
+    };
+    const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const HORARIOS = Array.from({ length: 33 }, (_, i) => `${String(6 + Math.floor(i / 2)).padStart(2, '0')}:${i % 2 ? '30' : '00'}`);
+
+    const comApi = async () => {
+      let sessao;
+      try {
+        const r = await fetch('/api/sessao', { credentials: 'same-origin', cache: 'no-store' });
+        if (r.status === 404 || !(r.headers.get('content-type') || '').includes('json')) return false;
+        sessao = await r.json();
+      } catch (_) { return false; }
+      let pro;
+      try { pro = (await api('GET', `/api/profissionais/${encodeURIComponent(slug)}`)).profissional; } catch (e) {
+        $('[data-achado]').textContent = e.status === 404 ? 'Não encontramos esta profissional. Volte à busca e escolha outra.' : e.message;
+        $$('[data-estado]').forEach((el) => { el.hidden = true; });
+        $('[data-exemplo]').hidden = true;
+        return true;
+      }
+      const primeiro = String(pro.nome).split(' ')[0];
+      const p = {
+        valor: pro.valorHoraCentavos / 100,
+        veiculo: !!pro.veiculoIncluso,
+        desconto: pro.descontoAPartirHoras && pro.valorHoraDescontoCentavos ? { aPartir: pro.descontoAPartirHoras, valor: pro.valorHoraDescontoCentavos / 100 } : null,
+      };
+
+      // nome da profissional em toda a tela
+      document.title = `Revise o pedido para ${primeiro} · Minha companhia`;
+      $('[data-voltar]').href = `portfolio.html?p=${encodeURIComponent(slug)}`;
+      $('[data-voltar-texto]').textContent = `Perfil de ${primeiro}`;
+      $('[data-ajustar]').hidden = true;
+      $('[data-pro-nome]').textContent = pro.nome;
+      $('[data-achado]').textContent = `Escolha o dia e o horário, e o pedido vai para ${primeiro}.`;
+      $('[data-recado-rotulo]').textContent = `Recado para ${primeiro}`;
+      $('[data-nota-aceite]').textContent = `O pedido só vale depois que ${primeiro} aceitar. A resposta chega por e-mail.`;
+      $('[data-enviado-texto]').textContent = `Pedido enviado para ${primeiro}`;
+      if (pro.fotoUrl) $('.retrato').innerHTML = `<img src="${esc(pro.fotoUrl)}" alt="Foto de ${esc(pro.nome)}">`;
+
+      // formulário no lugar do exemplo
+      const f = $('[data-form-pedido]');
+      $('[data-exemplo]').hidden = true;
+      f.hidden = false;
+      $('[data-enviar]').setAttribute('form', 'form-pedido');
+      $('[data-enviar]').type = 'submit';
+
+      // tarefas do perfil (chave: tipo, ou "personalizada:Nome"), mais "outra" se ela aceitar
+      const tarefas = (pro.tarefas || []).map((t) => ({ chave: t.tipo === 'personalizada' ? `personalizada:${t.nome}` : t.tipo, tipo: t.tipo, nome: t.nome, minimo: t.minimoHoras }));
+      if (pro.aceitaOutras) tarefas.push({ chave: 'outra', tipo: 'outra', nome: 'Outra tarefa (a combinar)', minimo: 1 });
+      if (!tarefas.length) tarefas.push({ chave: '', tipo: null, nome: 'Acompanhamento', minimo: pro.horasMinimas || 1 });
+      const pedida = params.get('tarefa');
+      f.tarefa.innerHTML = tarefas.map((t) => `<option value="${esc(t.chave)}"${t.chave === pedida ? ' selected' : ''}>${esc(t.nome)}${t.tipo === 'outra' ? '' : ` · mínimo ${t.minimo} h`}</option>`).join('');
+      const tarefaAtual = () => tarefas.find((t) => t.chave === f.tarefa.value) || tarefas[0];
+
+      // horas: do mínimo da tarefa até 12
+      const desenhaHoras = () => {
+        const t = tarefaAtual();
+        const quer = Number(f.horas.value) || (Number.isFinite(pedidas) ? pedidas : 4);
+        const h = Math.max(t.minimo, Math.min(12, quer));
+        f.horas.innerHTML = Array.from({ length: 13 - t.minimo }, (_, i) => t.minimo + i).map((n) => `<option value="${n}"${n === h ? ' selected' : ''}>${n} ${n === 1 ? 'hora' : 'horas'}</option>`).join('');
+        $('[data-campo-outra]').hidden = t.tipo !== 'outra';
+        total(p, h);
+      };
+
+      // dia: a partir de amanhã; começa no próximo dia em que ela atende
+      const disp = pro.disponibilidade || [];
+      const amanha = new Date(); amanha.setHours(0, 0, 0, 0); amanha.setDate(amanha.getDate() + 1);
+      f.dia.min = iso(amanha);
+      const proximo = new Date(amanha);
+      for (let i = 0; i < 14 && disp.length && !disp.some((d) => d.dia === proximo.getDay()); i++) proximo.setDate(proximo.getDate() + 1);
+      f.dia.value = /^\d{4}-\d{2}-\d{2}$/.test(params.get('data') || '') && params.get('data') >= f.dia.min ? params.get('data') : iso(proximo);
+      f.hora.innerHTML = HORARIOS.map((h) => `<option value="${h}"${h === '09:00' ? ' selected' : ''}>${hh(h)}</option>`).join('');
+      $('[data-disponibilidade]').textContent = disp.length ? `${primeiro} atende ${resumoDias(disp)}.` : '';
+
+      desenhaHoras();
+      f.addEventListener('change', (ev) => { if (ev.target === f.tarefa || ev.target === f.horas) desenhaHoras(); limpa(); });
+
+      const limpa = () => {
+        $$('[data-erro], [data-erro-envio]').forEach((el) => { el.hidden = true; el.textContent = ''; });
+        $$('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
+      };
+      const erro = (onde, texto, campo) => {
+        const el = onde === 'envio' ? $('[data-erro-envio]') : $(`[data-erro="${onde}"]`);
+        el.textContent = texto; el.hidden = false;
+        if (campo) { campo.setAttribute('aria-invalid', 'true'); campo.focus(); }
+      };
+
+      // conta: só a família envia
+      const conta = sessao && sessao.usuario;
+      const sair = async () => { try { await fetch('/api/sessoes/atual', { method: 'DELETE', credentials: 'same-origin' }); } catch (_) { /* a sessão expira de todo jeito */ } mostra('sem-conta'); };
+      $('[data-sair]').addEventListener('click', sair);
+      if (conta && conta.papeis.includes('contratante')) {
+        $('[data-nome]').textContent = conta.nome;
+        $('[data-email]').textContent = conta.email;
+        mostra('com-conta');
+        try {
+          const { pessoas } = await api('GET', '/api/pessoas');
+          if (pessoas.length) {
+            f.pessoa.innerHTML = pessoas.map((x) => `<option value="${esc(x.id)}">${esc(x.nome)}</option>`).join('') + '<option value="">Outra pessoa (conto no recado)</option>';
+            $('[data-campo-pessoa]').hidden = false;
+          }
+        } catch (_) { /* sem pessoas cadastradas, o campo fica de fora */ }
+      } else if (conta) {
+        mostra('sem-conta');
+        $('[data-achado]').textContent = 'Para pedir um atendimento, entre com uma conta de família.';
+      }
+
+      f.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        limpa();
+        const t = tarefaAtual();
+        const outra = f.outra.value.trim();
+        if (t.tipo === 'outra' && outra.length < 2) { erro('outra', 'Conte o que precisa, em poucas palavras.', f.outra); return; }
+        if (!f.dia.value || f.dia.value < f.dia.min) { erro('quando', 'Escolha um dia a partir de amanhã.', f.dia); return; }
+        const inicio = new Date(`${f.dia.value}T${f.hora.value}:00`);
+        const corpo = {
+          profissional: slug,
+          tarefa: t.tipo === 'outra' ? outra : t.nome,
+          horas: Number(f.horas.value),
+          inicio: inicio.toISOString(),
+        };
+        if (t.tipo) corpo.tipoTarefa = t.tipo;
+        if (t.tipo === 'personalizada') corpo.nomeTarefa = t.nome;
+        if (f.local.value.trim()) corpo.local = f.local.value.trim();
+        if (f.observacoes.value.trim()) corpo.observacoes = f.observacoes.value.trim();
+        if (!$('[data-campo-pessoa]').hidden && f.pessoa.value) corpo.pessoaAcompanhadaId = f.pessoa.value;
+        const b = $('[data-enviar]'); b.disabled = true; b.textContent = 'Enviando…';
+        try {
+          await api('POST', '/api/servicos', corpo);
+          mostra('enviado');
+          f.querySelectorAll('input, select, textarea').forEach((c) => { c.disabled = true; });
+          $('.titulo h1').textContent = 'Pedido enviado';
+          $('[data-achado]').textContent = `Agora é com ${primeiro}. Você recebe a resposta por e-mail e acompanha em Meus pedidos.`;
+        } catch (e) {
+          if (e.status === 401) { mostra('sem-conta'); $('[data-achado]').textContent = 'Sua sessão terminou. Entre de novo para enviar o pedido.'; return; }
+          const porCodigo = {
+            fora_da_disponibilidade: ['quando', f.dia],
+            horario_indisponivel: ['quando', f.dia],
+            horario_ocupado: ['quando', f.hora],
+            abaixo_do_minimo: ['quando', f.horas],
+            tarefa_nao_oferecida: ['tarefa', f.tarefa],
+          }[e.codigo];
+          if (e.codigo === 'horario_indisponivel' && !e.message) e.message = `${primeiro} não atende neste dia. Escolha outro.`;
+          if (porCodigo) erro(porCodigo[0], e.message, porCodigo[1]);
+          else if (e.campos && Object.keys(e.campos).length) {
+            const alvo = { tarefa: t.tipo === 'outra' ? ['outra', f.outra] : ['tarefa', f.tarefa], tipoTarefa: ['tarefa', f.tarefa], inicio: ['quando', f.dia], horas: ['quando', f.horas], local: ['local', f.local], observacoes: ['observacoes', f.observacoes] };
+            Object.entries(e.campos).forEach(([k, texto]) => { const [onde, campo] = alvo[k] || ['envio', null]; erro(onde, texto, campo); });
+          } else erro('envio', e.message);
+        } finally {
+          b.disabled = false; b.textContent = 'Enviar pedido';
+        }
+      });
+      return true;
+    };
+
+    comApi().then((ok) => { if (!ok) demo(); });
   })();
 </script>
 </body>

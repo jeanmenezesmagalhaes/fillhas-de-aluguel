@@ -15,7 +15,7 @@
   <div class="site-barra">
     <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="index.html#como-contratar">Como contratar</a><a href="index.html#confianca">Por que confiar</a><a href="pedidos.html">Meus pedidos</a><a class="botao-linha" href="profissional.html">Área profissional</a></nav>
+    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="pedidos.html">Meus pedidos</a><a class="botao-linha" href="profissional.html">Área profissional</a></nav>
   </div>
 </header>
 <header class="perfil-capa">
@@ -25,9 +25,9 @@
       <h1 class="perfil-nome"><span class="linha" style="--i:0">Ana Oliveira</span></h1>
       <p class="perfil-apoio">Leva sua mãe ou seu pai à consulta, ao banco e ao mercado no Cambuí e no Taquaral, no próprio carro.</p>
       <ul class="condicoes num">
-        <li><strong>R$ 70/h</strong><span>R$ 60/h a partir de 4 h</span></li>
-        <li><strong>Mínimo 2 h</strong><span>por atendimento</span></li>
-        <li><strong>Veículo incluso</strong><span>busca e traz de volta</span></li>
+        <li><strong data-cond-valor>R$ 80/h</strong><span data-cond-desconto>R$ 70/h a partir de 4 h</span></li>
+        <li><strong data-cond-minimo>A partir de 1 h</strong><span>mínimo varia por tarefa</span></li>
+        <li data-cond-veiculo><strong>Veículo incluso</strong><span>busca e traz de volta</span></li>
       </ul>
       <p class="perfil-selo"><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M0 22V6h9l3-6h9l3 6h6v16z" fill="#2d5e4b"/><path d="M9 14l3.5 3.5L21 9" fill="none" stroke="#fff" stroke-width="2.4"/></svg><span><strong>Profissional verificada.</strong> Documentos revisados em 01/10/2026.</span></p>
       <a class="botao" href="#orcamento">Fazer orçamento</a>
@@ -37,9 +37,9 @@
       </div>
     </div>
   </div>
-  <figure class="perfil-foto">
-    <img src="assets/lagoa-do-taquaral-panoramio-26-1600.webp" alt="A Lagoa do Taquaral entre árvores, com prédios ao fundo" width="1600" height="1065" fetchpriority="high">
-    <figcaption>Lagoa do Taquaral, um dos bairros que Ana atende.</figcaption>
+  <figure class="perfil-foto perfil-retrato-grande" data-retrato>
+    <svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Ana Oliveira"><path d="M27 84Q20 12 60 10q40 2 33 74-9-5-13-22H40q-4 17-13 22z" fill="#3d332b"/><path d="M14 120q0-52 46-52t46 52" fill="#2d5e4b"/><path d="M44 86q16 10 32 0" fill="none" stroke="#24503f" stroke-width="3"/><ellipse cx="60" cy="47" rx="25" ry="31" fill="#c68c68"/><path d="M34 46Q28 12 60 11q32 1 27 33-14-14-34-12-11 4-19 14z" fill="#3d332b"/><circle cx="35" cy="54" r="2.6" fill="#f2c94c"/><circle cx="85" cy="54" r="2.6" fill="#f2c94c"/><path d="M51 58q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="45" r="2.2" fill="#2e2822"/><circle cx="70" cy="45" r="2.2" fill="#2e2822"/></svg>
+    <figcaption data-legenda-retrato>Ana Oliveira · 6 anos acompanhando pessoas idosas</figcaption>
   </figure>
 </header>
 
@@ -48,18 +48,29 @@
     <h2 class="perfil-sobre-frase" id="t-sobre" data-chega>Calma, pontualidade e paciência</h2>
     <div class="perfil-sobre-textos">
       <div data-chega style="--i:1"><h3>Como acompanho</h3><p>Sou Ana, acompanho pessoas idosas há seis anos. Busco em casa, vou junto à consulta, ao banco ou ao mercado, espero o tempo que for preciso e trago de volta. Combino tudo antes com a família e respeito o ritmo de quem vai comigo.</p></div>
-      <div data-chega style="--i:2"><h3>Experiência e qualificações</h3><p>Curso de cuidadora de idosos, 160 horas, em 2020. Atualização em primeiros socorros em 2025. Carro próprio, que já entra no valor da hora.</p></div>
+      <div data-chega style="--i:2"><h3>Experiência e qualificações</h3><p>Curso de cuidador de idosos, 160 horas, em 2019, e de primeiros socorros em 2024, os dois validados pela equipe. Carro próprio, que já entra no valor da hora.</p></div>
     </div>
     <figure class="perfil-sobre-foto" data-chega>
-      <img src="assets/ipe-rei-3831844709-1600.webp" alt="Ipê-amarelo florido em um parque de Campinas" width="1600" height="1067" loading="lazy">
+      <img src="assets/ipe-amarelo-campo-1024.webp" alt="Ipê-amarelo florido no meio de um campo" width="1024" height="683" loading="lazy">
     </figure>
   </section>
 
   <section class="pasta ipe" id="orcamento" aria-labelledby="t-orc">
     <span class="aba vazia" aria-hidden="true"></span>
     <h2 class="cabeca" id="t-orc">Orçamento com Ana</h2>
-    <p class="texto">Diga quantas horas a tarefa deve levar, sem limite. Ana atende a partir de 2 horas, e a hora fica mais barata a partir de 4.</p>
+    <p class="texto">Escolha a tarefa e diga quantas horas ela deve levar. Cada tarefa tem o mínimo que Ana definiu, e a hora fica mais barata a partir de 4.</p>
     <div class="orc" data-orcamento="ana"><div class="horas-seletor">
+        <fieldset class="tarefa-escolha">
+          <legend class="horas-rotulo">Para qual tarefa?</legend>
+          <div class="tarefa-ops" data-tarefa-ops>
+            <label><input type="radio" name="tarefa" value="consulta" checked><span>Consulta ou exame</span></label>
+            <label><input type="radio" name="tarefa" value="banco"><span>Banco ou cartório</span></label>
+            <label><input type="radio" name="tarefa" value="mercado"><span>Mercado e farmácia</span></label>
+            <label><input type="radio" name="tarefa" value="passeio"><span>Passeio</span></label>
+            <label><input type="radio" name="tarefa" value="outra"><span>Outra tarefa</span></label>
+          </div>
+          <div class="tarefa-outra" data-tarefa-outra hidden><label for="tarefa-qual">O que precisa?</label><input id="tarefa-qual" name="tarefaQual" maxlength="120" placeholder="Ex.: ir ao dentista, renovar a CNH"></div>
+        </fieldset>
         <label class="horas-rotulo" for="horas-qtd">Horas estimadas</label>
         <div class="passo">
           <button type="button" class="passo-btn" data-passo="-1" aria-label="Uma hora a menos" aria-controls="horas-qtd"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
@@ -68,29 +79,27 @@
           <button type="button" class="passo-btn" data-passo="1" aria-label="Uma hora a mais" aria-controls="horas-qtd"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M10 4v12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
         </div>
         <p class="horas-ajuda nota" id="horas-ajuda" data-ajuda>Mínimo de 2 horas, sem limite máximo. Digite o número ou use os botões.</p>
-        <div class="atalhos" role="group" aria-label="Atalhos de horas"><button type="button" data-h="2">2 h</button><button type="button" data-h="4">4 h</button><button type="button" data-h="6">6 h</button><button type="button" data-h="8">8 h</button><button type="button" data-h="12">12 h</button></div>
-        <div class="blocos-horas" aria-hidden="true" data-blocos><span class="bh"></span><span class="bh"></span><span class="bh"></span><span class="bh"></span></div>
-        <p class="blocos-legenda nota"><i class="bh"></i><span data-legenda>Cada bloco é uma hora a R$ 60,00, valor de Ana a partir de 4 horas.</span></p>
-      </div><div class="orc-leitura" aria-live="polite"><p class="orc-total num" data-total>R$ 240,00</p><p class="orc-conta num" data-conta>4 horas × R$ 60,00 por hora</p><p data-minimo>Ana atende a partir de 2 horas.</p><p data-desconto>A partir de 4 horas, a hora de Ana cai para R$ 60,00. Você economiza R$ 40,00.</p><p class="orc-linha"><svg viewBox="0 0 30 22" aria-hidden="true" data-veiculo-icone data-tem="sim"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="#f2c94c"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/><path data-risco d="M2 20L28 2" stroke="#f28cb1" stroke-width="3"/></svg><span data-veiculo>Veículo incluso: Ana busca em casa, leva e traz de volta.</span></p><a class="botao" href="resumo.html" data-acao>Pedir 4 horas com Ana</a></div></div><script type="application/json" id="profissionais">{"ana": {"nome": "Ana", "completo": "Ana Oliveira", "valor": 70, "minimo": 2, "desconto": {"aPartir": 4, "valor": 60}, "veiculo": true, "link": "resumo.html"}}</script>
+        <div class="atalhos" role="group" aria-label="Atalhos de horas"><button type="button" data-h="2">2 h</button><button type="button" data-h="4">4 h</button><button type="button" data-h="6">6 h</button><button type="button" data-h="8">8 h</button></div>
+      </div><div class="orc-leitura" aria-live="polite"><p class="orc-total num" data-total>R$ 280,00</p><p class="orc-conta num" data-conta>4 horas × R$ 70,00 por hora</p><p data-minimo>Ana atende a partir de 2 horas.</p><p data-desconto>A partir de 4 horas, a hora de Ana cai para R$ 60,00. Você economiza R$ 40,00.</p><p class="orc-linha"><svg viewBox="0 0 30 22" aria-hidden="true" data-veiculo-icone data-tem="sim"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="#f2c94c"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/><path data-risco d="M2 20L28 2" stroke="#f28cb1" stroke-width="3"/></svg><span data-veiculo>Veículo incluso: Ana busca em casa, leva e traz de volta.</span></p><a class="botao" href="resumo.html" data-acao>Pedir 4 horas com Ana</a></div></div><script type="application/json" id="profissionais">{"ana": {"nome": "Ana", "completo": "Ana Oliveira", "valor": 80, "minimo": 1, "desconto": {"aPartir": 4, "valor": 70}, "veiculo": true, "link": "resumo.html", "tarefas": {"consulta": {"nome": "Consulta ou exame", "minimo": 2}, "banco": {"nome": "Banco ou cartório", "minimo": 2}, "mercado": {"nome": "Mercado e farmácia", "minimo": 1}, "passeio": {"nome": "Passeio", "minimo": 2}, "outra": {"nome": "Outra tarefa", "minimo": 1, "aCombinar": true}}}}</script>
   </section>
 
   <section class="perfil-servicos" aria-labelledby="t-servicos">
     <div class="cardapio">
-      <div class="cardapio-cab"><h2 class="cabeca" id="t-servicos">Tarefas</h2><span class="nota">4 itens</span></div>
+      <div class="cardapio-cab"><h2 class="cabeca" id="t-servicos">O que Ana faz</h2></div>
       <ul class="cardapio-itens">
-        <li data-chega><img class="marcador-foto" src="assets/rua-maria-monteiro-cambui-campinas-sp-800.webp" alt="" width="800" height="600" loading="lazy"><div><p class="item-linha"><strong>Consulta ou exame</strong><span>2 a 4 h</span></p><p>Busca em casa, acompanha na sala de espera e na consulta, se a família quiser, e traz de volta.</p></div></li>
-        <li data-chega style="--i:1"><img class="marcador-foto" src="assets/werner-haberkorn-praca-bento-quirino-campinas-1-800.webp" alt="" width="800" height="531" loading="lazy"><div><p class="item-linha"><strong>Banco ou cartório</strong><span>2 a 3 h</span></p><p>Ajuda com filas, senhas e papéis. Assinaturas e decisões ficam com quem vai ao banco.</p></div></li>
-        <li data-chega style="--i:2"><img class="marcador-foto" src="assets/mercado-municipal-de-campinas-1-800.webp" alt="" width="800" height="534" loading="lazy"><div><p class="item-linha"><strong>Mercado e farmácia</strong><span>1 a 2 h</span></p><p>Carrega as sacolas e segue a lista combinada com a família.</p></div></li>
-        <li data-chega style="--i:3"><img class="marcador-foto" src="assets/lagoa-do-taquaral-panoramio-26-800.webp" alt="" width="800" height="533" loading="lazy"><div><p class="item-linha"><strong>Passeio</strong><span>1 a 3 h</span></p><p>Caminhada na Lagoa do Taquaral ou na praça, no ritmo de quem caminha.</p></div></li>
+        <li data-tarefa="consulta" data-chega style="--i:0"><span class="icone-tarefa" aria-hidden="true"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="6" y="5" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 5V3h8v2M14 10v8M10 14h8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><div><p class="item-linha"><strong>Consulta ou exame</strong><span>Mínimo 2 h</span></p><p>Busca em casa, espera junto e traz de volta.</p></div></li>
+        <li data-tarefa="banco" data-chega style="--i:1"><span class="icone-tarefa" aria-hidden="true"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 11L14 4l10 7M6 11v10M11 11v10M17 11v10M22 11v10M3 24h22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><p class="item-linha"><strong>Banco ou cartório</strong><span>Mínimo 2 h</span></p><p>Ajuda com filas, senhas e papéis.</p></div></li>
+        <li data-tarefa="mercado" data-chega style="--i:2"><span class="icone-tarefa" aria-hidden="true"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M3 5h3l3 13h12l3-9H8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="22.5" r="1.8" fill="currentColor"/><circle cx="20" cy="22.5" r="1.8" fill="currentColor"/></svg></span><div><p class="item-linha"><strong>Mercado e farmácia</strong><span>Mínimo 1 h</span></p><p>Segue a lista e carrega as sacolas.</p></div></li>
+        <li data-tarefa="passeio" data-chega style="--i:3"><span class="icone-tarefa" aria-hidden="true"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 25v-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M14 3c-5 0-8 4-8 8s3 7 8 7 8-3 8-7-3-8-8-8z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 25h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><div><p class="item-linha"><strong>Passeio</strong><span>Mínimo 2 h</span></p><p>Caminhada no ritmo de quem caminha.</p></div></li>
+        <li data-tarefa="outra" data-chega style="--i:4"><span class="icone-tarefa" aria-hidden="true"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M5 6h18v12H12l-5 4v-4H5z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M10 12h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><div><p class="item-linha"><strong>Outra tarefa</strong><span>A combinar</span></p><p>Conte no pedido o que precisa. Ana responde se pode ir e quanto tempo leva.</p></div></li>
       </ul>
     </div>
     <div class="cardapio">
-      <div class="cardapio-cab"><h2 class="cabeca">Onde e quando</h2><span class="nota">4 itens</span></div>
+      <div class="cardapio-cab"><h2 class="cabeca">Onde e quando</h2></div>
       <ul class="cardapio-itens">
-        <li data-chega><span class="marcador m1" aria-hidden="true"></span><div><p class="item-linha"><strong>Cambuí</strong><span>Atende</span></p><p>Saída e volta de casa no bairro.</p></div></li>
-        <li data-chega style="--i:1"><span class="marcador m2" aria-hidden="true"></span><div><p class="item-linha"><strong>Taquaral</strong><span>Atende</span></p><p>Saída e volta de casa no bairro.</p></div></li>
-        <li data-chega style="--i:2"><span class="marcador m5" aria-hidden="true"></span><div><p class="item-linha"><strong>Disponibilidade</strong><span>Seg–sex</span></p><p>Das 8h às 18h. Os horários dependem do aceite de cada pedido.</p></div></li>
-        <li data-chega style="--i:3"><span class="marcador m4" aria-hidden="true"></span><div><p class="item-linha"><strong>Veículo</strong><span>Incluso</span></p><p>Carro próprio, sem cobrança à parte. Táxi ou aplicativo não são necessários.</p></div></li>
+        <li data-chega style="--i:0"><span class="icone-tarefa" aria-hidden="true"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 25s8-7.5 8-13.5a8 8 0 0 0-16 0C6 17.5 14 25 14 25z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="14" cy="11.5" r="3" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></span><div><p class="item-linha"><strong>Bairros</strong><span data-onde-bairros>Cambuí e Taquaral</span></p><p>Saída e volta da casa da sua mãe ou do seu pai.</p></div></li>
+        <li data-chega style="--i:1"><span class="icone-tarefa" aria-hidden="true"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M14 8v6.5l4 2.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><div><p class="item-linha"><strong>Dias e horários</strong><span data-onde-dias>Seg a sex, 8h às 18h</span></p><p>O horário de cada pedido depende do aceite de Ana.</p></div></li>
+        <li data-chega style="--i:2"><span class="icone-tarefa" aria-hidden="true"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 19v-5l3-6h14l3 6v5z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="9" cy="19.5" r="2.4" fill="currentColor"/><circle cx="19" cy="19.5" r="2.4" fill="currentColor"/></svg></span><div><p class="item-linha"><strong>Veículo</strong><span data-onde-veiculo>Incluso</span></p><p data-onde-veiculo-texto>Carro próprio, sem cobrança à parte.</p></div></li>
       </ul>
     </div>
   </section>
@@ -98,29 +107,49 @@
   <section class="perfil-docs" aria-labelledby="t-pdocs">
     <div class="ladrilho destaque" data-chega><h2 class="cabeca" id="t-pdocs">Documentos em dia</h2></div>
     <div class="ladrilho" data-chega style="--i:1"><strong>Identidade</strong><span>Aprovada</span></div>
-    <div class="ladrilho" data-chega style="--i:2"><strong>Certificado 160 h</strong><span>Aprovado · 2020</span></div>
-    <div class="ladrilho" data-chega style="--i:3"><strong>Primeiros socorros</strong><span>Atualização · 2025</span></div>
+    <div class="ladrilho" data-chega style="--i:2"><strong>Comprovante de endereço</strong><span>Aprovado</span></div>
+    <div class="ladrilho" data-chega style="--i:3"><strong>CNH</strong><span>Aprovada · atende com veículo</span></div>
     <div class="ladrilho" data-chega style="--i:4"><strong>Revisão</strong><span class="num">01/10/2026</span></div>
     <div class="ladrilho" data-chega style="--i:5"><strong>Próxima</strong><span class="num">01/11/2026</span><span data-faltam="2026-11-01">Revisão mensal dos documentos.</span></div>
     <div class="ladrilho" data-chega style="--i:6"><strong>4,9 de 5</strong><span>12 avaliações</span></div>
     
   </section>
 
-  <section class="perfil-depoimento" aria-labelledby="t-dep">
-    <figure class="dep-retrato" data-chega>
-      <img src="assets/werner-haberkorn-bosque-dos-jequitibas-campinas-1600.webp" alt="Cartão-postal antigo do Bosque dos Jequitibás, em Campinas" width="1600" height="1070" loading="lazy">
-    </figure>
-    <div class="dep-texto">
-      <h2 class="dep-titulo" id="t-dep" data-chega>O que as filhas contam</h2>
-      <blockquote data-chega style="--i:1"><p>“Eu estava no trabalho. A Ana levou minha mãe ao exame e esperou até o fim.”</p></blockquote>
-      <p class="dep-autor" data-chega style="--i:2"><span role="img" aria-label="Nota 5 de 5">5 de 5</span> · Beatriz M., filha · 12/10/2026</p>
-      <p class="dep-resposta" data-chega style="--i:3">Resposta de Ana: Obrigada pela confiança, Beatriz. Foi um prazer ir com a sua mãe.</p>
-      <p class="nota dep-nota">Avaliação vinculada ao atendimento FA-1024.</p>
+  <section class="perfil-cursos" aria-labelledby="t-cursos" data-cursos-validados data-slug="ana-oliveira">
+    <div class="perfil-cursos-cab" data-chega>
+      <h2 class="cabeca" id="t-cursos">Cursos validados</h2>
+      <p>A equipe da Minha companhia conferiu o certificado de cada curso.</p>
     </div>
-    <figure class="dep-pequena" data-chega style="--i:2">
-      <img src="assets/bosque-dos-jequitibas-800.webp" alt="O Bosque dos Jequitibás visto de cima" width="800" height="483" loading="lazy">
-    </figure>
+    <ul class="cursos-lista" data-lista-cursos>
+      <li data-chega style="--i:1"><strong>Cuidador de idosos</strong><span>Senac Campinas</span><span class="num">160 horas · 2019</span><span class="curso-ok num">Validado em 01/10/2026</span></li>
+      <li data-chega style="--i:2"><strong>Primeiros socorros</strong><span>Cruz Vermelha Brasileira</span><span class="num">16 horas · 2024</span><span class="curso-ok num">Validado em 01/10/2026</span></li>
+    </ul>
   </section>
+
+  <section class="perfil-avaliacoes" aria-labelledby="t-av" data-avaliacoes data-slug="ana-oliveira">
+    <div class="av-resumo" data-chega>
+      <h2 class="cabeca" id="t-av">Avaliações</h2>
+      <p class="av-media num"><strong data-av-media>4,9</strong> de 5</p>
+      <p class="av-total num" data-av-total>12 avaliações de quem contratou Ana</p>
+      <button class="botao escuro av-ver" type="button" data-av-abrir>Ver todas as avaliações</button>
+    </div>
+    <ul class="av-lista" data-av-destaque><li data-chega style="--i:0"><div class="av-cab"><span class="av-quem">Beatriz M., filha · <span class="num">12/10/2026</span></span><span class="estrelas-av" role="img" aria-label="Nota 5 de 5"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg></span></div><p class="av-texto">“Eu estava no trabalho. A Ana levou minha mãe ao exame e esperou até o fim.”</p><p class="av-resposta"><strong>Resposta de Ana:</strong> Obrigada pela confiança, Beatriz. Foi um prazer ir com a sua mãe.</p></li><li data-chega style="--i:1"><div class="av-cab"><span class="av-quem">Mariana C., filha · <span class="num">14/10/2026</span></span><span class="estrelas-av" role="img" aria-label="Nota 4 de 5"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg class="apagada" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg></span></div><p class="av-texto">“Resolveu tudo no banco com paciência. Chegou dez minutos depois do combinado, mas avisou antes.”</p><p class="av-resposta"><strong>Resposta de Ana:</strong> Obrigada, Mariana. O trânsito no Cambuí estava parado; da próxima vez saio mais cedo.</p></li><li data-chega style="--i:2"><div class="av-cab"><span class="av-quem">Rafael S., filho · <span class="num">09/10/2026</span></span><span class="estrelas-av" role="img" aria-label="Nota 5 de 5"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg></span></div><p class="av-texto">“Pontual e cuidadosa. Me mandou mensagem quando saíram da consulta. Minha mãe já pediu para ser com ela de novo.”</p></li></ul>
+    <script type="application/json" id="avaliacoes-exemplo">[{"nota": 5, "autor": "Beatriz M.", "relacao": "filha", "criadoEm": "2026-10-12", "comentario": "Eu estava no trabalho. A Ana levou minha mãe ao exame e esperou até o fim.", "resposta": "Obrigada pela confiança, Beatriz. Foi um prazer ir com a sua mãe."}, {"nota": 4, "autor": "Mariana C.", "relacao": "filha", "criadoEm": "2026-10-14", "comentario": "Resolveu tudo no banco com paciência. Chegou dez minutos depois do combinado, mas avisou antes.", "resposta": "Obrigada, Mariana. O trânsito no Cambuí estava parado; da próxima vez saio mais cedo."}, {"nota": 5, "autor": "Rafael S.", "relacao": "filho", "criadoEm": "2026-10-09", "comentario": "Pontual e cuidadosa. Me mandou mensagem quando saíram da consulta. Minha mãe já pediu para ser com ela de novo.", "resposta": null}, {"nota": 5, "autor": "Lúcia P.", "relacao": "filha", "criadoEm": "2026-10-02", "comentario": "Meu pai é desconfiado e ficou à vontade com a Ana logo no primeiro dia.", "resposta": null}, {"nota": 5, "autor": "Teresa A.", "relacao": "filha", "criadoEm": "2026-09-23", "comentario": "Levou minha mãe ao cardiologista e anotou tudo o que o médico falou. Chegou com o papel pronto para mim.", "resposta": null}, {"nota": 5, "autor": "Paulo R.", "relacao": "filho", "criadoEm": "2026-09-15", "comentario": "Meu pai usa andador e a Ana teve toda a paciência na saída do carro.", "resposta": null}, {"nota": 5, "autor": "Sandra L.", "relacao": "filha", "criadoEm": "2026-09-08", "comentario": "Passeio no Taquaral no sábado de manhã. Minha mãe voltou feliz e contando as histórias da conversa.", "resposta": null}, {"nota": 5, "autor": "Cristina F.", "relacao": "filha", "criadoEm": "2026-08-27", "comentario": "Resolveu a prova de vida no banco que eu não conseguia levar minha mãe há meses.", "resposta": null}, {"nota": 5, "autor": "Gustavo M.", "relacao": "filho", "criadoEm": "2026-08-14", "comentario": "Muito atenciosa no exame de sangue em jejum. Levou um lanche para depois.", "resposta": null}, {"nota": 5, "autor": "Helena V.", "relacao": "filha", "criadoEm": "2026-07-30", "comentario": "Já é a quarta vez. Minha mãe pergunta por ela pelo nome.", "resposta": null}, {"nota": 5, "autor": "Rosana T.", "relacao": "filha", "criadoEm": "2026-07-14", "comentario": "Farmácia e mercado na mesma manhã, tudo conferido com a lista.", "resposta": null}, {"nota": 5, "autor": "Márcio D.", "relacao": "filho", "criadoEm": "2026-06-20", "comentario": "Simpática e firme na medida certa. Meu pai não gosta de sair e foi tranquilo.", "resposta": null}]</script>
+  </section>
+
+  <dialog class="av-janela" data-av-janela aria-labelledby="t-av-janela">
+    <div class="av-janela-cab">
+      <div><h2 id="t-av-janela">Avaliações de Ana</h2><p class="num" data-av-janela-sub>4,9 de 5 · 12 avaliações</p></div>
+      <button class="av-fechar" type="button" data-av-fechar><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16" fill="none" stroke="currentColor" stroke-width="2.4"/></svg><span class="vh">Fechar</span></button>
+    </div>
+    <div class="av-ordem" role="group" aria-label="Ordenar avaliações">
+      <button type="button" data-ordem="recentes" aria-pressed="true">Mais recentes</button>
+      <button type="button" data-ordem="antigas" aria-pressed="false">Mais antigas</button>
+      <button type="button" data-ordem="melhores" aria-pressed="false">Melhores notas</button>
+      <button type="button" data-ordem="piores" aria-pressed="false">Piores notas</button>
+    </div>
+    <ul class="av-lista av-lista-toda" data-av-todas></ul>
+  </dialog>
 </main>
 
 <footer class="rodape">
@@ -128,10 +157,9 @@
   <p class="vh">Minha companhia</p>
   <div class="rodape-colunas">
     <div><h2>Famílias</h2><ul><li><a href="busca.html">Encontrar profissional</a></li><li><a href="index.html#como-contratar">Como contratar</a></li><li><a href="index.html#confianca">Por que confiar</a></li><li><a href="pedidos.html">Meus pedidos</a></li></ul></div>
-    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="cadastro.html">Quero me cadastrar</a></li></ul></div>
+    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="entrar.html?perfil=pro&amp;modo=criar">Quero me cadastrar</a></li></ul></div>
     <div class="contato"><h2>Onde atendemos</h2><p>Em todo o Brasil, nas cidades com profissionais cadastradas.</p></div>
   </div>
-  <p class="creditos">Fotos: <a href="https://commons.wikimedia.org/wiki/File:Lagoa_do_Taquaral_-_panoramio_(26).jpg">“Lagoa do Taquaral - panoramio (26)”</a>, de enioprado, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Rua_Maria_Monteiro_-_Cambu%C3%AD_-_Campinas,_SP.JPG">“Rua Maria Monteiro - Cambuí - Campinas, SP”</a>, de Fasouzafreitas, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Werner_Haberkorn_-_Pra%C3%A7a_Bento_Quirino_-_Campinas_1.jpg">“Werner Haberkorn - Praça Bento Quirino - Campinas 1”</a>, de Werner Haberkorn/Fotolabor/Museu Paulista da USP, <a href="https://creativecommons.org/publicdomain/mark/1.0/">domínio público</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Ip%C3%AA_rei_(3831844709).jpg">“Ipê rei (3831844709)”</a>, de Cássio Abreu from CAMPINAS, Brasil, <a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Bosque_dos_Jequitib%C3%A1s.jpg">“Bosque dos Jequitibás”</a>, de Prefeitura Campinas, <a href="https://creativecommons.org/publicdomain/mark/1.0/">domínio público</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Werner_Haberkorn_-_Bosque_dos_Jequitibas_-_Campinas.jpg">“Werner Haberkorn - Bosque dos Jequitibas - Campinas”</a>, de Werner Haberkorn/Fotolabor/Museu Paulista da USP, <a href="https://creativecommons.org/publicdomain/mark/1.0/">domínio público</a>, via Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Mercado_Municipal_de_Campinas_1.tif">“Mercado Municipal de Campinas 1”</a>, de Bel Young, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons.</p>
   <div class="rodape-fim"><span>Minha companhia · 2026</span></div>
 </footer>
 <script src="site.js" defer></script>

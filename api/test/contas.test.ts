@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ambiente, cliente, DIA, familia, profissional, type Ambiente } from './ajuda.js';
+import { eq } from 'drizzle-orm';
+import { profissionais } from '../src/db/schema.js';
+import { ambiente, cliente, DIA, familia, profissional, profissionalAprovada, type Ambiente } from './ajuda.js';
 
 let amb: Ambiente;
 beforeAll(async () => {
@@ -59,15 +61,6 @@ describe('cadastro da profissional', () => {
     expect(r.corpo.erro.campos.valorHoraCentavos).toBe('O valor mínimo da hora é R$ 70.');
     const ok = await c.patch('/api/profissionais/eu', { valorHoraCentavos: 7000, horasMinimas: 2 });
     expect(ok.corpo.usuario.profissional).toMatchObject({ valorHoraCentavos: 7000, horasMinimas: 2 });
-  });
-
-  it('só vai para análise com o valor da hora definido', async () => {
-    const c = cliente(amb.app);
-    await c.post('/api/profissionais', profissional());
-    expect((await c.post('/api/profissionais/eu/analise')).status).toBe(422);
-    await c.patch('/api/profissionais/eu', { valorHoraCentavos: 8000 });
-    const r = await c.post('/api/profissionais/eu/analise');
-    expect(r.corpo.usuario.profissional.situacao).toBe('em_analise');
   });
 
   it('perfil fora do ar não aparece para o público', async () => {
@@ -140,5 +133,27 @@ describe('limite de tentativas', () => {
     } finally {
       await outro.fechar();
     }
+  });
+});
+
+describe('portfólio público', () => {
+  it('aprovado sem valor da hora ainda não aparece', async () => {
+    const pro = await profissionalAprovada(amb);
+    expect((await cliente(amb.app).get(`/api/profissionais/${pro.slug}`)).status).toBe(200);
+    await amb.banco.db.update(profissionais).set({ valorHoraCentavos: null }).where(eq(profissionais.slug, pro.slug));
+    expect((await cliente(amb.app).get(`/api/profissionais/${pro.slug}`)).status).toBe(404);
+    expect((await pro.c.get(`/api/profissionais/${pro.slug}`)).status).toBe(200);
+  });
+});
+
+describe('sessão para telas públicas', () => {
+  it('responde 200 com a conta ou null', async () => {
+    const c = cliente(amb.app);
+    const sem = await c.get('/api/sessao');
+    expect(sem).toMatchObject({ status: 200, corpo: { usuario: null } });
+    await c.post('/api/contas', familia());
+    const com = await c.get('/api/sessao');
+    expect(com.corpo.usuario.papeis).toEqual(['contratante']);
+    expect(com.resposta.headers['cache-control']).toBe('no-store');
   });
 });

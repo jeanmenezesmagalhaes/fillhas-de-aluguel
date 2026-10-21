@@ -15,10 +15,15 @@ import type { Db } from '../db/index.js';
 import { contratantes, pessoasAcompanhadas, profissionais, usuarios } from '../db/schema.js';
 import { conflito, ErroApi, violouUnico } from '../erros.js';
 import * as v from '../validacao.js';
+import { codigoIndicacao, registrarIndicacao } from './indicacoes.js';
+import { tarefasDe } from '../tarefas.js';
+import { disponibilidadeDe } from '../disponibilidade.js';
+import { fotoDaConta } from './fotos.js';
 
 const pessoa = z.object({
   nome: v.nome,
   dataNascimento: v.dataIso.optional(),
+  parentesco: z.string().trim().min(2).max(40, 'Use no máximo 40 caracteres.').optional(),
   observacoes: z.string().trim().max(1000, 'Use no máximo 1000 caracteres.').optional(),
 });
 
@@ -28,6 +33,8 @@ const cadastroBase = z.object({
   celular: v.celular,
   senha: v.senhaNova,
   aceitaTermos: v.aceitaTermos,
+  // código de quem indicou, vindo do link (?indicacao=ANA-7K2P)
+  codigoIndicacao: z.preprocess((x) => (x === '' ? undefined : x), codigoIndicacao.optional()),
 });
 
 const cadastroContratante = cadastroBase.extend({
@@ -91,6 +98,7 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
       celular: usuarios.celular,
       admin: usuarios.admin,
       emailVerificado: usuarios.emailVerificadoEm,
+      celularVerificado: usuarios.celularVerificadoEm,
       contratante: contratantes.usuarioId,
       profissional: {
         slug: profissionais.slug,
@@ -100,6 +108,12 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
         valorHoraCentavos: profissionais.valorHoraCentavos,
         horasMinimas: profissionais.horasMinimas,
         veiculoIncluso: profissionais.veiculoIncluso,
+        aceitaOutras: profissionais.aceitaOutras,
+        descontoAPartirHoras: profissionais.descontoAPartirHoras,
+        valorHoraDescontoCentavos: profissionais.valorHoraDescontoCentavos,
+        anosExperiencia: profissionais.anosExperiencia,
+        apresentacao: profissionais.apresentacao,
+        bairros: profissionais.bairros,
       },
     })
     .from(usuarios)
@@ -118,8 +132,16 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
     email: linha.email,
     celular: linha.celular,
     emailVerificado: !!linha.emailVerificado,
+    celularVerificado: !!linha.celularVerificado,
     papeis,
-    profissional: linha.profissional,
+    profissional: linha.profissional
+      ? {
+          ...linha.profissional,
+          tarefas: await tarefasDe(db, linha.id),
+          disponibilidade: await disponibilidadeDe(db, linha.id),
+          ...(await fotoDaConta(db, linha.id)),
+        }
+      : null,
   };
 }
 
@@ -138,6 +160,7 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
           .values({ nome: dados.nome, email: dados.email, celular: dados.celular, senhaHash, termosAceitosEm: ctx.agora() })
           .returning({ id: usuarios.id });
         await tx.insert(contratantes).values({ usuarioId: u!.id });
+        await registrarIndicacao(tx as unknown as Db, dados.codigoIndicacao, u!.id);
         if (dados.pessoaAcompanhada) {
           await tx.insert(pessoasAcompanhadas).values({ contratanteId: u!.id, ...dados.pessoaAcompanhada });
         }
@@ -168,6 +191,7 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
           cidade: dados.cidade,
           uf: dados.uf,
         });
+        await registrarIndicacao(tx as unknown as Db, dados.codigoIndicacao, u!.id);
         return u!.id;
       });
     } catch (err) {
@@ -201,6 +225,13 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
     return reply.status(204).send();
   });
 
+  // Para as telas públicas saberem se há alguém conectado sem gerar um 401 no console:
+  // sempre 200, com a conta ou null.
+  app.get('/api/sessao', async (req, reply) => {
+    reply.header('cache-control', 'no-store');
+    return { usuario: req.usuario ? await dadosDaConta(ctx.db, req.usuario.id) : null };
+  });
+
   app.get('/api/eu', async (req) => {
     const u = exigirUsuario(req);
     return { usuario: await dadosDaConta(ctx.db, u.id) };
@@ -214,6 +245,7 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
         id: pessoasAcompanhadas.id,
         nome: pessoasAcompanhadas.nome,
         dataNascimento: pessoasAcompanhadas.dataNascimento,
+        parentesco: pessoasAcompanhadas.parentesco,
         observacoes: pessoasAcompanhadas.observacoes,
       })
       .from(pessoasAcompanhadas)
@@ -232,6 +264,7 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
         id: pessoasAcompanhadas.id,
         nome: pessoasAcompanhadas.nome,
         dataNascimento: pessoasAcompanhadas.dataNascimento,
+        parentesco: pessoasAcompanhadas.parentesco,
         observacoes: pessoasAcompanhadas.observacoes,
       });
     return reply.status(201).send({ pessoa: p });

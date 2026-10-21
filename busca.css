@@ -183,3 +183,8 @@ a.botao.lp-breve:active { transform: none; }
 .faixa-trilho input:focus-visible::-moz-range-thumb { outline: 3px solid var(--tinta); outline-offset: 2px; }
 .faixa-limites { display: flex; justify-content: space-between; color: var(--salvia-texto); font-size: var(--step-small); }
 @media (prefers-reduced-motion: reduce) { .faixa-barras span { transition: none; } }
+.op-hora { color: var(--tinta-2); font-size: var(--step-small); }
+/* listagem pela API: iniciais para quem não tem foto nem retrato desenhado, e "Nova na plataforma" sem nota */
+.lp-iniciais { display: grid; place-items: center; width: 100%; height: 100%; color: var(--tinta); font-size: 1.75rem; font-weight: 600; }
+.lp-retrato img { width: 100%; height: 100%; object-fit: cover; }
+.lp-nova { color: var(--tinta-2); font-size: var(--step-small); }

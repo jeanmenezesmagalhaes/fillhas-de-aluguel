@@ -28,7 +28,7 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
 
 - Uso no celular e no computador; contrato exige as duas representações.
 - Fluxos: busca → resultados → portfólio → WhatsApp ilustrativo; portfólio → identificação → solicitação → resumo → aguardando aceite → confirmação; solicitação → alteração da cuidadora → novo aceite; cadastro da cuidadora → documentos → aprovação → portfólio publicado; contratação realizada → avaliação; denúncia → análise administrativa.
-- 16 telas mapeadas em `docs/MAPA-DE-TELAS.md`; `mapa.html` é a navegação de revisão.
+- Telas listadas no README; as do primeiro protótipo (cadastro, login, pagamento e mapa) foram apagadas em 20/10/2026.
 - Trabalho passa entre agentes; cada passagem registra estado em `docs/PASSAGEM.md` e continua sem reiniciar.
 
 ## Capabilities and Constraints
@@ -37,6 +37,14 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
 - Botões, filtros e campos do produto são representações inativas, exceto na listagem (busca.html), que o usuário pediu pronta para o consumidor: busca, filtros e ordenação funcionam na tela e ficam na URL. Exceções propostas em 20/10/2026: o orçamento por horas calcula na tela (horas sem teto, mínimo e desconto) e o filtro por tarefa da home mostra e esconde perfis; nada é enviado. Links de revisão (navegação entre amostras) ficam separados dos controles do produto.
 - **Conta da família (decidido em 20/10/2026):** só quem tem conta envia pedido. No resumo, quem não entrou vê "Entrar para enviar" e "Criar conta", e entrar.html leva de volta ao pedido.
 - **Backend (iniciado em 20/10/2026, a pedido do usuário):** `api/` tem contas, login com sessão em cookie, pedidos de serviço e avaliações. entrar.html cria a conta da família ou da profissional (?perfil=pro&modo=criar) e entra pela API; o localStorage "mc-conta"/"mc-pro" continua só para as outras telas mostrarem o nome. Senha com no mínimo 8 caracteres.
+- **Verificação da profissional e lista de espera (pedido do usuário em 20/10/2026):**
+  - Para começar a atender, a profissional confirma e-mail e WhatsApp, informa CPF (ou CPF e CNPJ) e endereço, e envia documento com foto e comprovante de endereço (mais o cartão CNPJ, se tiver CNPJ).
+  - Depois entra numa lista de espera até a aprovação da plataforma.
+  - O documento com foto (RG ou CNH) é obrigatório, para comprovar quem ela é (confirmado pelo usuário em 20/10/2026).
+  - Quem atende com veículo envia também a CNH, obrigatória (pedido do usuário em 20/10/2026).
+- **Cursos e treinamentos (pedido do usuário em 20/10/2026):** a profissional cadastra cursos e treinamentos com comprovante. A administração valida, e só os validados aparecem no portfólio. Backend pronto; telas ainda não.
+  - O backend está pronto; as telas ainda não.
+- **Indicações (pedido do usuário em 20/10/2026):** enquanto espera, a profissional pode indicar outras profissionais e famílias pelo próprio código ou link. O bônus está **indefinido**: nunca mostrar valor ou regra como decididos.
 - **Avaliação nos dois sentidos (decidido em 20/10/2026):** por serviço realizado, a família avalia a profissional e a profissional avalia a família (1 a 5 e comentário). Às cegas: nenhuma vê a nota da outra até as duas avaliarem ou passarem 14 dias; depois do prazo não se avalia. A nota da profissional é pública; a da família só a vê a profissional que recebeu um pedido dela.
 - **Telas de gestão (20/10/2026):**
   - **painel.html**, para a profissional: pedidos novos (aceitar, propor mudança, recusar), próximos atendimentos, o mês por semana e o perfil.
@@ -67,7 +75,7 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
 Dados canônicos fictícios, consistentes entre telas (fonte: `docs/PASSAGEM.md`):
 
 - Ana Oliveira, Campinas (Cambuí/Taquaral), 6 anos de experiência, carro próprio incluso, seg–sex 8h–18h. Revisão 01/10/2026, próxima 01/11/2026. Nota 4,9 em 12 avaliações fictícias.
-- Proposta nas amostras redesenhadas (20/10/2026): R$70/h, mínimo de 2 h, a partir de 4 h R$60/h (hipótese de desconto), veículo incluso.
+- Ana, valores (decidido pelo usuário em 20/10/2026): R$80/h e, a partir de 4 h, R$70/h (hipótese de desconto), veículo incluso. Substitui o R$70/h com R$60/h a partir de 4 h, que ficava abaixo do mínimo de R$70/h da plataforma.
 - Cláudia Ramos (amostra nova, Taquaral): R$65/h, mínimo de 1 h, sem desconto, sem veículo.
 - Marta Ferreira (amostra nova, Centro e Bosque, 9 anos): R$75/h, mínimo de 3 h, R$68/h a partir de 3 h, veículo incluso, 5,0 em 4 avaliações, revisão 08/10/2026.
 - Joana Prado (amostra nova, Cambuí, 3 anos): R$70/h, mínimo de 2 h, sem desconto, sem veículo, 4,7 em 19 avaliações, revisão 29/09/2026.
@@ -83,8 +91,8 @@ Dados canônicos fictícios, consistentes entre telas (fonte: `docs/PASSAGEM.md`
 
   Os dados ficam em `docs/gera_busca.py`. Três são homens. Só Ana tem perfil publicado.
 - Cláudia: 4,8 em 7 avaliações, revisão 05/10/2026, Taquaral, 4 anos.
-- Mariana Costa contrata Ana para levar Helena Costa (78) a uma consulta, 28/10/2026, 9h–13h: 4 h × R$60 = R$240; taxa da plataforma em definição, fora do total.
-- Dados anteriores (R$330 com deslocamento R$20, acompanhamento externo R$15 e taxa R$15; visão da cuidadora R$315) seguem nas telas ainda não revisadas (valores.html, pagamento.html).
+- Mariana Costa contrata Ana para levar Helena Costa (78) a uma consulta, 28/10/2026, 9h–13h: 4 h × R$70 = R$280 (hora com desconto); taxa da plataforma em definição, fora do total.
+- Dados anteriores (R$330 com deslocamento R$20, acompanhamento externo R$15 e taxa R$15; visão da cuidadora R$315) ficaram só no histórico: valores.html virou redirecionamento e pagamento.html foi apagada.
 
 Retratos são ilustrações locais, não fotografias de pessoas reais. Não existem clientes, depoimentos, métricas ou parcerias reais; não inventar.
 
