@@ -63,6 +63,7 @@ await banco.db.transaction(async (tx) => {
     horasMinimas: 1,
     veiculoIncluso: true,
     aceitaOutras: true,
+    anosExperiencia: 6,
     situacao: 'aprovado',
     revisadoEm: dia(em(-19, 12)),
     proximaRevisao: dia(em(11, 12)),
@@ -153,14 +154,14 @@ await banco.db.transaction(async (tx) => {
   await tx.insert(contratantes).values({ usuarioId: mariana });
   const [helena] = await tx
     .insert(pessoasAcompanhadas)
-    .values({ contratanteId: mariana, nome: 'Helena Costa', dataNascimento: '1948-03-02', observacoes: 'Caminha devagar.' })
+    .values({ contratanteId: mariana, nome: 'Helena Costa', dataNascimento: '1948-03-02', parentesco: 'filha', observacoes: 'Caminha devagar.' })
     .returning({ id: pessoasAcompanhadas.id });
 
   const rafael = await conta('Rafael Souza', EMAILS[3]!, '19966660000');
   await tx.insert(contratantes).values({ usuarioId: rafael });
   const [dirce] = await tx
     .insert(pessoasAcompanhadas)
-    .values({ contratanteId: rafael, nome: 'Dirce Souza', dataNascimento: '1944-05-10' })
+    .values({ contratanteId: rafael, nome: 'Dirce Souza', dataNascimento: '1944-05-10', parentesco: 'filho' })
     .returning({ id: pessoasAcompanhadas.id });
 
   const base = { valorHoraCentavos: 7000 };
