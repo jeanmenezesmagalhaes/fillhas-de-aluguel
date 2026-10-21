@@ -439,3 +439,6 @@
 .carregando body::after { content: "Carregando…"; position: fixed; left: 0; right: 0; top: 40vh; color: var(--muted); font-size: 16px; text-align: center; opacity: 0; animation: aparece-carregando 200ms ease-out 300ms forwards; pointer-events: none; }
 @keyframes aparece-carregando { to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .carregando body::after { animation-duration: 1ms; } }
+/* ganhos: aviso de simulação, uma linha discreta sob a frase do topo */
+.simulacao { margin-top: 4px; color: var(--muted); font-size: var(--fs-small); }
+.simulacao[hidden] { display: none; }

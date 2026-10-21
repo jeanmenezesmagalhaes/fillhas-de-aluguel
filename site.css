@@ -598,3 +598,7 @@ section[id], .lista { scroll-margin-top: 140px; }
 .tarefa-outra input { height: 48px; padding: 0 14px; border: 0; background: var(--papel); color: var(--tinta); font: inherit; }
 .cardapio-itens li[hidden] { display: none; }
 .perfil-retrato-grande.com-foto img { width: 100%; height: 100%; object-fit: cover; }
+/* portfólio de quem ainda não tem foto: as iniciais grandes no lugar do retrato */
+.retrato-iniciais { display: grid; place-items: center; width: 100%; height: 100%; color: var(--tinta); font-size: clamp(4rem, 12vw, 9rem); font-weight: 600; letter-spacing: -0.02em; }
+/* endereço de portfólio que não existe */
+.perfil-sumiu { display: grid; gap: 16px; justify-items: start; max-width: 640px; margin: 0 auto; padding: clamp(48px, 10vh, 120px) var(--margin); }

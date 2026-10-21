@@ -24,6 +24,18 @@
 
 })();
 
+// peças comuns: há API? (servidor só de páginas responde 404) e qual profissional o portfólio mostra
+window.mcSite = (() => {
+  let pedido = null;
+  const temApi = () => pedido || (pedido = /^https?:$/.test(location.protocol)
+    ? fetch('/api/sessao', { credentials: 'same-origin' }).then((r) => r.ok && (r.headers.get('content-type') || '').includes('json')).catch(() => false)
+    : Promise.resolve(false));
+  // portfolio.html?p=<slug>; sem parâmetro, o exemplo da Ana
+  const slug = new URLSearchParams(location.search).get('p') || 'ana-oliveira';
+  document.querySelectorAll('[data-slug]').forEach((el) => { el.dataset.slug = slug; });
+  return { temApi, slug };
+})();
+
 // orçamento: horas estimadas × valor da hora, respeitando o mínimo e o desconto de cada profissional.
 // Seletor de horas sem teto, no portfólio.
 (() => {
@@ -98,7 +110,7 @@
     $('[data-veiculo]').textContent = p.veiculo ? `Veículo incluso: ${p.nome} busca em casa, leva e traz de volta.` : 'Sem veículo: combine táxi ou aplicativo para a ida e a volta.';
     raiz.querySelector('[data-veiculo-icone]').dataset.tem = p.veiculo ? 'sim' : 'nao';
     const acao = $('[data-acao]');
-    if (p.link) { acao.href = `${p.link}?horas=${h}${p.tarefa ? `&tarefa=${encodeURIComponent(p.tarefa)}` : ''}`; acao.textContent = `Pedir ${horas(h)} com ${p.nome}`; acao.removeAttribute('aria-disabled'); acao.classList.remove('inativo'); }
+    if (p.link) { acao.href = `${p.link}?horas=${h}${p.tarefa ? `&tarefa=${encodeURIComponent(p.tarefa)}` : ''}${p.slug ? `&p=${encodeURIComponent(p.slug)}` : ''}`; acao.textContent = `Pedir ${horas(h)} com ${p.nome}`; acao.removeAttribute('aria-disabled'); acao.classList.remove('inativo'); }
     else { acao.removeAttribute('href'); acao.textContent = `Perfil de ${p.nome} em breve`; acao.setAttribute('aria-disabled', 'true'); acao.classList.add('inativo'); }
     blocos(p, h);
   };
@@ -139,14 +151,49 @@
   if (!lista) return;
   const nomes = { todas: 'todas as tarefas', consulta: 'consulta ou exame', banco: 'banco ou cartório', mercado: 'mercado e farmácia', passeio: 'passeio' };
   const botoes = lista.querySelectorAll('.ft');
-  const cartoes = lista.querySelectorAll('.pc');
   const conta = lista.querySelector('[data-conta-lista]');
   const vazia = lista.querySelector('[data-vazia]');
+  // as contagens de cada botão seguem os cartões que estão na página
+  const recontar = () => botoes.forEach((b) => {
+    const t = b.dataset.t;
+    const n = [...lista.querySelectorAll('.pc')].filter((c) => t === 'todas' || c.dataset.tarefas.split(' ').includes(t)).length;
+    const el = b.querySelector('.ft-conta'); if (el) el.textContent = n;
+  });
+  // com a API, cada destaque mostra os dados do perfil no ar (valor, nota, bairros, mínimo, veículo, tarefas)
+  // e leva ao portfólio dela; quem não está no ar sai da lista
+  mcSite.temApi().then(async (api) => {
+    if (!api) return;
+    let pros = [];
+    try { const r = await fetch('/api/profissionais?porPagina=50', { credentials: 'same-origin' }); if (!r.ok) return; pros = (await r.json()).profissionais; } catch (_) { return; }
+    const juntaE = (a) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} e ${a[a.length - 1]}`);
+    lista.querySelectorAll('.pc').forEach((c) => {
+      const p = pros.find((x) => x.nome === c.querySelector('h3').textContent);
+      if (!p) { c.remove(); return; }
+      const nota = c.querySelector('.pc-nota');
+      if (nota) {
+        if (p.nota && p.nota.total) { nota.querySelector('strong').textContent = p.nota.media.toFixed(1).replace('.', ','); nota.querySelector('span[aria-hidden]').textContent = `(${p.nota.total})`; nota.querySelector('.vh').textContent = ` de 5, ${p.nota.total} ${p.nota.total === 1 ? 'avaliação' : 'avaliações'}`; }
+        else nota.innerHTML = 'Nova na plataforma';
+      }
+      c.querySelector('.pc-preco strong').textContent = `R$ ${(p.valorHoraCentavos / 100).toLocaleString('pt-BR')}`;
+      c.querySelector('.pc-bairro').textContent = `${juntaE(p.bairros || [])} · ${p.cidade}, ${p.uf}`;
+      const fatos = c.querySelectorAll('.pc-fatos li');
+      if (fatos[0]) fatos[0].lastChild.textContent = `Mínimo de ${p.horasMinimas} ${p.horasMinimas === 1 ? 'hora' : 'horas'}`;
+      if (fatos[1]) { fatos[1].className = `pc-veiculo ${p.veiculoIncluso ? 'sim' : 'nao'}`; fatos[1].lastChild.textContent = p.veiculoIncluso ? 'Veículo incluso' : 'Sem veículo'; }
+      c.dataset.tarefas = (p.tarefas || []).map((t) => t.tipo).join(' ');
+      const acao = c.querySelector('.pc-acao');
+      const link = document.createElement('a');
+      link.className = 'botao escuro pc-acao'; link.href = `portfolio.html?p=${encodeURIComponent(p.slug)}`;
+      link.textContent = acao.tagName === 'A' ? acao.textContent : 'Ver perfil';
+      acao.replaceWith(link);
+    });
+    recontar();
+    const ativo = lista.querySelector('.ft[aria-pressed="true"]'); if (ativo) ativo.click();
+  });
   botoes.forEach((b) => b.addEventListener('click', () => {
     const t = b.dataset.t;
     botoes.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
     let n = 0;
-    cartoes.forEach((c) => { const ok = t === 'todas' || c.dataset.tarefas.split(' ').includes(t); c.hidden = !ok; if (ok) n++; });
+    lista.querySelectorAll('.pc').forEach((c) => { const ok = t === 'todas' || c.dataset.tarefas.split(' ').includes(t); c.hidden = !ok; if (ok) n++; });
     conta.textContent = `${n} ${n === 1 ? 'profissional verificada' : 'profissionais verificadas'} para ${nomes[t]}`;
     vazia.hidden = n > 0;
   }));
@@ -192,8 +239,73 @@
   const filtros = document.querySelector('[data-filtros]');
   const fonte = document.getElementById('dados-profissionais');
   if (!filtros || !fonte) return;
-  const pros = JSON.parse(fonte.textContent);
   const lista = document.querySelector('[data-lista]');
+  const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+  // com a API, a lista vem de GET /api/profissionais (todas as páginas) e os filtros seguem na tela;
+  // os retratos desenhados da página continuam valendo para quem tem o mesmo nome
+  const CURTO = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  const juntaE = (a) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} e ${a[a.length - 1]}`);
+  const diasTexto = (d) => {
+    if (d.length === 7) return 'Todos os dias';
+    if (d.length > 2 && d.every((x, i) => !i || x === d[i - 1] + 1)) return `${CURTO[d[0]][0].toUpperCase()}${CURTO[d[0]].slice(1)} a ${CURTO[d[d.length - 1]]}`;
+    const t = juntaE(d.map((x) => CURTO[x])); return t[0].toUpperCase() + t.slice(1);
+  };
+  const turnosTexto = (t) => juntaE([...t].map((x) => ({ m: 'de manhã', t: 'à tarde', n: 'à noite' })[x]));
+  const daApi = (p) => {
+    const dias = p.disponibilidade && p.disponibilidade.length ? [...new Set(p.disponibilidade.map((f) => f.dia))].sort((a, b) => a - b) : [0, 1, 2, 3, 4, 5, 6];
+    const turnos = p.turnos ? ['m', 't', 'n'].filter((t) => Object.values(p.turnos).some((l) => l.includes(t))).join('') : 'mtn';
+    return {
+      id: p.slug, nome: p.nome, genero: null, cidade: p.cidade, uf: p.uf, bairros: p.bairros || [], valor: p.valorHoraCentavos / 100,
+      minimo: p.horasMinimas || 1, veiculo: !!p.veiculoIncluso, nota: p.nota && p.nota.total ? p.nota.media : 0, avaliacoes: p.nota ? p.nota.total : 0,
+      dias, turnos: turnos || 'mtn', tarefas: [...(p.tarefas || []).map((t) => t.tipo), ...(p.aceitaOutras ? ['outra'] : [])], fotoUrl: p.fotoUrl,
+    };
+  };
+  const montaLinhas = (pros) => {
+    const retratos = new Map([...lista.querySelectorAll('.lp')].map((li) => [li.querySelector('h3').textContent, li.querySelector('.lp-retrato').innerHTML]));
+    const relogio = (lista.querySelector('.lp-fatos li svg') || {}).outerHTML || '';
+    const carro = (lista.querySelector('.lp-veiculo svg') || {}).outerHTML || '';
+    const estrela = (lista.querySelector('.pc-estrela') || {}).outerHTML || '';
+    lista.innerHTML = pros.map((p) => `<li class="lp" data-id="${esc(p.id)}">
+        <span class="lp-retrato">${p.fotoUrl ? `<img src="${esc(p.fotoUrl)}" alt="" loading="lazy">` : retratos.get(p.nome) || `<span class="lp-iniciais" aria-hidden="true">${esc(p.nome.split(/\s+/).map((x) => x[0]).slice(0, 2).join('').toUpperCase())}</span>`}</span>
+        <div class="lp-corpo">
+          <div class="lp-quem"><h3>${esc(p.nome)}</h3>${p.avaliacoes ? `<p class="lp-nota num">${estrela}<strong>${p.nota.toFixed(1).replace('.', ',')}</strong> <span aria-hidden="true">(${p.avaliacoes})</span><span class="vh"> de 5, ${p.avaliacoes} avaliações</span></p>` : '<p class="lp-nota lp-nova">Nova na plataforma</p>'}</div>
+          <p class="lp-bairro">${esc(juntaE(p.bairros))} · ${esc(p.cidade)}, ${esc(p.uf)}</p>
+          <p class="lp-agenda" data-agenda><span class="lp-ponto" aria-hidden="true"></span><span data-agenda-texto>${diasTexto(p.dias)}, ${turnosTexto(p.turnos)}</span></p>
+          <ul class="lp-fatos">
+            <li class="num">${relogio}Mínimo de ${p.minimo} ${p.minimo === 1 ? 'hora' : 'horas'}</li>
+            <li class="lp-veiculo ${p.veiculo ? 'sim' : 'nao'}">${carro}${p.veiculo ? 'Veículo incluso' : 'Sem veículo'}</li>
+          </ul>
+        </div>
+        <div class="lp-preco">
+          <p class="num"><strong>R$ ${String(p.valor).replace('.', ',')}</strong> por hora</p>
+          <a class="botao escuro lp-acao" href="portfolio.html?p=${encodeURIComponent(p.id)}">Ver perfil<span class="vh"> de ${esc(p.nome)}</span></a>
+        </div>
+      </li>`).join('');
+  };
+  const carregaApi = async () => {
+    const todas = [];
+    for (let pagina = 1; pagina <= 20; pagina++) {
+      const r = await fetch(`/api/profissionais?porPagina=50&pagina=${pagina}`, { credentials: 'same-origin' });
+      if (!r.ok) throw new Error('lista');
+      const d = await r.json();
+      todas.push(...d.profissionais);
+      if (todas.length >= d.total || !d.profissionais.length) break;
+    }
+    return todas.map(daApi);
+  };
+  mcSite.temApi().then(async (api) => {
+    if (!api) { inicia(JSON.parse(fonte.textContent)); return; }
+    let pros;
+    try { pros = await carregaApi(); } catch (_) { inicia(JSON.parse(fonte.textContent)); return; }
+    montaLinhas(pros);
+    // a API não guarda gênero: o filtro sai
+    const gen = filtros.querySelector('input[name="genero"]');
+    if (gen) gen.closest('fieldset').hidden = true;
+    inicia(pros);
+  });
+
+  function inicia(pros) {
   const linhas = new Map([...lista.querySelectorAll('.lp')].map((li) => [li.dataset.id, li]));
   const textoAgenda = new Map([...linhas].map(([id, li]) => [id, li.querySelector('[data-agenda-texto]').textContent]));
   const buscas = document.querySelectorAll('[data-busca]');
@@ -366,6 +478,7 @@
   document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && document.body.classList.contains('filtros-aberto')) { fecha(); abrir.focus(); } });
 
   desenha();
+  }
 })();
 
 // área profissional: quanto rende o valor da hora em 4 semanas
@@ -445,8 +558,61 @@
     });
     return grupos.map((g) => `${g.ini}${g.fim ? ` a ${g.fim.toLowerCase()}` : ''}, ${g.txt}`).join(' · ');
   };
+  // troca "Ana Oliveira" e "Ana" nos textos fixos da página pelo nome de quem está sendo vista
+  const trocaNome = (completo, primeiro) => {
+    if (completo === 'Ana Oliveira') return;
+    const andar = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const nos = [];
+    while (andar.nextNode()) nos.push(andar.currentNode);
+    nos.forEach((n) => {
+      if (n.parentElement.closest('script, .site-topo, .rodape')) return;
+      const t = n.nodeValue.replace(/Ana Oliveira/g, completo).replace(/\bAna\b/g, primeiro);
+      if (t !== n.nodeValue) n.nodeValue = t;
+    });
+    document.querySelectorAll('[aria-label*="Ana"]').forEach((el) => el.setAttribute('aria-label', el.getAttribute('aria-label').replace(/Ana Oliveira/g, completo).replace(/\bAna\b/g, primeiro)));
+  };
+  const naoEncontrada = () => {
+    const main = document.querySelector('main');
+    document.querySelector('.perfil-capa').remove();
+    main.innerHTML = '<section class="perfil-sumiu"><h1 class="cabeca">Não encontramos esta profissional</h1><p>O perfil pode ter saído do ar ou o endereço está incompleto.</p><a class="botao" href="busca.html">Ver todos os profissionais</a></section>';
+    document.title = 'Profissional não encontrada · Minha companhia';
+  };
   const perfilDaApi = (p) => {
     const txt = (sel, t) => { const el = document.querySelector(sel); if (el) el.textContent = t; };
+    const dma = (iso) => { const [a, m, d] = String(iso).slice(0, 10).split('-'); return `${d}/${m}/${a}`; };
+    const juntaE = (l) => (l.length > 1 ? `${l.slice(0, -1).join(', ')} e ${l[l.length - 1]}` : l[0] || '');
+    const primeiroDe = String(p.nome || '').split(' ')[0];
+    document.documentElement.dataset.primeiro = primeiroDe;
+    trocaNome(p.nome, primeiroDe);
+    document.title = `${p.nome}, profissional verificada em ${p.cidade} · Minha companhia`;
+    txt('.perfil-nome .linha', p.nome);
+    // frase de apoio montada com o que ela faz, onde e se leva de carro
+    const FAZ = { consulta: 'à consulta', banco: 'ao banco', mercado: 'ao mercado', passeio: 'para passear' };
+    const faz = (p.tarefas || []).map((t) => FAZ[t.tipo]).filter(Boolean);
+    const onde = Array.isArray(p.bairros) && p.bairros.length ? juntaE(p.bairros) : p.cidade;
+    txt('.perfil-apoio', `Leva sua mãe ou seu pai ${faz.length ? juntaE(faz) : 'aonde for preciso'}. Atende ${onde}${p.veiculoIncluso ? ', com carro próprio' : ''}.`);
+    if (p.revisadoEm) { const selo = document.querySelector('.perfil-selo span'); if (selo) selo.innerHTML = `<strong>Profissional verificada.</strong> Documentos revisados em ${dma(p.revisadoEm)}.`; }
+    // "Como acompanho" e "Experiência": a apresentação dela e os cursos validados
+    const textos = document.querySelectorAll('.perfil-sobre-textos > div p');
+    if (textos[0]) textos[0].textContent = p.apresentacao || `${primeiroDe} ainda não escreveu a apresentação.`;
+    if (textos[1]) {
+      const cursos = (p.qualificacoes || []).map((c) => `${c.titulo}${c.cargaHorariaHoras ? `, ${c.cargaHorariaHoras} horas` : ''}${c.anoConclusao ? `, em ${c.anoConclusao}` : ''}`);
+      textos[1].textContent = [cursos.length ? `${cursos.length === 1 ? 'Curso' : 'Cursos'} de ${juntaE(cursos)}, ${cursos.length === 1 ? 'validado' : 'validados'} pela equipe.` : '', p.anosExperiencia ? `${p.anosExperiencia} ${p.anosExperiencia === 1 ? 'ano' : 'anos'} acompanhando pessoas idosas.` : '', p.veiculoIncluso ? 'Carro próprio, que já entra no valor da hora.' : ''].filter(Boolean).join(' ') || 'Experiência conferida pela equipe na entrevista.';
+    }
+    // ladrilhos de documentos: revisão, próxima revisão, CNH só de quem leva de carro, nota
+    const lad = [...document.querySelectorAll('.perfil-docs .ladrilho')];
+    const ladDe = (rot) => lad.find((l) => (l.querySelector('strong') || {}).textContent === rot);
+    const cnh = ladDe('CNH'); if (cnh) cnh.hidden = !p.veiculoIncluso;
+    const rev = ladDe('Revisão'); if (rev && p.revisadoEm) rev.querySelector('span').textContent = dma(p.revisadoEm);
+    const prox = ladDe('Próxima'); if (prox && p.proximaRevisao) { prox.querySelector('span').textContent = dma(p.proximaRevisao); const f = prox.querySelector('[data-faltam]'); if (f) f.dataset.faltam = String(p.proximaRevisao).slice(0, 10); }
+    const notaLad = lad[lad.length - 1];
+    if (notaLad && p.nota) notaLad.innerHTML = p.nota.total ? `<strong>${String(p.nota.media.toFixed(1)).replace('.', ',')} de 5</strong><span>${p.nota.total} ${p.nota.total === 1 ? 'avaliação' : 'avaliações'}</span>` : '<strong>Nova na plataforma</strong><span>Ainda sem avaliações</span>';
+    // sem foto, as iniciais no lugar do retrato desenhado da Ana
+    if (!p.fotoUrl && p.slug !== 'ana-oliveira') {
+      const fig = document.querySelector('[data-retrato]');
+      const svgRetrato = fig && fig.querySelector('svg');
+      if (svgRetrato) svgRetrato.outerHTML = `<span class="retrato-iniciais" aria-hidden="true">${esc(String(p.nome).split(/\s+/).map((x) => x[0]).slice(0, 2).join('').toUpperCase())}</span>`;
+    }
     const reais = (c) => `R$ ${(c / 100).toLocaleString('pt-BR')}`;
     const primeiro = String(p.nome || '').split(' ')[0];
     if (p.fotoUrl) {
@@ -461,7 +627,7 @@
       const temDesconto = p.descontoAPartirHoras && p.valorHoraDescontoCentavos;
       txt('[data-cond-desconto]', temDesconto ? `${reais(p.valorHoraDescontoCentavos)}/h a partir de ${p.descontoAPartirHoras} h` : 'por hora');
       const orc = document.querySelector('[data-orcamento]');
-      if (orc) orc.dispatchEvent(new CustomEvent('mc:perfil', { detail: { valor: p.valorHoraCentavos / 100, desconto: temDesconto ? { aPartir: p.descontoAPartirHoras, valor: p.valorHoraDescontoCentavos / 100 } : null, veiculo: !!p.veiculoIncluso } }));
+      if (orc) orc.dispatchEvent(new CustomEvent('mc:perfil', { detail: { nome: primeiro, completo: p.nome, slug: p.slug, minimo: p.horasMinimas || 1, valor: p.valorHoraCentavos / 100, desconto: temDesconto ? { aPartir: p.descontoAPartirHoras, valor: p.valorHoraDescontoCentavos / 100 } : null, veiculo: !!p.veiculoIncluso } }));
     }
     const cv = document.querySelector('[data-cond-veiculo]');
     if (cv) cv.innerHTML = p.veiculoIncluso ? '<strong>Veículo incluso</strong><span>busca e traz de volta</span>' : `<strong>Sem veículo</strong><span>${esc(primeiro)} vai até a casa</span>`;
@@ -471,7 +637,11 @@
     if (Array.isArray(p.disponibilidade)) txt('[data-onde-dias]', resumoDias(p.disponibilidade));
   };
   fetch(`/api/profissionais/${encodeURIComponent(sec.dataset.slug)}`, { credentials: 'same-origin' })
-    .then((r) => (r.ok && (r.headers.get('content-type') || '').includes('json') ? r.json() : null))
+    .then((r) => {
+      const json = (r.headers.get('content-type') || '').includes('json');
+      if (r.status === 404 && json) { naoEncontrada(); return null; }
+      return r.ok && json ? r.json() : null;
+    })
     .then((dados) => {
       if (dados && dados.profissional) { tarefasDaApi(dados.profissional); perfilDaApi(dados.profissional); }
       const lista = dados && (dados.qualificacoes || (dados.profissional && dados.profissional.qualificacoes));
@@ -488,19 +658,20 @@
   const sec = document.querySelector('[data-avaliacoes]');
   const janela = document.querySelector('[data-av-janela]');
   if (!sec || !janela) return;
+  const primeiroNome = () => document.documentElement.dataset.primeiro || 'Ana';
   const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const ESTRELA = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg>';
   const estrelas = (n) => `<span class="estrelas-av" role="img" aria-label="Nota ${n} de 5">${ESTRELA.repeat(n)}${ESTRELA.replace('<svg', '<svg class="apagada"').repeat(5 - n)}</span>`;
   // no horário daqui, não no UTC: uma avaliação das 22h não aparece com a data do dia seguinte
   const data = (iso) => { const d = iso.length > 10 ? new Date(iso) : new Date(`${iso}T12:00:00`); return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; };
-  const item = (a) => `<li><div class="av-cab"><span class="av-quem">${esc(a.autor)}${a.relacao ? `, ${esc(a.relacao.toLowerCase())}` : ''} · <span class="num">${data(a.criadoEm)}</span></span>${estrelas(a.nota)}</div>${a.comentario ? `<p class="av-texto">“${esc(a.comentario)}”</p>` : '<p class="av-texto av-sem">Deu a nota sem comentário.</p>'}${a.resposta ? `<p class="av-resposta"><strong>Resposta de Ana:</strong> ${esc(a.resposta)}</p>` : ''}</li>`;
+  const item = (a) => `<li><div class="av-cab"><span class="av-quem">${esc(a.autor)}${a.relacao ? `, ${esc(a.relacao.toLowerCase())}` : ''} · <span class="num">${data(a.criadoEm)}</span></span>${estrelas(a.nota)}</div>${a.comentario ? `<p class="av-texto">“${esc(a.comentario)}”</p>` : '<p class="av-texto av-sem">Deu a nota sem comentário.</p>'}${a.resposta ? `<p class="av-resposta"><strong>Resposta de ${esc(primeiroNome())}:</strong> ${esc(a.resposta)}</p>` : ''}</li>`;
   let lista = [];
   try { lista = JSON.parse(document.getElementById('avaliacoes-exemplo').textContent); } catch (_) { lista = []; }
   const media = () => (lista.length ? lista.reduce((s, a) => s + a.nota, 0) / lista.length : 0);
   const resumo = () => {
     const m = media().toFixed(1).replace('.', ',');
     sec.querySelector('[data-av-media]').textContent = m;
-    sec.querySelector('[data-av-total]').textContent = `${lista.length} ${lista.length === 1 ? 'avaliação' : 'avaliações'} de quem contratou Ana`;
+    sec.querySelector('[data-av-total]').textContent = `${lista.length} ${lista.length === 1 ? 'avaliação' : 'avaliações'} de quem contratou ${primeiroNome()}`;
     janela.querySelector('[data-av-janela-sub]').textContent = `${m} de 5 · ${lista.length} ${lista.length === 1 ? 'avaliação' : 'avaliações'}`;
   };
   const ORDENS = {

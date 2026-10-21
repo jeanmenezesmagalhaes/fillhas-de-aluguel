@@ -505,3 +505,48 @@ Pedido da sessão do backend, sobre a API do commit 860fa6f.
 - **assets/credits.json:** saiu o ipê-rei e entrou a foto nova, de domínio público.
 - **README, PRODUCT e DESIGN:** atualizados. O README agora lista as telas atuais.
 - **Não mexi em docs/MAPA-DE-TELAS.md**, que descreve as 16 telas antigas. Ele ficou desatualizado.
+
+## Ganhos pelo extrato da API — 20/10/2026
+- **ganhos.html, com a API:** os números vêm de GET /api/profissionais/eu/ganhos. Antes, eram calculados no navegador a partir de /api/servicos.
+  - São duas chamadas: 13 meses para trás até hoje (o máximo da rota, que vira "Todo o período", rotulado "dos últimos 13 meses") e amanhã até daqui a 60 dias.
+  - Cada lançamento traz da API o valor do serviço (`bruto`, já com desconto), o desconto, a taxa, o líquido, o estado e a data do depósito. A tela só soma e filtra por período.
+  - Estados: depositado vira "Na conta em…"; programado, "Cai…"; previsto, "Previsto para…"; aguardando_conclusao, "Marque como feito no painel".
+- **Regras:** taxa, prazo e cancelamento com menos de N h vêm de `regras` (topo da conta, detalhe de cada linha e dúvidas).
+- **Simulação:** com `simulado` ou `definitivas: false`, aparece uma linha discreta: "Valores de simulação: a taxa e os prazos ainda podem mudar."
+- **Sem a API:** o exemplo continua igual, com regras de exemplo de 12%, D+2, 24 h e 50%.
+- **Testado na 4175 com a Ana:**
+  - os totais batem com a API (depositado R$ 387,20, previsto R$ 211,20, aguardando R$ 140,80);
+  - períodos 1, 7, 30 e 365 dias e 13 meses;
+  - CSV gerado;
+  - celular a 375 px, sem rolagem lateral.
+- **Não testado:** cancelamento tardio pela API, porque o seed não tem nenhum.
+
+## Resumo envia o pedido — 20/10/2026
+- **resumo.html com a API:**
+  - lê `?p=<slug>` (padrão ana-oliveira), `?horas`, `?tarefa` e `?data`, e busca o perfil público;
+  - troca o exemplo fixo por um formulário: tarefa (as do perfil, com o mínimo, e "Outra tarefa" se ela aceitar, que abre "O que precisa?"), dia (a partir de amanhã, começando no próximo dia em que ela atende), horário, horas (do mínimo da tarefa até 12), "Para quem" (pessoas de /api/pessoas), onde e recado;
+  - o total usa o valor e o desconto do perfil;
+  - envia POST /api/servicos com profissional, tarefa, tipoTarefa, nomeTarefa, inicio, horas, local, observacoes e pessoaAcompanhadaId.
+- **Erros no lugar certo:** fora_da_disponibilidade, horario_indisponivel e horario_ocupado aparecem em "quando"; abaixo_do_minimo, junto das horas; tarefa_nao_oferecida, na tarefa; os campos de 400, em cada campo; e o 401 volta para "Entrar para enviar". A sessão vem de GET /api/sessao. Conta sem papel de família vê o aviso para entrar com uma conta de família.
+- **Sem a API:** continua o exemplo da Ana (R$ 80, R$ 70 a partir de 4 h).
+- **Testado na 4175** (localhost, como Mariana):
+  - sábado deu fora_da_disponibilidade;
+  - 1 h de consulta deu abaixo_do_minimo;
+  - qua 28/10, das 9h às 13h, foi enviado (R$ 280);
+  - o pedido de teste foi cancelado depois.
+- O link "Perfil de …" já leva para `portfolio.html?p=<slug>`.
+
+## Portfólio pelo endereço, listagem e home pela API — 20/10/2026
+- **site.js, `mcSite`:** `temApi()` olha GET /api/sessao, que dá 404 no servidor só de páginas. `slug` vem de `?p=` (padrão ana-oliveira) e vai para todos os `[data-slug]`.
+- **portfolio.html?p=<slug>, com a API:** lê o perfil público inteiro.
+  - Troca "Ana"/"Ana Oliveira" nos textos fixos pelo nome dela e monta a frase de apoio a partir das tarefas, dos bairros e do veículo.
+  - Preenche a apresentação, a experiência (cursos validados e anos), a revisão dos documentos, a CNH (só para quem leva de carro) e a nota ("Nova na plataforma" sem avaliações).
+  - Sem foto e quando não é a Ana, as iniciais ficam no lugar do retrato.
+  - O orçamento leva `&p=<slug>` para o resumo. Um slug que não existe mostra "Não encontramos esta profissional".
+- **busca.html, com a API:** carrega todas as páginas de GET /api/profissionais e redesenha as linhas.
+  - Os retratos desenhados continuam valendo para quem tem o mesmo nome; quem não tem foto nem retrato ganha as iniciais.
+  - Os filtros continuam na tela. O filtro de gênero sai, porque a API não guarda gênero.
+  - "Ver perfil" leva a portfolio.html?p=<slug>.
+- **index.html, com a API:** os destaques atualizam valor, nota, bairros, mínimo, veículo, tarefas e o link. Quem não está no ar sai da lista: hoje a Joana, que está na lista de espera. As contagens dos botões de tarefa são recalculadas.
+- **Sem a API:** tudo continua com os dados de exemplo. A Cláudia da home foi para R$ 70.
+- **Testado na 4175:** portfólio da Adriana, da Cláudia, da Ana e de um slug inexistente; listagem com e sem filtros (22 profissionais); home com 3 destaques. Testado também sem API, na 4173.

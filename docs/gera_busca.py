@@ -186,7 +186,7 @@ html = f'''<!doctype html>
 <meta name="description" content="Compare profissionais verificadas para acompanhar sua mãe ou seu pai em consultas, banco, mercado e passeios, em todo o Brasil.">
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="site.css">
-<link rel="stylesheet" href="busca.css?v=2">
+<link rel="stylesheet" href="busca.css?v=3">
 <script>document.documentElement.classList.add('js');setTimeout(function(){{if(!window.__fa)document.documentElement.classList.remove('js')}},2500)</script>
 </head>
 <body class="pagina-busca">
