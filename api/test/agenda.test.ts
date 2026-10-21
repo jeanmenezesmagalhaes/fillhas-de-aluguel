@@ -37,9 +37,12 @@ describe('arquivo da agenda', () => {
     const fam = cliente(amb.app);
     await fam.post('/api/contas', familia({ pessoaAcompanhada: { nome: 'Helena Costa' } }));
     const [helena] = (await fam.get('/api/pessoas')).corpo.pessoas;
-    const amanha = new Date(amb.relogio.agora.getTime() + DIA).toISOString();
-    const pedir = async (tarefa: string, extra: Record<string, unknown> = {}) =>
-      (await fam.post('/api/servicos', { profissional: pro.slug, tarefa, inicio: amanha, horas: 2, ...extra })).corpo.servico.id as string;
+    // um horário diferente para cada pedido: dois confirmados no mesmo horário dão conflito
+    let n = 0;
+    const pedir = async (tarefa: string, extra: Record<string, unknown> = {}) => {
+      const inicio = new Date(amb.relogio.agora.getTime() + DIA + 3 * HORA * n++).toISOString();
+      return (await fam.post('/api/servicos', { profissional: pro.slug, tarefa, inicio, horas: 2, ...extra })).corpo.servico.id as string;
+    };
 
     const consulta = await pedir('Consulta', { pessoaAcompanhadaId: helena.id, local: 'Clínica Viva Mais, Centro' });
     const banco = await pedir('Banco');

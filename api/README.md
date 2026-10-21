@@ -71,7 +71,18 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
   - A lista só pode ficar vazia se ela aceitar outras.
   - `horasMinimas` passa a ser o menor mínimo da lista.
   - No pedido, `tipoTarefa` (mais `nomeTarefa`, se for personalizada) aplica o mínimo daquela tarefa. Sem `tipoTarefa`, ou com o perfil sem lista, vale `horasMinimas`.
-- **Pedido de serviço:** o valor da hora fica congelado no pedido e respeita o mínimo de horas da profissional. Pode trazer `local` e `observacoes` (recado para a profissional). Situações: `solicitado`, `proposta_alterada`, `confirmado`, `recusado`, `cancelado`, `realizado`.
+- **Dias e horários, folgas e conflitos:**
+  - `disponibilidade` (no PATCH do perfil): `[{ dia: 0-6 (0 = domingo), inicio: "08:00", fim: "18:00" }]`, em horas cheias ou meias, até duas faixas por dia, sem sobrepor. A lista substitui a anterior, e vazia significa sem restrição de horário.
+  - Com faixas definidas, o pedido precisa caber inteiro numa faixa do dia, no horário de Brasília. Fora disso, o erro é 422 `fora_da_disponibilidade`, com os horários daquele dia na mensagem.
+  - Folgas e bloqueios (`/api/profissionais/eu/bloqueios`) recusam pedidos novos no período com 422 `horario_indisponivel`. A família não vê o motivo.
+  - Criar uma folga devolve em `conflitos` os atendimentos confirmados que batem com ela. Eles não mudam sozinhos.
+  - Pedido novo, aceite, proposta e aceite da proposta não podem sobrepor outro atendimento confirmado: o erro é 409 `horario_ocupado`.
+- **Prazo de resposta:**
+  - Pedido e proposta ganham `respondaAte`: 24 horas depois do envio, ou o início do atendimento, se vier antes.
+  - Sem resposta no prazo, o serviço passa a `expirado` e não pode mais ser aceito. Isso é conferido sempre que serviços são lidos ou alterados, sem tarefa agendada.
+- **Desconto e experiência:** `descontoAPartirHoras` (2 a 12) e `valorHoraDescontoCentavos` (no mínimo R$ 70 e menor que a hora) vão sempre juntos; mande os dois como null para tirar o desconto. O pedido com horas suficientes congela a hora com desconto. `anosExperiencia` vai de 0 a 60.
+- **Sem contato por fora:** telefone, e-mail ou link são recusados (400, "Não coloque telefone, e-mail ou link aqui.") nos textos que a outra parte lê: tarefa, observações, recado da proposta, comentário e resposta de avaliação, apresentação e nome das atividades. O `local` (endereço) pode ter números.
+- **Pedido de serviço:** o valor da hora fica congelado no pedido e respeita o mínimo de horas da profissional. Pode trazer `local` e `observacoes` (recado para a profissional). Situações: `solicitado`, `proposta_alterada`, `confirmado`, `recusado`, `cancelado`, `realizado`, `expirado`.
 - **Proposta de outro horário:** a profissional propõe outro início ou outra duração, com recado; o pedido fica em `proposta_alterada` até a família aceitar (o novo horário passa a valer e o pedido é confirmado) ou recusar (o pedido se encerra).
 - **Lista de serviços:** cada item traz `papel` (de quem pergunta), `minhaNota`, `podeAvaliar` e, nos pedidos recebidos pela profissional, `notaFamilia`.
 - **Avaliação:**
@@ -93,7 +104,10 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET | `/api/eu` | conta da sessão |
 | GET, POST | `/api/pessoas` | família: pessoas acompanhadas |
 | DELETE | `/api/pessoas/:id` | família |
-| PATCH | `/api/profissionais/eu` | profissional: valor da hora, mínimo, veículo, bairros, apresentação, `tarefas` e `aceitaOutras` |
+| PATCH | `/api/profissionais/eu` | profissional: valor da hora, desconto, experiência, veículo, bairros, apresentação, `tarefas`, `aceitaOutras` e `disponibilidade` |
+| GET, POST | `/api/profissionais/eu/bloqueios` | profissional: folgas e bloqueios futuros; criar devolve `conflitos` |
+| DELETE | `/api/profissionais/eu/bloqueios/:id` | profissional |
+| POST | `/api/avaliacoes/:id/resposta` | profissional: responde uma vez à avaliação recebida, depois de ela aparecer |
 | POST | `/api/eu/verificacoes` | pede código por `email` ou `whatsapp` |
 | POST | `/api/eu/verificacoes/confirmar` | confirma o código |
 | GET | `/api/profissionais/eu/verificacao` | profissional: o que falta, documentos, posição na fila |

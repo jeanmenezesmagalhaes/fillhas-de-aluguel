@@ -57,6 +57,13 @@
       "when": 1792541077362,
       "tag": "0007_desconto_experiencia_resposta",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792541209149,
+      "tag": "0008_disponibilidade_bloqueios_prazo",
+      "breakpoints": true
     }
   ]
 }

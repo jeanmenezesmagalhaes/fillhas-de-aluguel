@@ -17,6 +17,7 @@ import { conflito, ErroApi, violouUnico } from '../erros.js';
 import * as v from '../validacao.js';
 import { codigoIndicacao, registrarIndicacao } from './indicacoes.js';
 import { tarefasDe } from '../tarefas.js';
+import { disponibilidadeDe } from '../disponibilidade.js';
 
 const pessoa = z.object({
   nome: v.nome,
@@ -132,7 +133,9 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
     emailVerificado: !!linha.emailVerificado,
     celularVerificado: !!linha.celularVerificado,
     papeis,
-    profissional: linha.profissional ? { ...linha.profissional, tarefas: await tarefasDe(db, linha.id) } : null,
+    profissional: linha.profissional
+      ? { ...linha.profissional, tarefas: await tarefasDe(db, linha.id), disponibilidade: await disponibilidadeDe(db, linha.id) }
+      : null,
   };
 }
 

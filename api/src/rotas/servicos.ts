@@ -9,6 +9,7 @@ import { avaliacoes, pessoasAcompanhadas, profissionais, servicos, usuarios } fr
 import { conflito, ErroApi, naoEncontrado, violouUnico } from '../erros.js';
 import * as v from '../validacao.js';
 import { marcarPrimeiroServico } from './indicacoes.js';
+import { conferirHorario, expirarVencidos, prazoDeResposta } from '../disponibilidade.js';
 import { mensagemAbaixoDoMinimo, NOME_TAREFA, TIPOS_FIXOS, tarefasDe } from '../tarefas.js';
 
 type Situacao = (typeof servicos.$inferSelect)['situacao'];
@@ -60,6 +61,7 @@ const colunasServico = {
   situacao: servicos.situacao,
   proposta: { inicio: servicos.propostaInicio, horas: servicos.propostaHoras, recado: servicos.propostaRecado },
   realizadoEm: servicos.realizadoEm,
+  respondaAte: servicos.respondaAte,
   contratanteId: servicos.contratanteId,
   contratante: { id: familia.id, nome: familia.nome },
   profissional: { id: pro.id, nome: pro.nome, slug: profissionais.slug, veiculoIncluso: profissionais.veiculoIncluso },
@@ -106,6 +108,9 @@ async function servicoDaParte(ctx: Contexto, u: UsuarioSessao, id: string) {
       profissionalId: servicos.profissionalId,
       situacao: servicos.situacao,
       inicio: servicos.inicio,
+      horas: servicos.horas,
+      propostaInicio: servicos.propostaInicio,
+      propostaHoras: servicos.propostaHoras,
       realizadoEm: servicos.realizadoEm,
     })
     .from(servicos)
@@ -168,6 +173,8 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
     if (inicio <= ctx.agora()) {
       throw new ErroApi(422, 'inicio_no_passado', 'Escolha um horário a partir de agora.', { inicio: 'Escolha um horário futuro.' });
     }
+    // dentro dos dias e horários dela, fora das folgas e sem bater com outro atendimento
+    await conferirHorario(ctx.db, p.usuarioId, inicio, dados.horas);
     if (dados.pessoaAcompanhadaId) {
       const [dela] = await ctx.db
         .select({ id: pessoasAcompanhadas.id })
@@ -187,6 +194,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
         observacoes: dados.observacoes || null,
         inicio,
         horas: dados.horas,
+        respondaAte: prazoDeResposta(ctx.agora(), inicio),
         // a partir de N horas vale a hora com desconto, se ela oferece
         valorHoraCentavos: p.descontoAPartir && p.valorDesconto && dados.horas >= p.descontoAPartir ? p.valorDesconto : p.valor,
       })
@@ -198,6 +206,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
   // Nos pedidos recebidos vem também a nota da família, para a profissional decidir.
   app.get('/api/servicos', async (req) => {
     const u = exigirUsuario(req);
+    await expirarVencidos(ctx.db, ctx.agora());
     const linhas = await consultaServicos(ctx, u.id)
       .where(or(eq(servicos.contratanteId, u.id), eq(servicos.profissionalId, u.id)))
       .orderBy(desc(servicos.inicio))
@@ -217,6 +226,7 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
   app.get('/api/servicos/:id', async (req) => {
     const u = exigirUsuario(req);
     const { id } = idParam.parse(req.params);
+    await expirarVencidos(ctx.db, ctx.agora());
     const s = await servicoDaParte(ctx, u, id);
     return { servico: await servicoCompleto(ctx, u, s.id) };
   });
@@ -237,6 +247,8 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
     app.post(`/api/servicos/:id/${rota}`, async (req) => {
       const u = exigirUsuario(req);
       const { id } = idParam.parse(req.params);
+      // pedido ou proposta sem resposta no prazo não pode mais ser aceito
+      await expirarVencidos(ctx.db, ctx.agora());
       const s = await servicoDaParte(ctx, u, id);
       if (quem !== 'qualquer' && s.papel !== quem) throw soDa(quem);
       await op.validar?.(s, req.body);
@@ -255,24 +267,34 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
     if (s.inicio <= ctx.agora()) throw new ErroApi(422, 'ja_comecou', 'O horário do serviço já começou; ele não pode mais mudar.');
   };
 
-  transicao('aceitar', 'profissional', ['solicitado'], 'confirmado');
+  // aceitar não pode bater com outro atendimento já confirmado (os horários dela ela mesma conhece)
+  transicao('aceitar', 'profissional', ['solicitado'], 'confirmado', {
+    validar: (s) => conferirHorario(ctx.db, s.profissionalId, s.inicio, s.horas, { conferirFaixas: false, ignorarServico: s.id }),
+    campos: () => ({ respondaAte: null }),
+  });
   transicao('recusar', 'profissional', ['solicitado'], 'recusado');
   // a profissional propõe outro horário ou outra duração; o pedido espera o novo aceite da família
   transicao('propor', 'profissional', ['solicitado'], 'proposta_alterada', {
-    validar: (s, corpo) => {
+    validar: async (s, corpo) => {
       antesDoInicio(s);
       const p = proposta.parse(corpo);
       if (new Date(p.inicio) <= ctx.agora()) {
         throw new ErroApi(422, 'inicio_no_passado', 'Proponha um horário a partir de agora.', { inicio: 'Escolha um horário futuro.' });
       }
+      await conferirHorario(ctx.db, s.profissionalId, new Date(p.inicio), p.horas, { conferirFaixas: false, ignorarServico: s.id });
     },
-    campos: (_agora, corpo) => {
+    // a família tem o mesmo prazo para responder à proposta
+    campos: (agora, corpo) => {
       const p = proposta.parse(corpo);
-      return { propostaInicio: new Date(p.inicio), propostaHoras: p.horas, propostaRecado: p.recado || null };
+      const inicio = new Date(p.inicio);
+      return { propostaInicio: inicio, propostaHoras: p.horas, propostaRecado: p.recado || null, respondaAte: prazoDeResposta(agora, inicio) };
     },
   });
   transicao('aceitar-proposta', 'contratante', ['proposta_alterada'], 'confirmado', {
+    validar: (s) =>
+      conferirHorario(ctx.db, s.profissionalId, s.propostaInicio!, s.propostaHoras!, { conferirFaixas: false, ignorarServico: s.id }),
     campos: () => ({
+      respondaAte: null,
       inicio: sql`${servicos.propostaInicio}`,
       horas: sql`${servicos.propostaHoras}`,
       propostaInicio: null,

@@ -8,7 +8,7 @@ import { inArray, or, sql } from 'drizzle-orm';
 import { armazenamentoEmDisco } from '../armazenamento.js';
 import { gerarHashSenha } from '../auth.js';
 import { abrirBanco } from '../db/index.js';
-import { avaliacoes, contratantes, documentos, indicacoes, pessoasAcompanhadas, profissionais, qualificacoes, servicos, tarefasProfissional, usuarios } from '../db/schema.js';
+import { avaliacoes, contratantes, disponibilidade, documentos, indicacoes, pessoasAcompanhadas, profissionais, qualificacoes, servicos, tarefasProfissional, usuarios } from '../db/schema.js';
 
 if (process.env.NODE_ENV === 'production') {
   console.error('O seed só roda fora de produção.');
@@ -141,6 +141,12 @@ await banco.db.transaction(async (tx) => {
     { profissionalId: joana, tipo: 'banco', minimoHoras: 2, ordem: 1 },
   ]);
 
+  // dias e horários: Ana de segunda a sexta, 8h às 18h; Cláudia terça, quinta e sábado de manhã
+  await tx.insert(disponibilidade).values([
+    ...[1, 2, 3, 4, 5].map((dia) => ({ profissionalId: ana, dia, inicioMin: 8 * 60, fimMin: 18 * 60 })),
+    ...[2, 4, 6].map((dia) => ({ profissionalId: claudia, dia, inicioMin: 8 * 60, fimMin: 13 * 60 })),
+  ]);
+
   await conta('Equipe Minha Companhia', EMAILS[5]!, '19944440000', { admin: true });
 
   const mariana = await conta('Mariana Costa', EMAILS[2]!, '19999990000');
@@ -163,15 +169,15 @@ await banco.db.transaction(async (tx) => {
   const feitos = await tx
     .insert(servicos)
     .values([
-      { ...base, ...doRafael, profissionalId: ana, tarefa: 'Banco', local: 'Agência Centro', inicio: em(10, 14), horas: 2 },
+      { ...base, ...doRafael, profissionalId: ana, tarefa: 'Banco', local: 'Agência Centro', inicio: em(10, 14), horas: 2, respondaAte: em(1, 20) },
       {
         ...base, ...doMariana, profissionalId: ana, tarefa: 'Consulta médica', local: 'Clínica Viva Mais, Centro',
-        observacoes: 'Helena caminha devagar. Levar os exames anteriores, na pasta azul da sala.', inicio: em(8, 9), horas: 4,
+        observacoes: 'Helena caminha devagar. Levar os exames anteriores, na pasta azul da sala.', inicio: em(8, 9), horas: 4, respondaAte: em(1, 18),
       },
       {
         ...base, ...doMariana, profissionalId: claudia, tarefa: 'Mercado e farmácia', local: 'Rua Maria Monteiro, 120',
         inicio: em(11, 9), horas: 2, situacao: 'proposta_alterada', propostaInicio: em(11, 10), propostaHoras: 2,
-        propostaRecado: 'Às 9h tenho outro atendimento. Às 10h consigo ir com calma.',
+        propostaRecado: 'Às 9h tenho outro atendimento. Às 10h consigo ir com calma.', respondaAte: em(1, 21),
       },
       { ...base, ...doRafael, profissionalId: ana, tarefa: 'Exame de imagem', local: 'Hospital Vera Cruz', inicio: em(2, 8), horas: 3, situacao: 'confirmado' },
       { ...base, ...doMariana, profissionalId: ana, tarefa: 'Passeio no Taquaral', inicio: em(-1, 10), horas: 2, situacao: 'confirmado' },

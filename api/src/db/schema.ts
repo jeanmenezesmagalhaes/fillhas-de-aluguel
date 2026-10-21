@@ -161,6 +161,8 @@ export const situacaoServico = pgEnum('situacao_servico', [
   'recusado',
   'cancelado',
   'realizado',
+  // ninguém respondeu dentro do prazo (pedido sem resposta da profissional ou proposta sem resposta da família)
+  'expirado',
 ]);
 
 export const servicos = pgTable(
@@ -192,6 +194,8 @@ export const servicos = pgTable(
     // congelado no pedido: mudar o preço depois não altera serviços já pedidos
     valorHoraCentavos: integer('valor_hora_centavos').notNull(),
     situacao: situacaoServico('situacao').notNull().default('solicitado'),
+    // até quando a outra parte pode responder; passado o prazo, o pedido expira
+    respondaAte: quando('responda_ate'),
     realizadoEm: quando('realizado_em'),
     criadoEm: quando('criado_em').notNull().defaultNow(),
     atualizadoEm: quando('atualizado_em').notNull().defaultNow(),
@@ -393,3 +397,43 @@ export const linksAgenda = pgTable('links_agenda', {
   tokenHash: text('token_hash').notNull().unique(),
   criadoEm: quando('criado_em').notNull().defaultNow(),
 });
+
+// Dias e horários em que a profissional atende, por dia da semana (0 = domingo), em
+// minutos desde a meia-noite no horário de Brasília. Até duas faixas por dia.
+export const disponibilidade = pgTable(
+  'disponibilidade',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    profissionalId: uuid('profissional_id')
+      .notNull()
+      .references(() => profissionais.usuarioId, { onDelete: 'cascade' }),
+    dia: smallint('dia').notNull(),
+    inicioMin: smallint('inicio_min').notNull(),
+    fimMin: smallint('fim_min').notNull(),
+  },
+  (t) => [
+    index('disponibilidade_por_profissional').on(t.profissionalId, t.dia),
+    check('disponibilidade_dia', sql`${t.dia} between 0 and 6`),
+    check('disponibilidade_faixa', sql`${t.inicioMin} >= 0 and ${t.fimMin} <= 1440 and ${t.inicioMin} < ${t.fimMin}`),
+  ],
+);
+
+// Folgas, férias e compromissos: períodos em que ela não recebe pedidos.
+// O motivo é só para ela; a família vê apenas que o horário não está livre.
+export const bloqueiosAgenda = pgTable(
+  'bloqueios_agenda',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    profissionalId: uuid('profissional_id')
+      .notNull()
+      .references(() => profissionais.usuarioId, { onDelete: 'cascade' }),
+    inicio: quando('inicio').notNull(),
+    fim: quando('fim').notNull(),
+    motivo: text('motivo'),
+    criadoEm: quando('criado_em').notNull().defaultNow(),
+  },
+  (t) => [
+    index('bloqueios_por_profissional').on(t.profissionalId, t.inicio),
+    check('bloqueio_periodo', sql`${t.inicio} < ${t.fim}`),
+  ],
+);

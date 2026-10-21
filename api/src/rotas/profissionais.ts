@@ -11,6 +11,7 @@ import { dadosDaConta } from './contas.js';
 import { qualificacoesPublicas } from './qualificacoes.js';
 import { documentosAtuais } from './verificacao.js';
 import { listaDeTarefas, salvarTarefas, tarefasDe } from '../tarefas.js';
+import { disponibilidadeDe, listaDeDisponibilidade, salvarDisponibilidade } from '../disponibilidade.js';
 import type { Db } from '../db/index.js';
 
 const perfil = z
@@ -27,6 +28,8 @@ const perfil = z
     // tarefas que ela faz, cada uma com o mínimo de horas; trocam a lista inteira
     tarefas: listaDeTarefas,
     aceitaOutras: z.boolean(),
+    // dias e horários: [{ dia: 0-6, inicio: '08:00', fim: '18:00' }]; troca a lista inteira
+    disponibilidade: listaDeDisponibilidade,
   })
   .partial()
   .strict();
@@ -60,7 +63,7 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
         }
       }
     }
-    const { tarefas, ...campos } = dados;
+    const { tarefas, disponibilidade: faixas, ...campos } = dados;
     if (campos.descontoAPartirHoras !== undefined || campos.valorHoraDescontoCentavos !== undefined || campos.valorHoraCentavos !== undefined) {
       const [atual] = await ctx.db
         .select({ aPartir: profissionais.descontoAPartirHoras, desconto: profissionais.valorHoraDescontoCentavos, valor: profissionais.valorHoraCentavos })
@@ -95,6 +98,7 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
     }
     await ctx.db.transaction(async (tx) => {
       if (tarefas) await salvarTarefas(tx as unknown as Db, u.id, tarefas);
+      if (faixas) await salvarDisponibilidade(tx as unknown as Db, u.id, faixas);
       if (Object.keys(campos).length) {
         await tx
           .update(profissionais)
@@ -139,6 +143,7 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
         ...publico,
         nota: { media: notas.media, total: notas.total },
         tarefas: await tarefasDe(ctx.db, usuarioId),
+        disponibilidade: await disponibilidadeDe(ctx.db, usuarioId),
         // só cursos com o comprovante aprovado pela administração
         qualificacoes: await qualificacoesPublicas(ctx.db, usuarioId),
       },

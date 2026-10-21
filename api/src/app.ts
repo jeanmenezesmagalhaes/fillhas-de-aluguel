@@ -12,6 +12,7 @@ import { ErroApi, registrarTratamentoDeErros } from './erros.js';
 import { mensageiroIndisponivel, mensageiroNoLog, type Mensageiro } from './mensagens.js';
 import { rotasAdmin } from './rotas/admin.js';
 import { rotasAgenda } from './rotas/agenda.js';
+import { rotasBloqueios } from './rotas/bloqueios.js';
 import { rotasContas } from './rotas/contas.js';
 import { rotasIndicacoes } from './rotas/indicacoes.js';
 import { rotasProfissionais } from './rotas/profissionais.js';
@@ -79,6 +80,7 @@ export async function criarApp(op: OpcoesApp) {
   rotasIndicacoes(app, ctx, limite);
   rotasAdmin(app, ctx);
   rotasQualificacoes(app, ctx);
+  rotasBloqueios(app, ctx);
   rotasAgenda(app, ctx, op.segredoAgenda !== undefined ? op.segredoAgenda : producao ? null : 'segredo-de-desenvolvimento-da-agenda');
 
   app.get('/api/saude', async () => ({ ok: true }));
