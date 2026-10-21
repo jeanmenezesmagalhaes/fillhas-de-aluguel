@@ -20,17 +20,19 @@ const migrationsFolder = fileURLToPath(new URL('../../drizzle', import.meta.url)
 
 // `postgres://…` usa um Postgres de verdade. Qualquer outro valor é uma pasta do
 // PGlite (Postgres embutido); `memory://` não grava nada, para os testes.
-export async function abrirBanco(url = process.env.DATABASE_URL ?? './.data/pglite'): Promise<Banco> {
+// Na Vercel as migrations rodam no build (`npm run db:migrar`): a pasta drizzle/ não
+// vai junto com a função, então lá `migrar` é false.
+export async function abrirBanco(url = process.env.DATABASE_URL ?? './.data/pglite', { migrar = true } = {}): Promise<Banco> {
   if (/^postgres(ql)?:\/\//.test(url)) {
     const pool = new pg.Pool({ connectionString: url });
     const db = drizzlePg(pool, { schema });
-    await migratePg(db, { migrationsFolder });
+    if (migrar) await migratePg(db, { migrationsFolder });
     return { db: db as unknown as Db, fechar: () => pool.end() };
   }
   if (!url.startsWith('memory://')) mkdirSync(url, { recursive: true });
   const cliente = new PGlite(url);
   const db = drizzlePglite(cliente, { schema });
-  await migratePglite(db, { migrationsFolder });
+  if (migrar) await migratePglite(db, { migrationsFolder });
   return { db: db as unknown as Db, fechar: () => cliente.close() };
 }
 

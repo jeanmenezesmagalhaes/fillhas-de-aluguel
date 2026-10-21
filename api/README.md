@@ -11,13 +11,23 @@ npm run seed     # contas e pedidos de demonstração (só fora de produção)
 npm run dev      # http://127.0.0.1:4175 (a 4173 fica para o servidor estático do protótipo)
 ```
 
-Sem `DATABASE_URL`, o banco é um Postgres embutido (PGlite) gravado em `api/.data/pglite`. O PGlite só aceita um processo por vez: **pare a API antes de rodar `npm run seed`** (ou os scripts `admin` e `aprovar`) e suba de novo depois. Com os dois rodando juntos, a API continua vendo os dados antigos. Para um Postgres de verdade, defina `DATABASE_URL=postgres://…` (ver `.env.example`). As migrations rodam sozinhas ao iniciar.
+Sem `DATABASE_URL`, o banco é um Postgres embutido (PGlite) gravado em `api/.data/pglite`. O PGlite só aceita um processo por vez: **pare a API antes de rodar `npm run seed`** (ou os scripts `admin` e `aprovar`) e suba de novo depois. Com os dois rodando juntos, a API continua vendo os dados antigos. Para um Postgres de verdade, defina `DATABASE_URL=postgres://…` (ver `.env.example`). As migrations rodam sozinhas ao iniciar (na Vercel, no build).
 
 - `npm test`: testes (banco em memória, relógio controlado)
 - `npm run typecheck`
 - `npm run db:gerar`: gera uma migration nova em `drizzle/` depois de mudar `src/db/schema.ts`
 - `npm run admin -- <email>`: dá acesso de administração a uma conta
 - `npm run aprovar -- <slug>`: atalho de desenvolvimento que aprova um perfil sem passar pelos documentos
+
+## Vercel
+
+O projeto na Vercel usa **Root Directory = `api`** e a predefinição Fastify. Tudo vira uma função só, que serve a API e as telas.
+
+- **Entrada:** `index.ts` exporta um handler `(req, res)`. A Vercel escolhe o primeiro arquivo entre `app`, `index`, `server`, `src/app`, `src/index` e `src/server` que importe `fastify`. Sem o `index.ts`, ela pegaria `src/app.ts`, que só monta o app.
+- **Build:** `npm run vercel-build` copia as telas para `api/public/` (`montar-public`) e aplica as migrations (`db:migrar`). As telas entram na função porque `src/iniciar.ts` aponta para `public/`.
+- **Variáveis:** `DATABASE_URL` (Postgres, obrigatória: sem ela o build e a função param com erro) e `SEGREDO_AGENDA`. Builds de preview também rodam as migrations no banco da `DATABASE_URL` deles.
+- **Pacotes só-ESM:** o carregador da Vercel não aceita `require()` de pacote ESM, embora o Node 22 aceite. Por isso o `@fastify/static` fica na 9.x: a 10.x puxa o `content-disposition` 3, que é só-ESM, e derruba a função ao carregar.
+- **Arquivos enviados:** o disco da função é só leitura. Documentos e fotos falham até existir um bucket.
 
 ## Stack
 
