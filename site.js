@@ -1,3 +1,13 @@
+// dias até a próxima revisão de documentos, contados a partir de hoje
+function textoFaltam(el) {
+  const [a, m, d] = el.dataset.faltam.split('-').map(Number);
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const dias = Math.round((new Date(a, m - 1, d) - hoje) / 86400000);
+  if (dias > 1) el.textContent = `Faltam ${dias} dias. A data aparece no perfil de cada profissional.`;
+  else if (dias === 1) el.textContent = 'Falta 1 dia. A data aparece no perfil de cada profissional.';
+  else if (dias === 0) el.textContent = 'A revisão é hoje. A data aparece no perfil de cada profissional.';
+}
+
 // Movimento e a contagem da revisão. A página funciona inteira sem este arquivo.
 (() => {
   window.__fa = true;
@@ -12,15 +22,7 @@
     chega.forEach((el) => el.classList.add('chegou'));
   }
 
-  // dias até a próxima revisão de documentos, contados a partir de hoje
-  document.querySelectorAll('[data-faltam]').forEach((el) => {
-    const [a, m, d] = el.dataset.faltam.split('-').map(Number);
-    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-    const dias = Math.round((new Date(a, m - 1, d) - hoje) / 86400000);
-    if (dias > 1) el.textContent = `Faltam ${dias} dias. A data aparece no perfil de cada profissional.`;
-    else if (dias === 1) el.textContent = 'Falta 1 dia. A data aparece no perfil de cada profissional.';
-    else if (dias === 0) el.textContent = 'A revisão é hoje. A data aparece no perfil de cada profissional.';
-  });
+  document.querySelectorAll('[data-faltam]').forEach(textoFaltam);
 
 })();
 
@@ -603,8 +605,12 @@ window.mcSite = (() => {
     const lad = [...document.querySelectorAll('.perfil-docs .ladrilho')];
     const ladDe = (rot) => lad.find((l) => (l.querySelector('strong') || {}).textContent === rot);
     const cnh = ladDe('CNH'); if (cnh) cnh.hidden = !p.veiculoIncluso;
-    const rev = ladDe('Revisão'); if (rev && p.revisadoEm) rev.querySelector('span').textContent = dma(p.revisadoEm);
-    const prox = ladDe('Próxima'); if (prox && p.proximaRevisao) { prox.querySelector('span').textContent = dma(p.proximaRevisao); const f = prox.querySelector('[data-faltam]'); if (f) f.dataset.faltam = String(p.proximaRevisao).slice(0, 10); }
+    // identidade e comprovante são exigidos para aprovar; antes disso, só ela vê o perfil e eles ainda podem faltar
+    ['Identidade', 'Comprovante de endereço'].forEach((rot) => { const l = ladDe(rot); if (l) l.hidden = p.situacao !== 'aprovado'; });
+    const rev = ladDe('Revisão'); if (rev) rev.hidden = !p.revisadoEm;
+    if (rev && p.revisadoEm) rev.querySelector('span').textContent = dma(p.revisadoEm);
+    const prox = ladDe('Próxima'); if (prox) prox.hidden = !p.proximaRevisao;
+    if (prox && p.proximaRevisao) { prox.querySelector('span').textContent = dma(p.proximaRevisao); const f = prox.querySelector('[data-faltam]'); if (f) { f.dataset.faltam = String(p.proximaRevisao).slice(0, 10); textoFaltam(f); } }
     const notaLad = lad[lad.length - 1];
     if (notaLad && p.nota) notaLad.innerHTML = p.nota.total ? `<strong>${String(p.nota.media.toFixed(1)).replace('.', ',')} de 5</strong><span>${p.nota.total} ${p.nota.total === 1 ? 'avaliação' : 'avaliações'}</span>` : '<strong>Nova na plataforma</strong><span>Ainda sem avaliações</span>';
     // sem foto, as iniciais no lugar do retrato desenhado da Ana

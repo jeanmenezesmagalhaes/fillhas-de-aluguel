@@ -210,6 +210,8 @@ a.botao:active { transform: scale(0.97); }
 .ladrilho strong { font-size: var(--step-lead); font-weight: 700; line-height: 1.1; }
 .ladrilho span { color: var(--salvia-texto); }
 .ladrilho.destaque { grid-column: span 2; aspect-ratio: auto; background: var(--rosa); }
+/* o portfólio esconde cursos e documentos que a profissional não tem */
+.ladrilho[hidden], .perfil-cursos[hidden] { display: none; }
 .perfil-docs-nota { grid-column: 1 / -1; color: var(--tinta-2); margin-top: 16px; }
 
 .perfil-depoimento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0 24px; margin: var(--gap-section) var(--inset) 0; }
