@@ -14,9 +14,9 @@
 
 <header class="topo" data-topo>
   <div class="topo-dentro">
-    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="painel.html" aria-current="page">Painel</a><a href="perfil.html">Meu perfil</a><a href="ganhos.html">Ganhos</a><span class="topo-conta"><span data-nome-conta>Ana Oliveira</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="painel" aria-current="page">Painel</a><a href="perfil">Meu perfil</a><a href="ganhos">Ganhos</a><span class="topo-conta"><span data-nome-conta>Ana Oliveira</span><button class="link" type="button" data-sair>Sair</button></span></nav>
   </div>
 </header>
 
@@ -77,7 +77,7 @@
         <ul class="semanas num" data-semanas aria-label="Valor por semana"></ul>
         <p class="legenda"><span><i class="l-feito"></i>Feito</span><span><i class="l-conf"></i>Confirmado</span></p>
         <p class="kpi-nota num" data-conf>Com os confirmados, R$ 1.480 no mês.</p>
-        <a class="ajustar" href="ganhos.html">Ver extrato e depósitos</a>
+        <a class="ajustar" href="ganhos">Ver extrato e depósitos</a>
       </section>
 
       <section class="cartao" aria-labelledby="t-perfil">
@@ -91,7 +91,7 @@
           <p class="num" data-link>minhacompanhia.com.br/ana-oliveira</p>
           <button class="btn btn-secundario" type="button" data-copiar>Copiar link</button>
         </div>
-        <a class="ajustar" href="perfil.html">Editar meu perfil</a>
+        <a class="ajustar" href="perfil">Editar meu perfil</a>
       </section>
     </div>
   </div>
@@ -101,8 +101,8 @@
   <section class="cartao cartao-entrar">
     <h1>Entre na área profissional</h1>
     <p class="achado">Veja seus pedidos, sua agenda e quanto já recebeu no mês.</p>
-    <a class="btn btn-primario btn-largo" href="entrar.html?perfil=pro&amp;volta=painel.html">Entrar</a>
-    <p class="entrar-pro">Ainda não tem cadastro? <a href="entrar.html?perfil=pro&amp;modo=criar&amp;volta=painel.html">Quero me cadastrar</a></p>
+    <a class="btn btn-primario btn-largo" href="entrar?perfil=pro&amp;volta=painel">Entrar</a>
+    <p class="entrar-pro">Ainda não tem cadastro? <a href="entrar?perfil=pro&amp;modo=criar&amp;volta=painel">Quero me cadastrar</a></p>
   </section>
 </main>
 
@@ -125,7 +125,7 @@
     if (!conta) { document.querySelector('[data-gestao]').remove(); document.querySelector('[data-fora]').hidden = false; document.querySelector('.topo-conta').hidden = true; return; }
     document.querySelector('[data-fora]').remove();
     document.querySelector('[data-nome-conta]').textContent = conta.nome;
-    document.querySelector('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional.html'; });
+    document.querySelector('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional'; });
 
     const brl = (v) => `R$ ${v.toLocaleString('pt-BR')}`;
     const SEM = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -223,11 +223,11 @@
     const eu = await mc.entrar('profissional');
     if (!eu) return;
     // quem ainda não foi aprovada continua o cadastro na verificação
-    if (eu.profissional && ['rascunho', 'em_analise', 'correcao'].includes(eu.profissional.situacao)) { location.replace('verificacao.html'); return; }
+    if (eu.profissional && ['rascunho', 'em_analise', 'correcao'].includes(eu.profissional.situacao)) { location.replace('verificacao'); return; }
     const { esc, dia, faixa, brl, primeiro } = mc;
     const $ = (s) => document.querySelector(s);
     $('[data-nome-conta]').textContent = eu.nome;
-    $('[data-sair]').addEventListener('click', () => mc.sair('mc-pro', 'profissional.html'));
+    $('[data-sair]').addEventListener('click', () => mc.sair('mc-pro', 'profissional'));
     const achado = $('[data-achado]');
     const MES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     const SITUACAO = { aprovado: ['No ar', 'pill-ok'], em_analise: ['Em análise', ''], rascunho: ['Rascunho', ''], correcao: ['Correção pedida', 'pill-aviso'], vencido: ['Revisão vencida', 'pill-aviso'] };

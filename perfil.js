@@ -534,7 +534,7 @@
       modoApi = true;
       $('[data-nome-conta]').textContent = eu.nome;
       siglas = iniciais(eu.nome); marcaFoto(null);
-      $('[data-sair]').addEventListener('click', () => mc.sair('mc-pro', 'profissional.html'));
+      $('[data-sair]').addEventListener('click', () => mc.sair('mc-pro', 'profissional'));
       const p = eu.profissional || {};
       // apresentação e bairros vêm do perfil público (a própria profissional vê o seu em qualquer situação)
       let publico = {};
@@ -553,7 +553,7 @@
     $('[data-fora]').remove();
     $('[data-nome-conta]').textContent = conta.nome;
     siglas = iniciais(conta.nome); marcaFoto(null);
-    $('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional.html'; });
+    $('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional'; });
     let salvo = null;
     try { salvo = JSON.parse(localStorage.getItem('mc-perfil')); } catch (_) { /* sem armazenamento */ }
     desenha({ ...EXEMPLO, ...(salvo || {}) });

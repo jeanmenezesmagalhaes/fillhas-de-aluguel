@@ -319,9 +319,9 @@
       modoApi = true;
       const eu = r.ok ? (await r.json()).usuario : null;
       if (!eu || !eu.papeis.includes('admin')) { $('[data-gestao]').remove(); $('[data-fora]').hidden = false; $('.topo-conta').hidden = true; return; }
-      comeca(eu.nome, () => (window.mc ? mc.sair('mc-admin', 'index.html') : (location.href = 'index.html')));
+      comeca(eu.nome, () => (window.mc ? mc.sair('mc-admin', '/') : (location.href = '/')));
       return;
     }
-    comeca('Equipe', () => { location.href = 'index.html'; });
+    comeca('Equipe', () => { location.href = '/'; });
   })();
 })();

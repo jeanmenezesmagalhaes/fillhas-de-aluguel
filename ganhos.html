@@ -14,9 +14,9 @@
 
 <header class="topo" data-topo>
   <div class="topo-dentro">
-    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="painel.html">Painel</a><a href="perfil.html">Meu perfil</a><a href="ganhos.html" aria-current="page">Ganhos</a><span class="topo-conta"><span data-nome-conta>Ana Oliveira</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Área profissional"><a href="painel">Painel</a><a href="perfil">Meu perfil</a><a href="ganhos" aria-current="page">Ganhos</a><span class="topo-conta"><span data-nome-conta>Ana Oliveira</span><button class="link" type="button" data-sair>Sair</button></span></nav>
   </div>
 </header>
 
@@ -89,8 +89,8 @@
   <section class="cartao cartao-entrar">
     <h1>Entre para ver seus ganhos</h1>
     <p class="achado">Veja o extrato do mês, os próximos depósitos e como cada valor foi calculado.</p>
-    <a class="btn btn-primario btn-largo" href="entrar.html?perfil=pro&amp;volta=ganhos.html">Entrar</a>
-    <p class="entrar-pro">Ainda não tem cadastro? <a href="entrar.html?perfil=pro&amp;modo=criar">Quero me cadastrar</a></p>
+    <a class="btn btn-primario btn-largo" href="entrar?perfil=pro&amp;volta=ganhos">Entrar</a>
+    <p class="entrar-pro">Ainda não tem cadastro? <a href="entrar?perfil=pro&amp;modo=criar">Quero me cadastrar</a></p>
   </section>
 </main>
 
@@ -281,7 +281,7 @@
               ${l.aceito ? `<li><span>${dd(l.aceito)}</span>Você aceitou o pedido.</li>` : ''}
               ${l.pago ? `<li><span>${dd(l.pago)}</span>A família pagou ${brl(l.cancelado ? l.base : l.servico)} ${l.pag.startsWith('Pix') ? 'por Pix' : l.parcelas ? `no cartão, em ${l.parcelas}x. Você recebe tudo de uma vez` : 'no cartão, à vista'}.</li>` : ''}
               ${l.cancelado ? `<li><span>${typeof l.cancelado === 'string' ? dd(l.cancelado) : dd(l.dia)}</span>A família cancelou com menos de ${R.cancelamentoTardioHoras} h de antecedência. Você fica com ${fica} do valor.</li>` : `<li><span>${dd(l.dia)}</span>${l.estado === 'previsto' ? 'Atendimento marcado' : 'Atendimento feito'}: ${l.inicio}h às ${l.inicio + l.horas}h.</li>`}
-              ${l.concluir ? `<li class="previsto"><span>Agora</span>Marque como feito no <a href="painel.html">painel</a> para receber.</li>` : l.deposito ? `<li class="${l.estado}"><span>${dd(l.deposito)}</span>${l.estado === 'recebido' ? `Caiu ${brl(l.liquido)} no seu Pix.` : `${brl(l.liquido)} vai cair no seu Pix.`}</li>` : ''}
+              ${l.concluir ? `<li class="previsto"><span>Agora</span>Marque como feito no <a href="painel">painel</a> para receber.</li>` : l.deposito ? `<li class="${l.estado}"><span>${dd(l.deposito)}</span>${l.estado === 'recebido' ? `Caiu ${brl(l.liquido)} no seu Pix.` : `${brl(l.liquido)} vai cair no seu Pix.`}</li>` : ''}
             </ol></div>
           </div>
         </td></tr>`).join('') : `<tr><td colspan="8" class="ex-vazio">Nenhum atendimento ${ROTULO[periodo]}.</td></tr>`;
@@ -326,7 +326,7 @@
     let conta = null;
     try { conta = JSON.parse(localStorage.getItem('mc-pro')); } catch (_) { /* sem armazenamento */ }
     if (!conta) { fora(); return; }
-    dentro(() => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional.html'; });
+    dentro(() => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional'; });
     mostrar({ ...EXEMPLO, nome: conta.nome || EXEMPLO.nome });
   };
 
@@ -338,7 +338,7 @@
     if (r.status === 404 || !(r.headers.get('content-type') || '').includes('json')) { exemplo(); return; }
     const eu = r.ok ? (await r.json()).usuario : null;
     if (!eu || !eu.papeis.includes('profissional')) { fora(); return; }
-    dentro(() => mc.sair('mc-pro', 'profissional.html'));
+    dentro(() => mc.sair('mc-pro', 'profissional'));
     try {
       const hoje = new Date(); hoje.setHours(12, 0, 0, 0);
       const desloca = (dias) => isoLocal(new Date(hoje.getTime() + dias * 86400000));

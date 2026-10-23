@@ -1,4 +1,4 @@
-// Peças comuns das telas de gestão (painel.html e pedidos.html) quando ligadas à API.
+// Peças comuns das telas de gestão (painel e pedidos) quando ligadas à API.
 // Abertas direto do arquivo, sem servidor, as telas ficam na demonstração com dados fixos.
 (() => {
   const comApi = location.protocol === 'http:' || location.protocol === 'https:';
