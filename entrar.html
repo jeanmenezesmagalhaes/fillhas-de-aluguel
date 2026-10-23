@@ -92,6 +92,8 @@
     else { voltar.href = '/'; document.querySelector('[data-voltar-texto]').textContent = 'Início'; document.querySelector('[data-titulo]').textContent = 'Entre na sua conta'; document.querySelector('[data-sub]').textContent = 'Acompanhe seus pedidos e as respostas das profissionais.'; }
     // ?perfil=pro: a mesma tela, para a profissional entrar no painel ou criar a conta dela
     const pro = params.get('perfil') === 'pro';
+    // vindo das telas da equipe (?volta=admin…): só entrar, com o texto da equipe
+    const equipe = /^admin/.test(volta);
     const chave = pro ? 'mc-pro' : 'mc-conta';
     const destino = volta || (pro ? 'painel' : 'pedidos');
     if (pro) {
@@ -99,6 +101,12 @@
       if (!volta) { voltar.href = 'profissional'; document.querySelector('[data-voltar-texto]').textContent = 'Área profissional'; }
     }
     let modo = params.get('modo') === 'criar' ? 'criar' : 'entrar';
+    if (/^admin/.test(volta)) {
+      modo = 'entrar';
+      document.querySelector('.modos').hidden = true;
+      document.querySelector('.entrar-pro').hidden = true;
+      voltar.href = '/'; document.querySelector('[data-voltar-texto]').textContent = 'Início';
+    }
     const geral = form.querySelector('[data-erro-geral]');
     const aplica = () => {
       botoes.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === modo)));
@@ -108,7 +116,12 @@
       form.querySelector('[data-enviar]').textContent = modo === 'criar' ? (volta ? 'Criar conta e voltar ao pedido' : 'Criar conta') : (volta && !pro ? 'Entrar e voltar ao pedido' : 'Entrar');
       form.querySelectorAll('[data-erro]').forEach((p) => { p.hidden = true; });
       geral.hidden = true;
-      if (volta && !pro) document.querySelector('[data-titulo]').textContent = modo === 'criar' ? 'Crie sua conta para enviar o pedido' : 'Entre para enviar o pedido';
+      if (volta && !pro && !equipe) document.querySelector('[data-titulo]').textContent = modo === 'criar' ? 'Crie sua conta para enviar o pedido' : 'Entre para enviar o pedido';
+      if (equipe) {
+        document.querySelector('[data-titulo]').textContent = 'Entre na área da equipe';
+        document.querySelector('[data-sub]').textContent = 'Use a sua conta da administração.';
+        form.querySelector('[data-enviar]').textContent = 'Entrar';
+      }
       if (pro) {
         document.querySelector('[data-titulo]').textContent = modo === 'criar' ? 'Crie sua conta profissional' : 'Entre na área profissional';
         document.querySelector('[data-sub]').textContent = modo === 'criar' ? 'Depois você completa o portfólio, define o valor da sua hora e envia os documentos.' : 'Veja seus pedidos, sua agenda e quanto já recebeu no mês.';
