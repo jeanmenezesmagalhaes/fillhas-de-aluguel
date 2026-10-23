@@ -151,7 +151,10 @@ a.botao.lp-breve:active { transform: none; }
   .lp-retrato { width: 72px; height: 72px; clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%, 0 10px); }
   .lp-quem h3 { font-size: 1.1875rem; }
   .lp-bairro, .lp-fatos { font-size: 0.9375rem; }
-  .lp-agenda { font-size: 0.9375rem; margin-top: 8px; }
+  .lp-agenda { align-items: flex-start; font-size: 0.9375rem; margin-top: 8px; }
+  .lp-agenda .lp-ponto { margin-top: 0.45em; }
+  .lp-quem { row-gap: 0; }
+  .lp-nova { flex-basis: 100%; }
   .lp-preco { grid-column: 1 / -1; grid-template-columns: auto auto; justify-content: space-between; align-items: center; margin-top: 12px; text-align: left; }
   .lp-preco p { display: flex; align-items: baseline; gap: 6px; }
   .lp-preco strong { display: inline; font-size: 1.5rem; }
