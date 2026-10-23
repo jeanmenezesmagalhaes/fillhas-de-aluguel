@@ -105,7 +105,7 @@
   .pro-apoio { font-size: 1.125rem; margin-top: 20px; }
   .pro-acoes { margin-top: 28px; }
   .pro-acoes .botao { width: 100%; }
-  .pro-camadas { height: 490px; margin: 0 calc(var(--margin) * -1); }
+  .pro-camadas { height: 540px; margin: 0 calc(var(--margin) * -1); }
   .c-rosa { left: 16px; width: 80%; }
   .c-ipe { left: 9%; width: 82%; }
   .c-salvia { left: 18%; width: 80%; }

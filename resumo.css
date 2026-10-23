@@ -89,7 +89,7 @@ button { font: inherit; }
 .linhas > div { display: grid; grid-template-columns: 180px 1fr; gap: 16px; padding: 11px 0; border-top: 1px solid var(--rule); }
 .linhas > div:first-child { border-top: 0; }
 .linhas dt { color: var(--muted); }
-.linhas dd { color: var(--text); }
+.linhas dd { min-width: 0; color: var(--text); overflow-wrap: anywhere; }
 .linhas dd small { display: block; color: var(--muted); font-size: var(--fs-small); line-height: 18px; }
 
 /* faixa da manhã de Helena: o dia de Ana, das 8h às 18h */
@@ -256,6 +256,8 @@ button { font: inherit; }
 /* resumo com a API: formulário do pedido (tarefa, dia, horário, horas, para quem, onde e recado) */
 .form-pedido { display: grid; gap: 16px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--rule); }
 .form-pedido[hidden], .linhas[data-exemplo][hidden] { display: none; }
+/* logo abaixo da profissional, a linha dela já separa: sem uma segunda linha em cima do formulário */
+.pessoa ~ .form-pedido { margin-top: 16px; padding-top: 0; border-top: 0; }
 .form-pedido select, .form-pedido textarea { padding: 0 12px; border: 1px solid var(--control); border-radius: var(--radius-control); background: var(--surface); color: var(--text); font: inherit; font-size: 16px; }
 .form-pedido select { height: 44px; }
 .form-pedido textarea { padding: 10px 12px; line-height: 24px; resize: vertical; }

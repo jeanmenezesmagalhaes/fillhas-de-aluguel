@@ -138,7 +138,8 @@
   .campos-grade { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .c-cep, .c-num { grid-column: span 2; } .c-rua, .c-comp, .c-bairro { grid-column: span 4; } .c-cidade { grid-column: span 3; } .c-uf { grid-column: span 1; }
   .doc-acoes .doc-botao { flex: 1; justify-content: center; }
-  .ind-resumo { grid-template-columns: 1fr; }
+  .ind-resumo { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .ind-resumo span { line-height: 18px; }
   .ind-lista li { grid-template-columns: minmax(0, 1fr) auto; }
   .il-tipo { grid-row: 2; font-size: var(--fs-small); }
   .espera-posicao { text-align: left; }

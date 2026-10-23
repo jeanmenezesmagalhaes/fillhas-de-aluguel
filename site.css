@@ -437,14 +437,14 @@ a.botao:active { transform: scale(0.97); }
   .abertura { padding-top: 28px; }
   .abertura h1 { font-size: 10vw; }
   .abertura .apoio { font-size: 1.125rem; margin-top: 20px; }
-  .busca-home { grid-template-columns: 1fr 1fr; gap: 10px; margin: 32px calc(var(--margin) * -1) 0; padding: 16px var(--margin); }
+  .busca-home { grid-template-columns: 1fr; gap: 10px; margin: 32px calc(var(--margin) * -1) 0; padding: 16px var(--margin); }
   .busca-home input, .busca-home select { height: 48px; font-size: 1rem; padding: 0 12px; }
   .busca-home select { padding-right: 34px; background-position: right 12px center; }
   .busca-home label { margin-bottom: 4px; }
   .busca-home .botao { grid-column: 1 / -1; width: 100%; min-height: 48px; }
   .busca-home > div:nth-child(3) { grid-column: 1 / -1; }
   .abertura .apoio { font-size: 1.0625rem; }
-  .lista { margin-top: 88px; }
+  .lista { margin-top: 56px; }
   .cartoes { grid-template-columns: 1fr; }
   .como { margin-left: 0; margin-right: 0; padding: 32px 20px 40px; }
   .passos-home { grid-template-columns: 1fr; gap: 28px; }
@@ -502,7 +502,7 @@ section[id], .lista { scroll-margin-top: 140px; }
   .filtro-linha { flex-direction: column; align-items: stretch; }
   .filtro-linha .ver-todas { align-self: flex-start; }
   .filtro { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .ft { justify-content: space-between; min-height: 44px; padding: 0 14px; }
+  .ft { justify-content: space-between; min-height: 52px; padding: 6px 14px; line-height: 1.25; text-align: left; }
   .ft[data-t="todas"] { grid-column: 1 / -1; }
 }
 
@@ -584,10 +584,18 @@ section[id], .lista { scroll-margin-top: 140px; }
 }
 
 .pagina-perfil .orc { align-items: start; }
-@media (max-width: 760px) { .perfil-servicos .cardapio + .cardapio { margin-top: 32px; } }
+@media (max-width: 760px) {
+  .perfil-servicos .cardapio + .cardapio { margin-top: 32px; }
+  /* nome e valor numa linha só; se o valor não couber, ele desce inteiro para baixo do nome */
+  .cardapio-itens .item-linha { flex-wrap: wrap; gap: 2px 16px; }
+  .cardapio-itens .item-linha strong { flex: none; }
+}
 
 /* orçamento: a tarefa vem antes das horas, e cada uma tem o seu mínimo */
-.tarefa-escolha { margin: 0 0 24px; padding: 0; border: 0; }
+.tarefa-escolha { margin: 0 0 14px; padding: 0; border: 0; }
+.tarefa-escolha legend { padding: 0; }
+/* seletor de horas: rótulo, botões, ajuda e atalhos com o mesmo respiro entre si */
+.horas-seletor { display: grid; gap: 10px; align-content: start; }
 .tarefa-ops { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .tarefa-ops label { position: relative; cursor: pointer; }
 .tarefa-ops input { position: absolute; opacity: 0; }

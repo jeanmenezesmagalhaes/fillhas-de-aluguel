@@ -4,7 +4,7 @@
 
 .gestao .titulo { align-items: center; }
 .gestao-grade { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; margin-top: 32px; }
-.gestao-principal, .gestao-lado { display: grid; gap: 24px; }
+.gestao-principal, .gestao-lado { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
 .gestao .cartao { padding: 28px; }
 .gestao .cartao-cab { margin-bottom: 20px; }
 .gestao .btn { flex: none; white-space: nowrap; text-decoration: none; cursor: pointer; }
@@ -121,7 +121,7 @@
 @media (max-width: 640px) {
   .gestao .cartao { padding: 22px 20px; }
   .pn { padding: 24px 0; }
-  .gestao .titulo { flex-direction: row; align-items: flex-start; }
+  .gestao .titulo { flex-direction: column; align-items: flex-start; gap: 12px; }
   .agenda li { grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; }
   .agenda .ag-dia { grid-column: 1; }
   .agenda .ag-hora { grid-column: 1; grid-row: 2; }
@@ -131,6 +131,10 @@
   .pn-pe { align-items: stretch; }
   .pn-acoes { width: 100%; }
   .pn-acoes .btn-primario { flex: 1; justify-content: center; height: 44px; }
+  /* link do portfólio inteiro numa linha e o botão embaixo, sem quebrar o endereço no meio */
+  .perfil-link { flex-direction: column; align-items: stretch; }
+  .perfil-link .btn { justify-content: center; }
+  .cartao-cab { flex-wrap: wrap; row-gap: 4px; }
 }
 
 /* ganhos: a conta do mês, os depósitos e o extrato */
@@ -442,3 +446,20 @@
 /* ganhos: aviso de simulação, uma linha discreta sob a frase do topo */
 .simulacao { margin-top: 4px; color: var(--muted); font-size: var(--fs-small); }
 .simulacao[hidden] { display: none; }
+
+/* celular: ajustes que precisam vir depois das regras gerais acima */
+@media (max-width: 640px) {
+  /* desconto: as duas caixas dividem a largura do cartão */
+  .desconto { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* períodos do extrato: as linhas ocupam a largura toda, sem sobra no fim */
+  .extrato-cab .segmentos { display: flex; }
+  .segmentos button { flex: 1 1 auto; padding: 0 12px; }
+  /* extrato: o selo do depósito ganha linha própria e o serviço não fica espremido */
+  .ex-linha td:nth-child(7) { grid-column: 1 / -1; grid-row: 4; justify-self: start; margin: 6px 0 2px; text-align: left; }
+  .ex-linha td:nth-child(4) { grid-row: 5; }
+  .ex-linha td:nth-child(5) { grid-row: 6; }
+  .ex-linha td:nth-child(8) { grid-row: 5 / span 2; }
+  .ex-linha td:nth-child(3):has(> .traco:only-child) { display: none; }
+  .extrato tfoot [data-tot-valor]::before { content: "Valor "; }
+  .extrato tfoot [data-tot-taxa]::before { content: "Taxa "; }
+}
