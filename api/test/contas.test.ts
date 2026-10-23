@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
+import { criarApp } from '../src/app.js';
 import { profissionais } from '../src/db/schema.js';
 import { ambiente, cliente, DIA, familia, profissional, profissionalAprovada, type Ambiente } from './ajuda.js';
 
@@ -132,6 +133,31 @@ describe('limite de tentativas', () => {
       expect(r.corpo.erro.codigo).toBe('muitas_tentativas');
     } finally {
       await outro.fechar();
+    }
+  });
+
+  it('atrás do Cloudflare conta o IP do visitante, e só confia no cabeçalho vindo do Cloudflare', async () => {
+    const app = await criarApp({ db: amb.banco.db, agora: () => amb.relogio.agora, site: false, limiteTentativas: 2, producao: true });
+    // na Vercel, o x-forwarded-for traz quem conectou nela
+    const via = (conectou: string, visitante: string) =>
+      app.inject({
+        method: 'POST',
+        url: '/api/sessoes',
+        headers: { 'x-forwarded-for': conectou, 'cf-connecting-ip': visitante },
+        payload: { email: 'ninguem-cf@exemplo.com', senha: 'errada' },
+      });
+    try {
+      expect((await via('172.64.10.1', '198.51.100.1')).statusCode).toBe(401);
+      expect((await via('104.16.0.9', '198.51.100.1')).statusCode).toBe(401);
+      expect((await via('172.64.10.1', '198.51.100.1')).statusCode).toBe(429);
+      // outro visitante, pelo mesmo Cloudflare, segue livre
+      expect((await via('172.64.10.1', '198.51.100.2')).statusCode).toBe(401);
+      // direto na Vercel, trocar o cabeçalho não escapa do limite
+      expect((await via('203.0.113.9', '198.51.100.3')).statusCode).toBe(401);
+      expect((await via('203.0.113.9', '198.51.100.4')).statusCode).toBe(401);
+      expect((await via('203.0.113.9', '198.51.100.5')).statusCode).toBe(429);
+    } finally {
+      await app.close();
     }
   });
 });

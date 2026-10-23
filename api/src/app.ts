@@ -6,6 +6,7 @@ import fastifyStatic from '@fastify/static';
 import Fastify, { type FastifyServerOptions } from 'fastify';
 import { armazenamentoEmMemoria, type Armazenamento } from './armazenamento.js';
 import { carregarUsuario } from './auth.js';
+import { ipDoVisitante } from './cloudflare.js';
 import type { Contexto } from './contexto.js';
 import type { Db } from './db/index.js';
 import { ErroApi, registrarTratamentoDeErros } from './erros.js';
@@ -68,6 +69,10 @@ export async function criarApp(op: OpcoesApp) {
   app.decorateRequest('usuario', null);
   app.addHook('onRequest', async (req) => {
     if (!req.url.startsWith('/api/')) return;
+    // req.ip lê o x-forwarded-for a cada acesso: trocado aqui, o limite de tentativas e as
+    // sessões passam a ver o visitante, e não o Cloudflare
+    const visitante = ipDoVisitante(req.ip, req.headers['cf-connecting-ip']);
+    if (visitante) req.raw.headers['x-forwarded-for'] = visitante;
     // Pedidos que mudam algo só valem vindos deste mesmo site. O cookie já é SameSite=Lax;
     // isto fecha o que sobra de CSRF.
     if (req.method !== 'GET' && req.method !== 'HEAD') {
