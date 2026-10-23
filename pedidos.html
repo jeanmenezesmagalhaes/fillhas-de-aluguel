@@ -14,9 +14,9 @@
 
 <header class="topo topo-site" data-topo>
   <div class="topo-dentro">
-    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="pedidos.html" aria-current="page">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a><span class="topo-conta"><span data-nome-conta>Mariana Costa</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca">Encontrar profissional</a><a href="pedidos" aria-current="page">Meus pedidos</a><a class="topo-pro" href="profissional">Área profissional</a><span class="topo-conta"><span data-nome-conta>Mariana Costa</span><button class="link" type="button" data-sair>Sair</button></span></nav>
   </div>
 </header>
 
@@ -26,7 +26,7 @@
       <h1>Meus pedidos</h1>
       <p class="achado" data-achado aria-live="polite">Cláudia propôs outro horário para o mercado de sábado. Responda para confirmar.</p>
     </div>
-    <a class="btn btn-primario" href="busca.html">Novo pedido</a>
+    <a class="btn btn-primario" href="busca">Novo pedido</a>
   </div>
 
   <div class="gestao-grade">
@@ -97,8 +97,8 @@
   <section class="cartao cartao-entrar">
     <h1>Entre para ver seus pedidos</h1>
     <p class="achado">Acompanhe as respostas das profissionais e os atendimentos marcados.</p>
-    <a class="btn btn-primario btn-largo" href="entrar.html?volta=pedidos.html">Entrar</a>
-    <p class="entrar-pro">Primeira vez aqui? <a href="entrar.html?modo=criar&amp;volta=pedidos.html">Criar conta</a></p>
+    <a class="btn btn-primario btn-largo" href="entrar?volta=pedidos">Entrar</a>
+    <p class="entrar-pro">Primeira vez aqui? <a href="entrar?modo=criar&amp;volta=pedidos">Criar conta</a></p>
   </section>
 </main>
 
@@ -121,7 +121,7 @@
     document.querySelector('[data-fora]').remove();
     ['[data-nome-conta]', '[data-nome]'].forEach((s) => { document.querySelector(s).textContent = conta.nome; });
     document.querySelector('[data-email]').textContent = conta.email;
-    document.querySelector('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem('mc-conta'); } catch (_) { /* sem armazenamento */ } location.href = 'index.html'; });
+    document.querySelector('[data-sair]').addEventListener('click', () => { try { localStorage.removeItem('mc-conta'); } catch (_) { /* sem armazenamento */ } location.href = '/'; });
 
     const ESTRELA = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 15l-5.4 3 1.2-6L1.3 7.8l6.1-.7z" fill="currentColor"/></svg>';
     const confirmados = [];
@@ -146,7 +146,7 @@
     });
     cl.querySelector('[data-recusar]').addEventListener('click', (ev) => {
       const b = ev.currentTarget;
-      if (b.dataset.confirmar) { resolve(cl, '<strong>Proposta recusada.</strong> O pedido foi encerrado. <a href="busca.html?tarefa=mercado">Procurar outra profissional</a>'); return; }
+      if (b.dataset.confirmar) { resolve(cl, '<strong>Proposta recusada.</strong> O pedido foi encerrado. <a href="busca?tarefa=mercado">Procurar outra profissional</a>'); return; }
       b.dataset.confirmar = '1'; b.textContent = 'Confirmar recusa';
     });
     const an = document.querySelector('[data-pedido="ana"]');
@@ -181,7 +181,7 @@
     const $ = (s) => document.querySelector(s);
     ['[data-nome-conta]', '[data-nome]'].forEach((s) => { $(s).textContent = eu.nome; });
     $('[data-email]').textContent = eu.email;
-    $('[data-sair]').addEventListener('click', () => mc.sair('mc-conta', 'index.html'));
+    $('[data-sair]').addEventListener('click', () => mc.sair('mc-conta', '/'));
     const achado = $('[data-achado]');
     const veiculo = (s) => (s.profissional.veiculoIncluso ? 'com veículo' : 'sem veículo');
     const para = (s) => [s.pessoaAcompanhada && `Para ${esc(primeiro(s.pessoaAcompanhada.nome))}`, s.local && esc(s.local)].filter(Boolean).join(' · ');

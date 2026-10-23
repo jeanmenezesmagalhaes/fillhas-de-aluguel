@@ -13,11 +13,11 @@
 
 <header class="site-topo" data-topo>
   <div class="site-barra">
-    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="pedidos.html">Meus pedidos</a><a class="botao-linha" href="profissional.html">Área profissional</a></nav>
+    <nav class="site-nav" id="menu-principal" aria-label="Principal"><a href="busca">Encontrar profissional</a><a href="pedidos">Meus pedidos</a><a class="botao-linha" href="profissional">Área profissional</a></nav>
   </div>
-  <form class="busca-fixa" role="search" aria-label="Busca rápida" action="busca.html" method="get">
+  <form class="busca-fixa" role="search" aria-label="Busca rápida" action="busca" method="get">
     <label class="vh" for="cidade-fixa">Cidade</label><input id="cidade-fixa" name="cidade" type="search" placeholder="Sua cidade" autocomplete="address-level2">
     <label class="vh" for="tarefa-fixa">Tarefa</label><select id="tarefa-fixa" name="tarefa"><option value="">Qualquer tarefa</option><option value="consulta" selected>Consulta ou exame</option><option value="banco">Banco ou cartório</option><option value="mercado">Mercado e farmácia</option><option value="passeio">Passeio</option></select>
     <label class="vh" for="data-fixa">Dia do acompanhamento</label><input id="data-fixa" name="data" type="date" value="2026-10-28">
@@ -29,13 +29,13 @@
     <h1><span class="linha" style="--i:0">Contrate profissionais</span> <span class="linha" style="--i:1">para acompanhar seus pais</span></h1>
     <p class="apoio">Profissionais verificadas acompanham seus pais em consultas, exames, mercado ou passeios quando você não pode ir.</p>
     <p class="verificadas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5z" fill="currentColor"/><path d="M8 12.2l2.8 2.8L16.4 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Só profissionais verificadas, com documentos conferidos todo mês.</span></p>
-    <form class="busca busca-home" role="search" aria-label="Busca" action="busca.html" method="get">
+    <form class="busca busca-home" role="search" aria-label="Busca" action="busca" method="get">
       <div><label for="cidade">Cidade</label><input id="cidade" name="cidade" type="search" placeholder="Digite a cidade" autocomplete="address-level2"></div>
       <div><label for="tarefa">Tarefa</label><select id="tarefa" name="tarefa"><option value="">Qualquer tarefa</option><option value="consulta" selected>Consulta ou exame</option><option value="banco">Banco ou cartório</option><option value="mercado">Mercado e farmácia</option><option value="passeio">Passeio</option></select></div>
       <div><label for="data">Dia do acompanhamento</label><input id="data" name="data" type="date" value="2026-10-28"></div>
       <button class="botao" type="submit">Ver profissionais</button>
     </form>
-    <p class="ver-todas-topo"><a href="busca.html">Ou veja todos os profissionais<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></a></p>
+    <p class="ver-todas-topo"><a href="busca">Ou veja todos os profissionais<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></a></p>
   </div>
 </div>
 
@@ -44,7 +44,7 @@
     <div class="lista-cab">
       <h2 class="lista-titulo" id="t-lista">Profissionais em destaque</h2>
     </div>
-    <div class="filtro-linha"><div class="filtro" role="group" aria-label="Filtrar por tarefa"><button type="button" class="ft" data-t="todas" aria-pressed="true"><span class="ft-nome">Todas as tarefas</span><span class="ft-conta num">4</span></button><button type="button" class="ft" data-t="consulta" aria-pressed="false"><span class="ft-nome">Consulta ou exame</span><span class="ft-conta num">4</span></button><button type="button" class="ft" data-t="banco" aria-pressed="false"><span class="ft-nome">Banco ou cartório</span><span class="ft-conta num">2</span></button><button type="button" class="ft" data-t="mercado" aria-pressed="false"><span class="ft-nome">Mercado e farmácia</span><span class="ft-conta num">3</span></button><button type="button" class="ft" data-t="passeio" aria-pressed="false"><span class="ft-nome">Passeio</span><span class="ft-conta num">3</span></button></div><a class="ver-todas" href="busca.html">Ver todos<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></a><p class="vh" data-conta-lista aria-live="polite"></p></div>
+    <div class="filtro-linha"><div class="filtro" role="group" aria-label="Filtrar por tarefa"><button type="button" class="ft" data-t="todas" aria-pressed="true"><span class="ft-nome">Todas as tarefas</span><span class="ft-conta num">4</span></button><button type="button" class="ft" data-t="consulta" aria-pressed="false"><span class="ft-nome">Consulta ou exame</span><span class="ft-conta num">4</span></button><button type="button" class="ft" data-t="banco" aria-pressed="false"><span class="ft-nome">Banco ou cartório</span><span class="ft-conta num">2</span></button><button type="button" class="ft" data-t="mercado" aria-pressed="false"><span class="ft-nome">Mercado e farmácia</span><span class="ft-conta num">3</span></button><button type="button" class="ft" data-t="passeio" aria-pressed="false"><span class="ft-nome">Passeio</span><span class="ft-conta num">3</span></button></div><a class="ver-todas" href="busca">Ver todos<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></a><p class="vh" data-conta-lista aria-live="polite"></p></div>
     <ul class="cartoes">
         <li class="pc" data-tarefas="consulta banco mercado passeio">
           <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Ana Oliveira"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#2d5e4b"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#c68c68"/><path d="M34 49Q20 9 59 9q37 0 28 47L76 34Q49 40 40 28Z" fill="#3d332b"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
@@ -55,7 +55,7 @@
             <li class="num"><svg class="pc-relogio" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 6v5.5l3.5 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Mínimo de 2 horas</li>
             <li class="pc-veiculo sim"><svg class="pc-carro" viewBox="0 0 30 22" aria-hidden="true"><path d="M3 15v-4l3-6h14l4 6h3v4z" fill="currentColor"/><circle cx="9" cy="16" r="3" fill="#fff"/><circle cx="22" cy="16" r="3" fill="#fff"/></svg>Veículo incluso</li>
           </ul>
-          <a class="botao escuro pc-acao" href="portfolio.html">Conhecer a Ana</a>
+          <a class="botao escuro pc-acao" href="portfolio">Conhecer a Ana</a>
         </li>
         <li class="pc" data-tarefas="consulta mercado passeio">
           <span class="pc-retrato"><svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Retrato de Cláudia Ramos"><rect width="120" height="120" fill="#dce8e0"/><path d="M22 120q0-48 38-48t38 48" fill="#f28cb1"/><ellipse cx="60" cy="49" rx="25" ry="31" fill="#8d5a3b"/><circle cx="40" cy="30" r="13" fill="#1f1a17"/><circle cx="52" cy="20" r="14" fill="#1f1a17"/><circle cx="66" cy="20" r="14" fill="#1f1a17"/><circle cx="79" cy="30" r="13" fill="#1f1a17"/><circle cx="36" cy="44" r="10" fill="#1f1a17"/><circle cx="84" cy="44" r="10" fill="#1f1a17"/><path d="M51 60q9 7 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="47" r="2.2" fill="#2e2822"/><circle cx="70" cy="47" r="2.2" fill="#2e2822"/></svg></span>
@@ -92,7 +92,7 @@
         </li>
     </ul>
     <p class="lista-vazia" data-vazia hidden>Nenhum destaque para essa tarefa agora. Veja as outras tarefas ou todos os profissionais.</p>
-    <div class="lista-pe"><a class="botao escuro" href="busca.html">Ver todos os profissionais</a><p class="lista-nota nota">No perfil você conhece a experiência de cada uma, as tarefas que ela faz e o desconto para mais horas, quando houver.</p></div>
+    <div class="lista-pe"><a class="botao escuro" href="busca">Ver todos os profissionais</a><p class="lista-nota nota">No perfil você conhece a experiência de cada uma, as tarefas que ela faz e o desconto para mais horas, quando houver.</p></div>
   </section>
 
   <section class="como" id="como-contratar" aria-labelledby="t-como">
@@ -102,7 +102,7 @@
       <li data-chega style="--i:2"><span class="etapa num" aria-hidden="true">2</span><strong>Faça o orçamento</strong><p>Diga quanto tempo a tarefa deve levar. Você vê o valor total antes de pedir.</p></li>
       <li data-chega style="--i:3"><span class="etapa num" aria-hidden="true">3</span><strong>Confirme</strong><p>Envie o pedido. Quando a profissional aceitar, você recebe a confirmação por e-mail. Pronto: seus pais já têm companhia.</p></li>
     </ol>
-    <a class="botao como-acao" href="busca.html">Escolher profissional</a>
+    <a class="botao como-acao" href="busca">Escolher profissional</a>
   </section>
 
   <section class="confianca" id="confianca" aria-labelledby="t-conf">
@@ -139,7 +139,7 @@
     </div>
   </section>
 
-  <a class="chamada" href="busca.html?tarefa=consulta">
+  <a class="chamada" href="busca?tarefa=consulta">
     <span class="aba vazia" aria-hidden="true"></span>
     <span class="frase">Seu pai ou sua mãe tem uma consulta marcada? Escolha quem vai junto.</span>
     <svg class="seta" viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36L36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
@@ -152,8 +152,8 @@
   <div class="blocos" aria-hidden="true"><span style="height:100%;background:#f28cb1" data-l="m"></span><span style="height:78%;background:#f2c94c" data-l="i"></span><span style="height:92%;background:#dce8e0" data-l="n"></span><span style="height:64%;background:#ffffff" data-l="h"></span><span style="height:86%;background:#f28cb1" data-l="a"></span><span class="espaco"></span><span style="height:72%;background:#f2c94c" data-l="c"></span><span style="height:100%;background:#dce8e0" data-l="o"></span><span style="height:76%;background:#ffffff" data-l="m"></span><span style="height:90%;background:#f28cb1" data-l="p"></span><span style="height:68%;background:#f2c94c" data-l="a"></span><span style="height:76%;background:#dce8e0" data-l="n"></span><span style="height:84%;background:#ffffff" data-l="h"></span><span style="height:100%;background:#f28cb1" data-l="i"></span><span style="height:70%;background:#f2c94c" data-l="a"></span></div>
   <p class="vh">Minha companhia</p>
   <div class="rodape-colunas">
-    <div><h2>Famílias</h2><ul><li><a href="busca.html">Encontrar profissional</a></li><li><a href="index.html#como-contratar">Como contratar</a></li><li><a href="index.html#confianca">Por que confiar</a></li><li><a href="pedidos.html">Meus pedidos</a></li></ul></div>
-    <div><h2>Profissionais</h2><ul><li><a href="profissional.html">Área profissional</a></li><li><a href="entrar.html?perfil=pro&amp;modo=criar">Quero me cadastrar</a></li></ul></div>
+    <div><h2>Famílias</h2><ul><li><a href="busca">Encontrar profissional</a></li><li><a href="/#como-contratar">Como contratar</a></li><li><a href="/#confianca">Por que confiar</a></li><li><a href="pedidos">Meus pedidos</a></li></ul></div>
+    <div><h2>Profissionais</h2><ul><li><a href="profissional">Área profissional</a></li><li><a href="entrar?perfil=pro&amp;modo=criar">Quero me cadastrar</a></li></ul></div>
     <div class="contato"><h2>Onde atendemos</h2><p>Em todo o Brasil, nas cidades com profissionais cadastradas.</p></div>
   </div>
   <div class="rodape-fim"><span>Minha companhia · 2026</span></div>

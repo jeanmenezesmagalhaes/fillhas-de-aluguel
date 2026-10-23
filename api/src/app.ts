@@ -43,7 +43,11 @@ export interface OpcoesApp {
 const raizDoSite = fileURLToPath(new URL('../../', import.meta.url));
 
 // Só as telas e seus arquivos. Nada de api/, docs/, .git ou do banco local.
-const arquivoDoSite = /^\/(?:[\w-]+\.(?:html|css|js|svg)|(?:assets|fonts)\/[\w.-]+\.(?:webp|jpg|png|svg|woff2|json))?$/;
+const arquivoDoSite = /^\/(?:[\w-]+(?:\.(?:html|css|js|svg))?|(?:assets|fonts)\/[\w.-]+\.(?:webp|jpg|png|svg|woff2|json))?$/;
+
+// Endereços sem `.html`, como o `cleanUrls` da Vercel (api/vercel.json): `/busca` serve
+// busca.html e `/busca.html` redireciona para `/busca` (e `/index.html` para `/`).
+const telaComExtensao = /^\/([\w-]+)\.html(?:\?(.*))?$/s;
 
 export async function criarApp(op: OpcoesApp) {
   const producao = op.producao ?? false;
@@ -93,9 +97,16 @@ export async function criarApp(op: OpcoesApp) {
 
   const site = op.site === undefined ? raizDoSite : op.site;
   if (site) {
+    app.addHook('onRequest', async (req, reply) => {
+      const tela = telaComExtensao.exec(req.url);
+      if (!tela || (req.method !== 'GET' && req.method !== 'HEAD')) return;
+      const limpo = tela[1] === 'index' ? '/' : `/${tela[1]}`;
+      return reply.redirect(tela[2] ? `${limpo}?${tela[2]}` : limpo, 308);
+    });
     await app.register(fastifyStatic, {
       root: site,
       index: 'index.html',
+      extensions: ['html'],
       dotfiles: 'deny',
       allowedPath: (caminho) => arquivoDoSite.test(caminho),
     });

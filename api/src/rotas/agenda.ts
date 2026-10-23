@@ -187,7 +187,7 @@ export function rotasAgenda(app: FastifyInstance, ctx: Contexto, segredo: string
           `Família: ${s.familia}`,
           ...(s.pessoa ? [`Para: ${s.pessoa}`] : []),
           `Profissional: ${s.profissional}`,
-          `Detalhes e endereço: ${site}/agenda.html`,
+          `Detalhes e endereço: ${site}/painel#agenda`,
         ].join('\n'),
         atualizadoEm: s.atualizadoEm,
       }));

@@ -45,7 +45,7 @@
       { id: 'c1', titulo: 'Cuidador de idosos', instituicao: 'Senac Campinas', cargaHorariaHoras: 160, anoConclusao: 2022, situacao: 'aprovado', motivoRecusa: null, enviadoEm: new Date(Date.now() - 9 * 86400000).toISOString(), revisadoEm: new Date(Date.now() - 8 * 86400000).toISOString(), arquivo: { nome: 'certificado-cuidador.pdf', tipoArquivo: 'application/pdf', tamanho: 412000 } },
       { id: 'c2', titulo: 'Primeiros socorros', instituicao: 'Cruz Vermelha Brasileira', cargaHorariaHoras: 16, anoConclusao: 2024, situacao: 'enviado', motivoRecusa: null, enviadoEm: new Date(Date.now() - 86400000).toISOString(), revisadoEm: null, arquivo: { nome: 'primeiros-socorros.jpg', tipoArquivo: 'image/jpeg', tamanho: 630000 } },
     ];
-    const ind = { codigo: 'JOA-4F8M', links: { profissional: '/entrar.html?perfil=pro&modo=criar&indicacao=JOA-4F8M', familia: '/entrar.html?modo=criar&indicacao=JOA-4F8M' }, resumo: { cadastradas: 2, aprovadas: 1, comPrimeiroServico: 0 }, indicadas: [{ nome: 'Paula M.', tipo: 'profissional', etapa: 'aprovada' }, { nome: 'Sérgio L.', tipo: 'familia', etapa: 'cadastrada' }] };
+    const ind = { codigo: 'JOA-4F8M', links: { profissional: '/entrar?perfil=pro&modo=criar&indicacao=JOA-4F8M', familia: '/entrar?modo=criar&indicacao=JOA-4F8M' }, resumo: { cadastradas: 2, aprovadas: 1, comPrimeiroServico: 0 }, indicadas: [{ nome: 'Paula M.', tipo: 'profissional', etapa: 'aprovada' }, { nome: 'Sérgio L.', tipo: 'familia', etapa: 'cadastrada' }] };
     const arquivos = {};
     const recalcula = () => {
       const docsOk = v.documentos.every((d) => d.situacao === 'enviado' || d.situacao === 'aprovado');
@@ -516,13 +516,13 @@
       modoApi = true;
       const eu = r.ok ? (await r.json()).usuario : null;
       if (!eu || !eu.papeis.includes('profissional')) { fora(); return; }
-      comeca(eu.nome, () => (window.mc ? mc.sair('mc-pro', 'profissional.html') : (location.href = 'profissional.html')));
+      comeca(eu.nome, () => (window.mc ? mc.sair('mc-pro', 'profissional') : (location.href = 'profissional')));
       return;
     }
     let conta = null;
     try { conta = JSON.parse(localStorage.getItem('mc-pro')); } catch (_) { /* sem armazenamento */ }
     if (!conta) { fora(); return; }
-    comeca(conta.nome || 'Joana Prado', () => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional.html'; });
+    comeca(conta.nome || 'Joana Prado', () => { try { localStorage.removeItem('mc-pro'); } catch (_) { /* sem armazenamento */ } location.href = 'profissional'; });
   })();
 
   // menu no celular

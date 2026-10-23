@@ -13,13 +13,13 @@
 
 <header class="topo topo-site" data-topo>
   <div class="topo-dentro">
-    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="pedidos.html">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca">Encontrar profissional</a><a href="pedidos">Meus pedidos</a><a class="topo-pro" href="profissional">Área profissional</a></nav>
   </div>
 </header>
 <main class="tela tela-pedido">
-  <a class="voltar" href="portfolio.html" data-voltar><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg><span data-voltar-texto>Perfil de Ana</span></a>
+  <a class="voltar" href="portfolio" data-voltar><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg><span data-voltar-texto>Perfil de Ana</span></a>
   <div class="titulo">
     <h1>Revise o pedido</h1>
     <p class="achado" data-achado>Confira os dados antes de enviar para Ana.</p>
@@ -91,8 +91,8 @@
       <p class="total-conta num" data-conta>4 horas × R$ 70,00, com veículo incluso</p>
 
       <div class="envio" data-estado="sem-conta">
-        <a class="btn btn-primario btn-largo" href="entrar.html" data-entrar>Entrar para enviar</a>
-        <p class="envio-alt">Primeira vez aqui? <a href="entrar.html?modo=criar" data-criar>Criar conta</a></p>
+        <a class="btn btn-primario btn-largo" href="entrar" data-entrar>Entrar para enviar</a>
+        <p class="envio-alt">Primeira vez aqui? <a href="entrar?modo=criar" data-criar>Criar conta</a></p>
         <p class="total-nota">Com a sua conta, você recebe a resposta de Ana e acompanha seus pedidos.</p>
       </div>
       <div class="envio" data-estado="com-conta" hidden>
@@ -104,10 +104,10 @@
       <div class="envio" data-estado="enviado" hidden aria-live="polite">
         <p class="envio-ok"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="currentColor"/><path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2"/></svg><span data-enviado-texto>Pedido enviado para Ana</span></p>
         <p class="total-nota">A resposta chega em <strong data-email>seu e-mail</strong>. Nada fica marcado sem o aceite dela.</p>
-        <a class="btn btn-secundario btn-largo" href="pedidos.html">Ver meus pedidos</a>
+        <a class="btn btn-secundario btn-largo" href="pedidos">Ver meus pedidos</a>
       </div>
 
-      <a class="ajustar" href="portfolio.html#orcamento" data-ajustar>Mudar as horas</a>
+      <a class="ajustar" href="portfolio#orcamento" data-ajustar>Mudar as horas</a>
     </section>
   </div>
 </main>
@@ -131,8 +131,8 @@
     const params = new URLSearchParams(location.search);
     const slug = params.get('p') || 'ana-oliveira';
     const volta = encodeURIComponent(location.pathname.split('/').pop() + location.search);
-    $('[data-entrar]').href = `entrar.html?volta=${volta}`;
-    $('[data-criar]').href = `entrar.html?modo=criar&volta=${volta}`;
+    $('[data-entrar]').href = `entrar?volta=${volta}`;
+    $('[data-criar]').href = `entrar?modo=criar&volta=${volta}`;
     const mostra = (nome) => $$('[data-estado]').forEach((el) => { el.hidden = el.dataset.estado !== nome; });
     const pedidas = Math.floor(Number(params.get('horas')));
 
@@ -213,7 +213,7 @@
 
       // nome da profissional em toda a tela
       document.title = `Revise o pedido para ${primeiro} · Minha companhia`;
-      $('[data-voltar]').href = `portfolio.html?p=${encodeURIComponent(slug)}`;
+      $('[data-voltar]').href = `portfolio?p=${encodeURIComponent(slug)}`;
       $('[data-voltar-texto]').textContent = `Perfil de ${primeiro}`;
       $('[data-ajustar]').hidden = true;
       $('[data-pro-nome]').textContent = pro.nome;

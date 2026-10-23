@@ -13,13 +13,13 @@
 
 <header class="topo topo-site" data-topo>
   <div class="topo-dentro">
-    <a class="marca" href="index.html"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+    <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-principal"><svg viewBox="0 0 22 16" aria-hidden="true"><path d="M1 2h20M1 8h20M1 14h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button>
-    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca.html">Encontrar profissional</a><a href="pedidos.html">Meus pedidos</a><a class="topo-pro" href="profissional.html">Área profissional</a></nav>
+    <nav class="topo-nav" id="menu-principal" aria-label="Principal"><a href="busca">Encontrar profissional</a><a href="pedidos">Meus pedidos</a><a class="topo-pro" href="profissional">Área profissional</a></nav>
   </div>
 </header>
 <main class="tela tela-entrar">
-  <a class="voltar" href="resumo.html" data-voltar><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg><span data-voltar-texto>Voltar</span></a>
+  <a class="voltar" href="resumo" data-voltar><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2L4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg><span data-voltar-texto>Voltar</span></a>
   <section class="cartao cartao-entrar" aria-labelledby="t-entrar">
     <h1 id="t-entrar" data-titulo>Entre para enviar o pedido</h1>
     <p class="achado" data-sub>Use sua conta da Minha companhia. Se for a primeira vez, crie uma em um minuto.</p>
@@ -65,7 +65,7 @@
       <p class="campo-erro" data-erro-geral role="alert" hidden></p>
       <button class="btn btn-primario btn-largo" type="submit" data-enviar>Entrar</button>
     </form>
-    <p class="entrar-pro">É profissional? <a href="profissional.html">Acesse a área profissional</a></p>
+    <p class="entrar-pro">É profissional? <a href="profissional">Acesse a área profissional</a></p>
   </section>
 </main>
 
@@ -82,19 +82,19 @@
     const params = new URLSearchParams(location.search);
     // só volta para uma página deste site
     const v = params.get('volta') || '';
-    const volta = /^[a-z0-9-]+\.html(\?[^#]*)?$/i.test(v) ? v : '';
+    const volta = /^[a-z0-9-]+(?:\.html)?(\?[^#]*)?$/i.test(v) ? v : '';
     const form = document.querySelector('[data-form]');
     const botoes = document.querySelectorAll('[data-modo]');
     const voltar = document.querySelector('[data-voltar]');
     if (volta) { voltar.href = volta; document.querySelector('[data-voltar-texto]').textContent = volta.startsWith('resumo') ? 'Voltar ao pedido' : 'Voltar'; }
-    else { voltar.href = 'index.html'; document.querySelector('[data-voltar-texto]').textContent = 'Início'; document.querySelector('[data-titulo]').textContent = 'Entre na sua conta'; document.querySelector('[data-sub]').textContent = 'Acompanhe seus pedidos e as respostas das profissionais.'; }
+    else { voltar.href = '/'; document.querySelector('[data-voltar-texto]').textContent = 'Início'; document.querySelector('[data-titulo]').textContent = 'Entre na sua conta'; document.querySelector('[data-sub]').textContent = 'Acompanhe seus pedidos e as respostas das profissionais.'; }
     // ?perfil=pro: a mesma tela, para a profissional entrar no painel ou criar a conta dela
     const pro = params.get('perfil') === 'pro';
     const chave = pro ? 'mc-pro' : 'mc-conta';
-    const destino = volta || (pro ? 'painel.html' : 'pedidos.html');
+    const destino = volta || (pro ? 'painel' : 'pedidos');
     if (pro) {
-      document.querySelector('.entrar-pro').innerHTML = 'É da família? <a href="entrar.html">Entre na conta da família</a>';
-      if (!volta) { voltar.href = 'profissional.html'; document.querySelector('[data-voltar-texto]').textContent = 'Área profissional'; }
+      document.querySelector('.entrar-pro').innerHTML = 'É da família? <a href="entrar">Entre na conta da família</a>';
+      if (!volta) { voltar.href = 'profissional'; document.querySelector('[data-voltar-texto]').textContent = 'Área profissional'; }
     }
     let modo = params.get('modo') === 'criar' ? 'criar' : 'entrar';
     const geral = form.querySelector('[data-erro-geral]');
@@ -139,7 +139,7 @@
       // aberta direto do arquivo, sem a API: a tela segue só lembrando o nome no navegador
       if (!/^https?:$/.test(location.protocol)) {
         lembra(criar ? form.nome.value.trim() : email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), email);
-        location.href = pro && modo === 'criar' && !volta ? 'verificacao.html' : destino;
+        location.href = pro && modo === 'criar' && !volta ? 'verificacao' : destino;
         return;
       }
 
@@ -168,7 +168,7 @@
           return;
         }
         lembra(u.nome, u.email);
-        location.href = pro && modo === 'criar' && !volta ? 'verificacao.html' : destino;
+        location.href = pro && modo === 'criar' && !volta ? 'verificacao' : destino;
       } catch (_) {
         avisa('Não conseguimos conectar. Confira sua internet e tente de novo.');
       } finally {

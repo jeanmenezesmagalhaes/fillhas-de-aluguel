@@ -32,7 +32,7 @@ window.mcSite = (() => {
   const temApi = () => pedido || (pedido = /^https?:$/.test(location.protocol)
     ? fetch('/api/sessao', { credentials: 'same-origin' }).then((r) => r.ok && (r.headers.get('content-type') || '').includes('json')).catch(() => false)
     : Promise.resolve(false));
-  // portfolio.html?p=<slug>; sem parâmetro, o exemplo da Ana
+  // portfolio?p=<slug>; sem parâmetro, o exemplo da Ana
   const slug = new URLSearchParams(location.search).get('p') || 'ana-oliveira';
   document.querySelectorAll('[data-slug]').forEach((el) => { el.dataset.slug = slug; });
   return { temApi, slug };
@@ -184,7 +184,7 @@ window.mcSite = (() => {
       c.dataset.tarefas = (p.tarefas || []).map((t) => t.tipo).join(' ');
       const acao = c.querySelector('.pc-acao');
       const link = document.createElement('a');
-      link.className = 'botao escuro pc-acao'; link.href = `portfolio.html?p=${encodeURIComponent(p.slug)}`;
+      link.className = 'botao escuro pc-acao'; link.href = `portfolio?p=${encodeURIComponent(p.slug)}`;
       link.textContent = acao.tagName === 'A' ? acao.textContent : 'Ver perfil';
       acao.replaceWith(link);
     });
@@ -281,7 +281,7 @@ window.mcSite = (() => {
         </div>
         <div class="lp-preco">
           <p class="num"><strong>R$ ${String(p.valor).replace('.', ',')}</strong> por hora</p>
-          <a class="botao escuro lp-acao" href="portfolio.html?p=${encodeURIComponent(p.id)}">Ver perfil<span class="vh"> de ${esc(p.nome)}</span></a>
+          <a class="botao escuro lp-acao" href="portfolio?p=${encodeURIComponent(p.id)}">Ver perfil<span class="vh"> de ${esc(p.nome)}</span></a>
         </div>
       </li>`).join('');
   };
@@ -576,7 +576,7 @@ window.mcSite = (() => {
   const naoEncontrada = () => {
     const main = document.querySelector('main');
     document.querySelector('.perfil-capa').remove();
-    main.innerHTML = '<section class="perfil-sumiu"><h1 class="cabeca">Não encontramos esta profissional</h1><p>O perfil pode ter saído do ar ou o endereço está incompleto.</p><a class="botao" href="busca.html">Ver todos os profissionais</a></section>';
+    main.innerHTML = '<section class="perfil-sumiu"><h1 class="cabeca">Não encontramos esta profissional</h1><p>O perfil pode ter saído do ar ou o endereço está incompleto.</p><a class="botao" href="busca">Ver todos os profissionais</a></section>';
     document.title = 'Profissional não encontrada · Minha companhia';
   };
   const perfilDaApi = (p) => {

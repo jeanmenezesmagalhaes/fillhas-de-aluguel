@@ -96,7 +96,7 @@
     inicio: a.inicio,
     fim: fimDe(a),
     local: a.local || '',
-    detalhes: `Atendimento pela Minha companhia.\nFamília: ${a.familia}${a.pessoa ? `\nPara: ${a.pessoa}` : ''}\nDetalhes e endereço: ${new URL('painel.html#agenda', location.href).href}`,
+    detalhes: `Atendimento pela Minha companhia.\nFamília: ${a.familia}${a.pessoa ? `\nPara: ${a.pessoa}` : ''}\nDetalhes e endereço: ${new URL('painel#agenda', location.href).href}`,
   });
   const lista = (caixa, itens) => {
     const hoje = segunda(new Date());

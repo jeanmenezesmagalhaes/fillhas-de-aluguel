@@ -100,8 +100,8 @@ export function rotasIndicacoes(app: FastifyInstance, ctx: Contexto, limite: { m
     return {
       codigo,
       links: {
-        profissional: `/entrar.html?perfil=pro&modo=criar&indicacao=${codigo}`,
-        familia: `/entrar.html?modo=criar&indicacao=${codigo}`,
+        profissional: `/entrar?perfil=pro&modo=criar&indicacao=${codigo}`,
+        familia: `/entrar?modo=criar&indicacao=${codigo}`,
       },
       resumo: {
         cadastradas: indicadas.length,
