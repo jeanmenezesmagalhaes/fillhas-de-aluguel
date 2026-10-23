@@ -69,7 +69,8 @@ export async function criarApp(op: OpcoesApp) {
     pagamentos: op.pagamentos ?? (producao ? gatewayIndisponivel : gatewaySimulado()),
   };
 
-  registrarTratamentoDeErros(app);
+  const site = op.site === undefined ? raizDoSite : op.site;
+  registrarTratamentoDeErros(app, site);
   await app.register(cookie);
   // o contador fica no banco: na Vercel cada instância tem a própria memória
   await app.register(rateLimit, { global: false, store: lojaNoBanco(ctx.db, ctx.agora) });
@@ -121,7 +122,6 @@ export async function criarApp(op: OpcoesApp) {
 
   app.get('/api/saude', async () => ({ ok: true }));
 
-  const site = op.site === undefined ? raizDoSite : op.site;
   if (site) rotasTelas(app, site);
 
   return app;
