@@ -18,6 +18,10 @@ export const REGRAS = {
 
 const DIA_MS = 86_400_000;
 
+// Chave Pix nova só recebe repasse depois disto: quem invadir a conta não desvia o dinheiro na
+// hora, e a dona recebe o aviso por e-mail a tempo de reagir.
+export const CARENCIA_CHAVE_PIX_MS = 48 * 3_600_000;
+
 // data no horário de Brasília (UTC-3, sem horário de verão desde 2019), como AAAA-MM-DD
 export const dataBrasilia = (d: Date) => new Date(d.getTime() - 3 * 3_600_000).toISOString().slice(0, 10);
 
@@ -62,4 +66,26 @@ export function diasUteisDepois(iso: string, n: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-export const taxaDe = (brutoCentavos: number) => Math.round((brutoCentavos * REGRAS.taxaPercentual) / 100);
+export const taxaDe = (brutoCentavos: number, percentual = REGRAS.taxaPercentual) => Math.round((brutoCentavos * percentual) / 100);
+
+export interface Beneficio {
+  taxaEspecialPercentual: number | null;
+  taxaEspecialMeses: number | null;
+  taxaEspecialAte: Date | null;
+}
+
+// Taxa que vale para um atendimento da profissional, pela data dele. Com prazo em meses, a
+// taxa especial vale até `taxaEspecialAte`; antes da aprovação (sem a data marcada), ainda vale.
+export function percentualDaTaxa(b: Beneficio | null | undefined, quando: Date): number {
+  if (!b || b.taxaEspecialPercentual == null) return REGRAS.taxaPercentual;
+  if (b.taxaEspecialMeses != null && b.taxaEspecialAte && quando >= b.taxaEspecialAte) return REGRAS.taxaPercentual;
+  return b.taxaEspecialPercentual;
+}
+
+// a data `meses` meses depois, no mesmo dia (ou no último dia do mês, quando ele não existe)
+export function maisMeses(d: Date, meses: number): Date {
+  const r = new Date(d);
+  r.setUTCMonth(r.getUTCMonth() + meses);
+  if (r.getUTCDate() !== d.getUTCDate()) r.setUTCDate(0);
+  return r;
+}

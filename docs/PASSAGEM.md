@@ -283,7 +283,7 @@ O usuário preferiu a tabela à lista em frases, mas com mais respiro e com filt
   - checklist do que falta, entrada na fila com posição, dados travados durante a análise;
   - administração: fila, ficha completa, aprovar ou recusar documento com motivo, aprovar perfil ou pedir correção;
   - indicações com código, links e as etapas cadastro → aprovação → primeiro serviço.
-- **Ainda sem provedor:** e-mail e WhatsApp só aparecem no log do servidor, e os arquivos ficam em `api/.data/arquivos`. Para produção faltam provedor de mensagens e bucket privado.
+- **Provedores:** o e-mail sai pelo Resend com `RESEND_API_KEY` e `EMAIL_REMETENTE`; sem eles, só aparece no log do servidor. O WhatsApp ainda não tem provedor, e a verificação por código dele fica desligada (`VERIFICAR_WHATSAPP=1` liga). Os arquivos ficam em `api/.data/arquivos`. Para produção falta o bucket privado.
 - **Seed:** Joana Prado na fila, com dois documentos e indicada pela Ana (código ANA-DEMO). Conta de administração equipe@demo.minhacompanhia.test.
 - **Testes:** 34 passando (`cd api && npm test`).
 - **Decidido:** o documento com foto (RG ou CNH) é obrigatório.
@@ -551,7 +551,42 @@ Pedido da sessão do backend, sobre a API do commit 860fa6f.
 - **Sem a API:** tudo continua com os dados de exemplo. A Cláudia da home foi para R$ 70.
 - **Testado na 4175:** portfólio da Adriana, da Cláudia, da Ana e de um slug inexistente; listagem com e sem filtros (22 profissionais); home com 3 destaques. Testado também sem API, na 4173.
 
+## Pagamento com AbacatePay (MVP) — 20/10/2026
+- **Antes de integrar:** validamos AbacatePay e Asaas contra o modelo do usuário (paga ao contratar, retém até a avaliação, acréscimo do cartão para a família). O Asaas tem split com Conta Escrow, mas cobra mensalidade por subconta e exige BaaS. Para validar rápido, o usuário escolheu o AbacatePay com retenção no saldo da plataforma e repasse manual. Antes de abrir para o público, falta confirmar com o suporte do AbacatePay que esse modelo é aceito e pedir a liberação do `passFeesToCustomer`.
+- **Fluxo:**
+  - O aceite da profissional, ou da proposta pela família, leva o serviço a `aguardando_pagamento`. O horário fica reservado, e a família tem o mesmo prazo de resposta para pagar.
+  - Na pedidos.html, "Pagar R$ X" abre o checkout. A família volta para `pedidos.html?pago=<id>`, que confere o pagamento.
+  - Com o pagamento, o serviço vira `confirmado`. Cancelar devolve tudo à família.
+  - A equipe libera o repasse na nova aba **Pagamentos** de admin.html, com o Pix para a chave da profissional, só depois da avaliação ou dos 14 dias.
+- **Telas:**
+  - **pedidos.html:** cartão "Pague até…", forma de pagamento nos confirmados e "valor devolvido" nos cancelados.
+  - **painel.html:** "Aguardando pagamento" nos pedidos aceitos e situação do repasse nos feitos.
+  - **perfil.html:** cartão "Onde você recebe", com a chave Pix.
+  - **ganhos.html:** lê a forma de pagamento da API. As dúvidas agora explicam o repasse depois da avaliação e o estorno integral.
+  - **admin.html:** aba Pagamentos, com os grupos Para liberar, Devoluções que falharam, Esperando avaliação, Pagos ainda não feitos e Repassados.
+- **Desenvolvimento:** sem `ABACATEPAY_API_KEY`, o pagamento é simulado numa tela da própria API (Pix e cartão de 1x a 12x, com o acréscimo calculado pelas taxas públicas do AbacatePay). O seed traz pagamentos simulados dos confirmados e feitos, um pedido aceito esperando pagamento da Mariana, e a chave Pix (CPF) da Ana.
+- **Cancelamento em cima da hora:** a regra de 50% para a profissional não vale no MVP, porque todo cancelamento devolve tudo. O lançamento sai do extrato quando o pagamento foi devolvido.
+- **Testes:** 83 na API, 11 deles novos, de pagamento. No navegador, na porta 4176 com banco separado (`api/.data/pglite-pagamentos`), porque outra sessão usava a 4175:
+  - Mariana pagou no cartão em 3x e cancelou, e o valor foi devolvido;
+  - a equipe liberou o repasse da consulta do Rafael;
+  - a Ana viu a chave Pix e o aviso de chave inválida;
+  - o painel mostra o aceite esperando pagamento.
+- **Ainda falta:** cadastrar o webhook no AbacatePay (precisa de HTTPS público, então só depois do deploy); testar com a chave `abc_dev_` real; e-mail avisando a família do aceite e do prazo para pagar; devolução parcial; nota fiscal.
+
 ## Topo da home fala de "seus pais" — 21/10/2026
 - Título: "Contrate profissionais para acompanhar seus pais". Subtítulo: "Profissionais verificadas acompanham seus pais em consultas, exames, mercado ou passeios quando você não pode ir." Pedido do usuário: frase direta, focada no que se contrata, em até duas linhas no computador.
 - "Banco" saiu do subtítulo para não parecer golpe; "Banco ou cartório" continua nos filtros e na busca (decisão do usuário).
 - Textos que falavam só da mãe agora incluem o pai: título da aba, etapas 1 e 3, chamada final, filtro "Bairro dos seus pais" (busca.html e docs/gera_busca.py) e "Saída e volta da casa dos seus pais" no portfólio. Depoimentos ficaram como estão.
+
+## Auditoria de segurança — 23/10/2026
+- **/security-audit e /security-review:** nenhuma falha crítica. `npm audit` sem vulnerabilidades, SQL só com parâmetros, todas as rotas com `:id` conferem a dona, todo texto de pessoas passa por `esc()`. Em produção, `.env`, `package.json`, `docs/` e caminhos com `..` dão 404/400 e pedido de outra origem dá 403.
+- **Corrigido:**
+  - `.gitignore` da raiz cobre `.vercel`, `.env*` (menos `.env.example`) e `node_modules/`: o `.env.local` tem as credenciais do Neon de produção;
+  - o seed recusa Postgres que não seja local (a conta da equipe tem senha conhecida);
+  - a tentativa do código de verificação é contada numa só instrução, antes de conferir;
+  - o CSV do extrato não deixa passar fórmula do Excel;
+  - `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `Referrer-Policy` e `nosniff` na API (app.ts) e no `api/vercel.json`.
+- **Pendente:**
+  - definir `SITE_URL` na Vercel (sem ela, a volta do checkout e os convites usam o endereço do pedido);
+  - repasse que estoura o tempo fica "falhou" mesmo se o Pix saiu, e a nova tentativa usa outro `externalId`: confirmar com o AbacatePay antes de fixar o `externalId`;
+  - toda resposta de produção leva ~7,7 s (função em iad1), não é segurança, mas vale olhar.

@@ -74,10 +74,10 @@
   <section class="cartao duvidas" aria-labelledby="t-duvidas">
     <h2 id="t-duvidas">Dúvidas sobre pagamento</h2>
     <div class="duvidas-lista">
-      <details><summary>Quando o dinheiro cai na minha conta?</summary><p><span data-r-prazo>Dois</span> dias úteis depois do atendimento, por Pix, na chave cadastrada. Fins de semana e feriados não contam. Em outubro, o feriado de 12/10 empurrou um depósito de 13 para 14/10.</p></details>
+      <details><summary>Quando o dinheiro cai na minha conta?</summary><p>A família paga quando contrata, e o valor fica guardado com a Minha companhia. Depois que ela avalia o atendimento, a equipe envia o seu valor por Pix, na chave cadastrada no <a href="perfil#pix">seu perfil</a>. Se a família não avaliar, o envio sai quando terminam os 14 dias para avaliar. A data do extrato é uma estimativa até o Pix sair.</p></details>
       <details><summary>Por que recebo menos do que a família pagou?</summary><p>A família paga o valor do serviço: as horas vezes o seu valor da hora, já com o seu desconto, se houver. Desse valor sai a taxa da plataforma, de <span data-r-taxa>12</span>%. O resto é seu.</p></details>
       <details><summary>A família parcelou no cartão. Eu recebo parcelado?</summary><p>Não. Você recebe o valor inteiro de uma vez, no prazo normal. As parcelas e os juros, se houver, ficam entre a família e o cartão e não mudam o que você recebe.</p></details>
-      <details><summary>E se a família cancelar?</summary><p>Se cancelar com <span data-r-horas>24</span> horas ou mais de antecedência, não há custo e o pedido não entra no extrato. Se cancelar com menos de <span data-r-horas>24</span> horas, você recebe <span data-r-pct>metade</span> do valor do serviço, e a taxa vale só sobre essa parte.</p></details>
+      <details><summary>E se a família cancelar?</summary><p>Por enquanto, todo cancelamento antes do horário devolve à família tudo o que ela pagou, e o pedido não entra no seu extrato. O mesmo vale quando você cancela.</p></details>
       <details><summary>De onde sai o desconto para mais horas?</summary><p>Do seu valor da hora. É o desconto que você mesma definiu no perfil: a partir de 4 horas, a hora sai por R$ 70 em vez de R$ 80. Ele aparece separado no extrato para você ver quanto deixou de cobrar.</p></details>
       <details><summary>Como guardo o comprovante do mês?</summary><p>Use “Baixar extrato”. O arquivo traz cada atendimento com data, família, forma de pagamento, valor, taxa, o que você recebeu e a data do depósito.</p></details>
     </div>
@@ -157,7 +157,10 @@
       return {
         id: x.servicoId, dia: isoLocal(ini), inicio: ini.getHours(), horas: x.horas,
         valorHora: Math.round(base / x.horas * 100) / 100, desconto: cancelado ? 0 : x.descontoCentavos / 100,
-        familia: x.familia, para: x.para, tarefa: x.tarefa, pag: x.pagamento || null, cancelado,
+        familia: x.familia, para: x.para, tarefa: x.tarefa, cancelado,
+        // forma de pagamento da família, quando pagou pelo gateway: { metodo: 'PIX' | 'CARD', parcelas }
+        pag: x.pagamento ? (x.pagamento.metodo === 'PIX' ? 'Pix' : 'Cartão') : null,
+        parcelas: x.pagamento && x.pagamento.parcelas > 1 ? x.pagamento.parcelas : undefined,
         base, servico, taxa: x.taxaCentavos / 100, liquido: x.liquidoCentavos / 100,
         deposito: x.depositoEm, estado: ESTADO[x.estado] || 'previsto', concluir: x.estado === 'aguardando_conclusao', pronto: true,
       };
@@ -309,7 +312,9 @@
       const n = (v) => v.toFixed(2).replace('.', ',');
       const cab = ['Data do atendimento', 'Horário', 'Serviço', 'Família', 'Pagamento da família', 'Valor das horas', 'Desconto', 'Valor do serviço', 'Taxa da plataforma', 'Você recebe', 'Situação', 'Data do depósito'];
       const rows = atual.map((l) => [dma(l.dia), `${l.inicio}h-${l.inicio + l.horas}h`, l.tarefa + (l.cancelado ? ' (cancelado)' : ''), l.familia, l.pag || 'Não registrado', n(l.base), n(l.cancelado ? l.base - l.servico : l.desconto), n(l.servico), n(l.taxa), n(l.liquido), l.concluir ? 'Aguardando você marcar como feito' : { recebido: 'Na conta', programado: 'Programado', previsto: 'Previsto' }[l.estado], l.deposito ? dma(l.deposito) : '']);
-      const csv = [cab, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\r\n');
+      // texto que começa com = + - @ vira fórmula no Excel: o apóstrofo o mantém como texto
+      const cel = (c) => `"${String(c).replace(/^([=+@\t\r]|-(?!\d))/, "'$1").replace(/"/g, '""')}"`;
+      const csv = [cab, ...rows].map((r) => r.map(cel).join(';')).join('\r\n');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
       a.download = `extrato-minha-companhia-${HOJE}.csv`;

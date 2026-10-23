@@ -8,9 +8,9 @@ export interface Mensagem {
   texto: string;
 }
 
-// Envio de e-mail e WhatsApp. O provedor ainda não foi escolhido (Resend, SES ou
-// Postmark para e-mail; WhatsApp Cloud API, Twilio ou Z-API para WhatsApp): quem
-// implementar esta interface liga o envio de verdade sem mexer nas rotas.
+// Envio de e-mail e WhatsApp. O e-mail sai pelo Resend; o WhatsApp ainda não tem
+// provedor (WhatsApp Cloud API ou Twilio): quem implementar esta interface liga o
+// envio de verdade sem mexer nas rotas.
 export interface Mensageiro {
   enviar(m: Mensagem): Promise<void>;
 }
@@ -28,3 +28,31 @@ export const mensageiroIndisponivel: Mensageiro = {
     throw new ErroApi(503, 'envio_indisponivel', 'O envio de mensagens ainda não está disponível. Tente mais tarde.');
   },
 };
+
+// E-mail pelo Resend. O remetente precisa ser de um domínio verificado no Resend; o que
+// não for e-mail segue para `outros` (o WhatsApp, por ora indisponível).
+export function mensageiroResend(
+  chave: string,
+  remetente: string,
+  op: { outros?: Mensageiro; fetch?: typeof fetch; base?: string } = {},
+): Mensageiro {
+  const base = op.base ?? 'https://api.resend.com';
+  const buscar = op.fetch ?? fetch;
+  const outros = op.outros ?? mensageiroIndisponivel;
+  return {
+    async enviar(m) {
+      if (m.canal !== 'email') return outros.enviar(m);
+      const r = await buscar(`${base}/emails`, {
+        method: 'POST',
+        headers: { authorization: `Bearer ${chave}`, 'content-type': 'application/json' },
+        body: JSON.stringify({ from: remetente, to: [m.destino], subject: m.assunto, text: m.texto }),
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!r.ok) {
+        // vai para o log como erro interno; a tela recebe a mensagem genérica
+        const json = (await r.json().catch(() => null)) as { message?: string } | null;
+        throw new Error(`Resend respondeu ${r.status}: ${json?.message ?? 'sem detalhe'}`);
+      }
+    },
+  };
+}

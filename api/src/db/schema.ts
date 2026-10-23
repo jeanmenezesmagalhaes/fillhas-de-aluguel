@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+  type AnyPgColumn,
   boolean,
   check,
   date,
@@ -75,6 +76,9 @@ export const situacaoProfissional = pgEnum('situacao_profissional', [
   'vencido',
 ]);
 
+// tipos de chave Pix aceitos pelo envio de Pix do gateway
+export const tipoChavePix = pgEnum('tipo_chave_pix', ['CPF', 'CNPJ', 'PHONE', 'EMAIL', 'RANDOM']);
+
 export const profissionais = pgTable(
   'profissionais',
   {
@@ -112,18 +116,34 @@ export const profissionais = pgTable(
     bairro: text('bairro'),
     enderecoCidade: text('endereco_cidade'),
     enderecoUf: text('endereco_uf'),
+    // onde ela recebe o repasse de cada atendimento
+    chavePix: text('chave_pix'),
+    tipoChavePix: tipoChavePix('tipo_chave_pix'),
+    // a chave nova só recebe repasse depois de uma carência (conta invadida não desvia o dinheiro na hora)
+    chavePixAlteradaEm: quando('chave_pix_alterada_em'),
     // entrada na lista de espera; a ordem da fila é por esta data
     enviadoAnaliseEm: quando('enviado_analise_em'),
     motivoCorrecao: text('motivo_correcao'),
     aprovadoEm: quando('aprovado_em'),
     aprovadoPor: uuid('aprovado_por').references(() => usuarios.id, { onDelete: 'set null' }),
+    // Benefício de convite especial (ou dado pela equipe): taxa da plataforma menor por um
+    // tempo e lugar na frente da lista de espera. Os meses contam a partir da aprovação, quando
+    // `taxaEspecialAte` é marcada; sem meses, a taxa especial não acaba.
+    conviteId: uuid('convite_id').references((): AnyPgColumn => convites.id, { onDelete: 'set null' }),
+    taxaEspecialPercentual: smallint('taxa_especial_percentual'),
+    taxaEspecialMeses: smallint('taxa_especial_meses'),
+    taxaEspecialAte: quando('taxa_especial_ate'),
+    prioridadeFila: boolean('prioridade_fila').notNull().default(false),
     criadoEm: quando('criado_em').notNull().defaultNow(),
     atualizadoEm: quando('atualizado_em').notNull().defaultNow(),
   },
   (t) => [
+    check('taxa_especial_faixa', sql`${t.taxaEspecialPercentual} is null or ${t.taxaEspecialPercentual} between 0 and 100`),
+    check('taxa_especial_meses_faixa', sql`${t.taxaEspecialMeses} is null or ${t.taxaEspecialMeses} between 1 and 60`),
     check('cpf_formato', sql`${t.cpf} is null or ${t.cpf} ~ '^[0-9]{11}$'`),
     check('cnpj_formato', sql`${t.cnpj} is null or ${t.cnpj} ~ '^[0-9]{14}$'`),
     check('cep_formato', sql`${t.cep} is null or ${t.cep} ~ '^[0-9]{8}$'`),
+    check('chave_pix_completa', sql`(${t.chavePix} is null) = (${t.tipoChavePix} is null)`),
     index('profissionais_fila').on(t.situacao, t.enviadoAnaliseEm),
     check('desconto_completo', sql`(${t.descontoAPartirHoras} is null) = (${t.valorHoraDescontoCentavos} is null)`),
     check('desconto_faixa', sql`${t.descontoAPartirHoras} is null or ${t.descontoAPartirHoras} between 2 and 12`),
@@ -135,6 +155,52 @@ export const profissionais = pgTable(
     check('uf_formato', sql`${t.uf} ~ '^[A-Z]{2}$'`),
     index('profissionais_por_cidade').on(t.cidade, t.situacao),
   ],
+);
+
+// Convite especial da equipe para uma profissional: um link de cadastro que já traz os
+// benefícios. Com e-mail, só a conta com aquele e-mail usa o convite.
+export const convites = pgTable(
+  'convites',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    codigo: text('codigo').notNull().unique(),
+    // para quem é (aparece na tela do cadastro: "Convite para Maria")
+    nome: text('nome').notNull(),
+    email: text('email'),
+    celular: text('celular'),
+    // recado da equipe, mostrado no cadastro e no e-mail
+    mensagem: text('mensagem'),
+    taxaPercentual: smallint('taxa_percentual'),
+    taxaMeses: smallint('taxa_meses'),
+    prioridadeFila: boolean('prioridade_fila').notNull().default(false),
+    usosMaximos: smallint('usos_maximos').notNull().default(1),
+    usos: smallint('usos').notNull().default(0),
+    expiraEm: quando('expira_em'),
+    // anotação só da equipe ("feira de Campinas", "parceria com o Senac")
+    observacao: text('observacao'),
+    criadoPor: uuid('criado_por').references(() => usuarios.id, { onDelete: 'set null' }),
+    criadoEm: quando('criado_em').notNull().defaultNow(),
+    enviadoEm: quando('enviado_em'),
+    canceladoEm: quando('cancelado_em'),
+  },
+  (t) => [
+    check('convite_taxa_faixa', sql`${t.taxaPercentual} is null or ${t.taxaPercentual} between 0 and 100`),
+    check('convite_meses_faixa', sql`${t.taxaMeses} is null or ${t.taxaMeses} between 1 and 60`),
+    check('convite_usos_faixa', sql`${t.usosMaximos} between 1 and 500 and ${t.usos} between 0 and ${t.usosMaximos}`),
+    index('convites_por_criacao').on(t.criadoEm),
+  ],
+);
+
+// Contadores de tentativas (por IP e rota, ou por e-mail no login) que valem para todas as
+// instâncias da API: na Vercel cada instância tem a própria memória, então o limite fica no banco.
+export const tentativas = pgTable(
+  'tentativas',
+  {
+    chave: text('chave').primaryKey(),
+    contagem: integer('contagem').notNull(),
+    expiraEm: quando('expira_em').notNull(),
+  },
+  (t) => [index('tentativas_por_expiracao').on(t.expiraEm)],
 );
 
 // Guardamos só o hash do token; o token em si vive no cookie.
@@ -157,6 +223,8 @@ export const sessoes = pgTable(
 export const situacaoServico = pgEnum('situacao_servico', [
   'solicitado',
   'proposta_alterada',
+  // a profissional aceitou (ou a família aceitou a proposta): falta a família pagar
+  'aguardando_pagamento',
   'confirmado',
   'recusado',
   'cancelado',
@@ -198,7 +266,7 @@ export const servicos = pgTable(
     canceladoEm: quando('cancelado_em'),
     canceladoPor: text('cancelado_por'),
     situacao: situacaoServico('situacao').notNull().default('solicitado'),
-    // até quando a outra parte pode responder; passado o prazo, o pedido expira
+    // até quando a outra parte pode responder (ou a família pagar); passado o prazo, o pedido expira
     respondaAte: quando('responda_ate'),
     realizadoEm: quando('realizado_em'),
     criadoEm: quando('criado_em').notNull().defaultNow(),
@@ -465,5 +533,53 @@ export const fotosPerfil = pgTable(
   (t) => [
     index('fotos_por_profissional').on(t.profissionalId, t.situacao),
     check('foto_recusada_tem_motivo', sql`${t.situacao} <> 'recusado' or ${t.motivoRecusa} is not null`),
+  ],
+);
+
+// A família paga ao contratar; o dinheiro fica no saldo da plataforma até a equipe
+// liberar o repasse para a profissional, depois da avaliação. Um pagamento por serviço:
+// se a cobrança vencer sem pagamento, a linha passa a apontar para uma cobrança nova.
+export const situacaoPagamento = pgEnum('situacao_pagamento', ['pendente', 'pago', 'reembolsado']);
+export const situacaoRepasse = pgEnum('situacao_repasse', ['aguardando', 'enviando', 'enviado', 'falhou']);
+
+export const pagamentos = pgTable(
+  'pagamentos',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    servicoId: uuid('servico_id')
+      .notNull()
+      .unique()
+      .references(() => servicos.id, { onDelete: 'cascade' }),
+    // 'abacatepay' ou 'simulado' (desenvolvimento)
+    gateway: text('gateway').notNull(),
+    cobrancaId: text('cobranca_id').notNull().unique(),
+    url: text('url').notNull(),
+    // preço do serviço (horas × valor da hora); o acréscimo do cartão vem à parte
+    valorCentavos: integer('valor_centavos').notNull(),
+    situacao: situacaoPagamento('situacao').notNull().default('pendente'),
+    metodo: text('metodo'),
+    parcelas: smallint('parcelas'),
+    // o que a família pagou a mais pela taxa do cartão (parcelamento)
+    acrescimoCentavos: integer('acrescimo_centavos'),
+    taxaGatewayCentavos: integer('taxa_gateway_centavos'),
+    comprovanteUrl: text('comprovante_url'),
+    pagoEm: quando('pago_em'),
+    reembolsadoEm: quando('reembolsado_em'),
+    // último erro ao tentar devolver o dinheiro; a equipe tenta de novo pela administração
+    reembolsoErro: text('reembolso_erro'),
+    repasseSituacao: situacaoRepasse('repasse_situacao').notNull().default('aguardando'),
+    repasseValorCentavos: integer('repasse_valor_centavos'),
+    repasseId: text('repasse_id'),
+    repasseComprovanteUrl: text('repasse_comprovante_url'),
+    repasseErro: text('repasse_erro'),
+    repassadoEm: quando('repassado_em'),
+    repassadoPor: uuid('repassado_por').references(() => usuarios.id, { onDelete: 'set null' }),
+    criadoEm: quando('criado_em').notNull().defaultNow(),
+    atualizadoEm: quando('atualizado_em').notNull().defaultNow(),
+  },
+  (t) => [
+    index('pagamentos_por_situacao').on(t.situacao, t.repasseSituacao),
+    check('pagamento_valor_positivo', sql`${t.valorCentavos} > 0`),
+    check('pagamento_pago_tem_data', sql`${t.situacao} = 'pendente' or ${t.pagoEm} is not null`),
   ],
 );

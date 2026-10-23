@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ambiente, cliente, DIA, familia, HORA, profissionalAprovada, type Ambiente } from './ajuda.js';
+import { aceitarEPagar, ambiente, cliente, DIA, familia, HORA, profissionalAprovada, type Ambiente } from './ajuda.js';
 
 // o relógio dos testes começa em 2026-10-20T12:00Z: terça, 9h em Brasília
 let amb: Ambiente;
@@ -66,7 +66,7 @@ describe('folgas e conflito de horário', () => {
     const pro = await profissionalAprovada(amb);
     const fam = await familiaNova();
     const { id } = (await fam.post('/api/servicos', { profissional: pro.slug, tarefa: 'Consulta', inicio: brasilia('2026-11-03', 10), horas: 2 })).corpo.servico;
-    await pro.c.post(`/api/servicos/${id}/aceitar`);
+    await aceitarEPagar(pro.c, fam, id);
 
     const folga = await pro.c.post('/api/profissionais/eu/bloqueios', { inicio: brasilia('2026-11-03', 0), fim: brasilia('2026-11-04', 0), motivo: 'Consulta médica minha' });
     expect(folga.status).toBe(201);

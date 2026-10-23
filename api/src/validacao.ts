@@ -85,6 +85,35 @@ export const uf = z
   .toUpperCase()
   .regex(/^[A-Z]{2}$/, 'Use a sigla do estado, como SP.');
 
+// Chave Pix para o repasse, já no formato que o gateway espera: CPF e CNPJ só com números,
+// celular com DDD (sem +55), e-mail em minúsculas e chave aleatória como UUID.
+export const chavePix = z
+  .object({
+    tipo: z.enum(['CPF', 'CNPJ', 'PHONE', 'EMAIL', 'RANDOM'], { error: 'Escolha o tipo da chave Pix.' }),
+    chave: z.string({ error: 'Informe a chave Pix.' }).trim().min(1, 'Informe a chave Pix.').max(120),
+  })
+  .transform((p, c) => {
+    const erro = (m: string) => {
+      c.addIssue({ code: 'custom', path: ['chave'], message: m });
+      return z.NEVER;
+    };
+    const d = soDigitos(p.chave);
+    switch (p.tipo) {
+      case 'CPF':
+        return cpfValido(d) ? { tipo: p.tipo, chave: d } : erro('Confira o CPF: os números não batem.');
+      case 'CNPJ':
+        return cnpjValido(d) ? { tipo: p.tipo, chave: d } : erro('Confira o CNPJ: os números não batem.');
+      case 'PHONE': {
+        const n = d.length > 11 && d.startsWith('55') ? d.slice(2) : d;
+        return /^\d{10,11}$/.test(n) ? { tipo: p.tipo, chave: n } : erro('Use o celular com DDD, como (19) 99999-0000.');
+      }
+      case 'EMAIL':
+        return z.email().safeParse(p.chave.toLowerCase()).success ? { tipo: p.tipo, chave: p.chave.toLowerCase() } : erro('Confira o e-mail.');
+      case 'RANDOM':
+        return z.uuid().safeParse(p.chave.toLowerCase()).success ? { tipo: p.tipo, chave: p.chave.toLowerCase() } : erro('A chave aleatória tem 32 letras e números, separados por traços.');
+    }
+  });
+
 // "123.456.789-09" vira "***.456.789-**": basta para a pessoa reconhecer o próprio CPF
 export const mascararCpf = (c: string) => `***.${c.slice(3, 6)}.${c.slice(6, 9)}-**`;
 export const mascararCnpj = (c: string) => `${c.slice(0, 2)}.***.***/${c.slice(8, 12)}-**`;

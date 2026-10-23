@@ -26,7 +26,7 @@
     const v = {
       veiculoIncluso: false,
       situacao: 'rascunho',
-      contatos: { email: { destino: 'jo•••@exemplo.com', verificado: true }, whatsapp: { destino: '(19) •••••-4521', verificado: false } },
+      contatos: { email: { destino: 'jo•••@exemplo.com', verificado: true }, whatsapp: { destino: '(19) •••••-4521', verificado: false, exigido: false } },
       dadosFiscais: null, endereco: null,
       documentos: [doc('documento_identidade', 'Documento com foto (RG ou CNH)'), doc('comprovante_endereco', 'Comprovante de endereço')],
       falta: [], podeEnviar: false, filaDeEspera: null, motivoCorrecao: null,
@@ -49,7 +49,7 @@
     const arquivos = {};
     const recalcula = () => {
       const docsOk = v.documentos.every((d) => d.situacao === 'enviado' || d.situacao === 'aprovado');
-      v.falta = Object.entries({ email: v.contatos.email.verificado, whatsapp: v.contatos.whatsapp.verificado, dadosFiscais: !!v.dadosFiscais, endereco: !!v.endereco, documentos: docsOk }).filter(([, ok]) => !ok).map(([k]) => k);
+      v.falta = Object.entries({ email: v.contatos.email.verificado, whatsapp: !v.contatos.whatsapp.exigido || v.contatos.whatsapp.verificado, dadosFiscais: !!v.dadosFiscais, endereco: !!v.endereco, documentos: docsOk }).filter(([, ok]) => !ok).map(([k]) => k);
       v.podeEnviar = ['rascunho', 'correcao'].includes(v.situacao) && !v.falta.length;
     };
     recalcula();
@@ -154,7 +154,7 @@
   // --- desenho da tela a partir da verificação ---
   const desenha = () => {
     const c = v.contatos;
-    const prontas = { contatos: c.email.verificado && c.whatsapp.verificado, dados: !!(v.dadosFiscais && v.endereco), documentos: v.documentos.every((d) => d.situacao === 'enviado' || d.situacao === 'aprovado') };
+    const prontas = { contatos: c.email.verificado && (!c.whatsapp.exigido || c.whatsapp.verificado), dados: !!(v.dadosFiscais && v.endereco), documentos: v.documentos.every((d) => d.situacao === 'enviado' || d.situacao === 'aprovado') };
     const nProntas = Object.values(prontas).filter(Boolean).length;
     const naFila = v.situacao === 'em_analise';
     const aprovada = !['rascunho', 'correcao', 'em_analise'].includes(v.situacao);
@@ -190,7 +190,10 @@
       li.classList.toggle('agora', e === proxima);
     });
 
-    // contatos
+    // contatos: o WhatsApp só aparece quando a plataforma exige o código dele
+    $('[data-canal="whatsapp"]').hidden = !c.whatsapp.exigido;
+    $('[data-contatos-titulo]').textContent = c.whatsapp.exigido ? 'Confirme seu e-mail e WhatsApp' : 'Confirme seu e-mail';
+    $('[data-contatos-sub]').textContent = c.whatsapp.exigido ? 'Mandamos um código de 6 números para cada um.' : 'Mandamos um código de 6 números para ele.';
     ['email', 'whatsapp'].forEach((canal) => {
       const box = $(`[data-canal="${canal}"]`);
       const k = c[canal];

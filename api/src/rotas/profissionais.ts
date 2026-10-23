@@ -1,7 +1,7 @@
 import { and, eq, inArray } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { exigirProfissional } from '../auth.js';
+import { exigirProfissional, exigirSenhaAtual, type UsuarioSessao } from '../auth.js';
 import { avaliacoesRecebidas } from '../avaliacoes.js';
 import type { Contexto } from '../contexto.js';
 import { profissionais, servicos, usuarios } from '../db/schema.js';
@@ -14,6 +14,7 @@ import { listaDeTarefas, salvarTarefas, tarefasDe } from '../tarefas.js';
 import { disponibilidadeDe, listaDeDisponibilidade, salvarDisponibilidade } from '../disponibilidade.js';
 import { fotoPublica } from './fotos.js';
 import type { Db } from '../db/index.js';
+import { CARENCIA_CHAVE_PIX_MS } from '../financeiro.js';
 
 const perfil = z
   .object({
@@ -31,9 +32,36 @@ const perfil = z
     aceitaOutras: z.boolean(),
     // dias e horários: [{ dia: 0-6, inicio: '08:00', fim: '18:00' }]; troca a lista inteira
     disponibilidade: listaDeDisponibilidade,
+    // onde ela recebe o repasse; null tira a chave
+    chavePix: v.chavePix.nullable(),
+    // trocar ou tirar a chave Pix pede a senha de novo
+    senhaAtual: z.string().max(200),
   })
   .partial()
   .strict();
+
+const ROTULO_PIX = { CPF: 'CPF', CNPJ: 'CNPJ', PHONE: 'celular', EMAIL: 'e-mail', RANDOM: 'chave aleatória' } as const;
+const dataHora = (d: Date) =>
+  new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(d);
+
+// Aviso por e-mail da troca da chave Pix: se não foi ela, dá tempo de reagir dentro da carência.
+// Falha no envio não desfaz a troca (fica no log).
+async function avisarTrocaPix(ctx: Contexto, log: { error: (o: object, m: string) => void }, u: UsuarioSessao, nova: { tipo: keyof typeof ROTULO_PIX; chave: string } | null, agora: Date) {
+  const oque = nova ? `trocada para ${ROTULO_PIX[nova.tipo]} terminado em ${nova.chave.slice(-4)}` : 'removida';
+  try {
+    await ctx.mensageiro.enviar({
+      canal: 'email',
+      destino: u.email,
+      assunto: 'Sua chave Pix foi alterada',
+      texto:
+        `A chave Pix que recebe os seus repasses na Minha companhia foi ${oque} em ${dataHora(agora)}.` +
+        (nova ? ` Por segurança, ela só recebe repasses a partir de ${dataHora(new Date(agora.getTime() + CARENCIA_CHAVE_PIX_MS))}.` : '') +
+        ' Se não foi você, avise a equipe da Minha companhia agora.',
+    });
+  } catch (err) {
+    log.error({ err }, 'aviso de troca da chave Pix');
+  }
+}
 
 const slugParam = z.object({ slug: z.string().min(1).max(80) });
 
@@ -64,7 +92,22 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
         }
       }
     }
-    const { tarefas, disponibilidade: faixas, ...campos } = dados;
+    const { tarefas, disponibilidade: faixas, chavePix, senhaAtual, ...resto } = dados;
+    const campos: typeof resto & { chavePix?: string | null; tipoChavePix?: 'CPF' | 'CNPJ' | 'PHONE' | 'EMAIL' | 'RANDOM' | null; chavePixAlteradaEm?: Date | null } = resto;
+    // Chave Pix nova (ou tirada): senha de novo, carência antes do primeiro repasse e aviso por
+    // e-mail. Mandar a mesma chave de novo não muda nada.
+    let pixMudou = false;
+    if (chavePix !== undefined) {
+      const [atual] = await ctx.db
+        .select({ chave: profissionais.chavePix, tipo: profissionais.tipoChavePix })
+        .from(profissionais)
+        .where(eq(profissionais.usuarioId, u.id));
+      pixMudou = (chavePix?.chave ?? null) !== atual!.chave || (chavePix?.tipo ?? null) !== atual!.tipo;
+      if (pixMudou) {
+        await exigirSenhaAtual(ctx, u, senhaAtual);
+        Object.assign(campos, { chavePix: chavePix?.chave ?? null, tipoChavePix: chavePix?.tipo ?? null, chavePixAlteradaEm: chavePix ? ctx.agora() : null });
+      }
+    }
     if (campos.descontoAPartirHoras !== undefined || campos.valorHoraDescontoCentavos !== undefined || campos.valorHoraCentavos !== undefined) {
       const [atual] = await ctx.db
         .select({ aPartir: profissionais.descontoAPartirHoras, desconto: profissionais.valorHoraDescontoCentavos, valor: profissionais.valorHoraCentavos })
@@ -107,7 +150,8 @@ export function rotasProfissionais(app: FastifyInstance, ctx: Contexto) {
           .where(eq(profissionais.usuarioId, u.id));
       }
     });
-    return { usuario: await dadosDaConta(ctx.db, u.id) };
+    if (pixMudou) await avisarTrocaPix(ctx, req.log, u, chavePix ?? null, ctx.agora());
+    return { usuario: await dadosDaConta(ctx.db, u.id, ctx.agora()) };
   });
 
   // portfólio público: só perfis aprovados (a própria profissional vê o seu em qualquer situação)

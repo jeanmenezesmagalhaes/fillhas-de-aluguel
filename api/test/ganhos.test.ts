@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { diasUteisDepois, feriados } from '../src/financeiro.js';
-import { ambiente, cliente, DIA, familia, HORA, profissionalAprovada, type Ambiente } from './ajuda.js';
+import { aceitarEPagar, ambiente, cliente, DIA, familia, HORA, profissionalAprovada, type Ambiente } from './ajuda.js';
 
 // o relógio dos testes começa em 2026-10-20T12:00Z: terça, 9h em Brasília
 let amb: Ambiente;
@@ -31,13 +31,13 @@ describe('extrato de ganhos', () => {
     const em = (h: number) => new Date(amb.relogio.agora.getTime() + h * HORA).toISOString();
     const pedir = async (tarefa: string, inicio: string, horas: number) => {
       const { id } = (await fam.post('/api/servicos', { profissional: pro.slug, tarefa, inicio, horas, pessoaAcompanhadaId: helena.id })).corpo.servico;
-      await pro.c.post(`/api/servicos/${id}/aceitar`);
+      await aceitarEPagar(pro.c, fam, id);
       return id as string;
     };
 
     const consulta = await pedir('Consulta', em(24), 4); // quarta, 9h às 13h, com desconto
     const banco = await pedir('Banco', em(72), 2); // sexta
-    const mercado = await pedir('Mercado', em(30), 2); // quarta, 15h: a família cancela em cima da hora
+    const mercado = await pedir('Mercado', em(30), 2); // quarta, 15h: a família cancela em cima da hora e recebe tudo de volta
     const passeio = await pedir('Passeio', em(120), 2); // domingo: a família cancela com folga
     const exame = await pedir('Exame', em(96), 2); // sábado: a profissional cancela
     await pro.c.post(`/api/servicos/${exame}/cancelar`);
@@ -53,25 +53,32 @@ describe('extrato de ganhos', () => {
     const por = (id: string) => g.lancamentos.find((l: { servicoId: string }) => l.servicoId === id);
     expect(por(consulta)).toMatchObject({
       tipo: 'atendimento', estado: 'programado', para: 'Helena', horas: 4, valorHoraCentavos: 7000,
-      descontoCentavos: 4000, brutoCentavos: 28000, taxaCentavos: 3360, liquidoCentavos: 24640, depositoEm: '2026-10-23', pagamento: null,
+      descontoCentavos: 4000, brutoCentavos: 28000, taxaCentavos: 3360, liquidoCentavos: 24640, pagamento: { metodo: 'PIX', parcelas: null },
+      // sem avaliação da família, o repasse sai no dia útil depois dos 14 dias para avaliar
+      depositoEm: '2026-11-05',
     });
-    expect(por(banco)).toMatchObject({ estado: 'previsto', brutoCentavos: 16000, depositoEm: '2026-10-27' });
-    expect(por(mercado)).toMatchObject({ tipo: 'cancelamento_tardio', brutoCentavos: 8000, taxaCentavos: 960, liquidoCentavos: 7040, descontoCentavos: 0 });
+    expect(por(banco)).toMatchObject({ estado: 'previsto', brutoCentavos: 16000, depositoEm: '2026-11-09' });
+    // no MVP o cancelamento devolve tudo à família: não sobra valor para a profissional
+    expect(por(mercado)).toBeUndefined();
     expect(por(passeio)).toBeUndefined();
     expect(por(exame)).toBeUndefined();
     expect(g.resumo).toMatchObject({
       atendimentosFeitos: 1, horasFeitas: 4,
-      brutoCentavos: 28000 + 16000 + 8000, taxaCentavos: 3360 + 1920 + 960,
-      programadoCentavos: 24640 + 7040, previstoCentavos: 14080, depositadoCentavos: 0,
+      brutoCentavos: 28000 + 16000, taxaCentavos: 3360 + 1920,
+      programadoCentavos: 24640, previstoCentavos: 14080, depositadoCentavos: 0,
     });
-    expect(g.proximosDepositos[0]).toMatchObject({ data: '2026-10-23', liquidoCentavos: 24640 + 7040, lancamentos: 2 });
+    expect(g.proximosDepositos[0]).toMatchObject({ data: '2026-11-05', liquidoCentavos: 24640, lancamentos: 1 });
+    // com a avaliação da família, a estimativa vira o próximo dia útil
+    await fam.post(`/api/servicos/${consulta}/avaliacoes`, { nota: 5 });
+    expect((await pro.c.get('/api/profissionais/eu/ganhos')).corpo.lancamentos.find((l: { servicoId: string }) => l.servicoId === consulta).depositoEm).toBe('2026-10-22');
 
-    // passado o prazo, o depósito conta como feito; atendimento passado sem conclusão espera
+    // pago pelo gateway, só conta como depositado quando a equipe libera o repasse;
+    // atendimento passado sem conclusão espera
     amb.relogio.avancar(4 * DIA);
     const depois = (await pro.c.get('/api/profissionais/eu/ganhos')).corpo;
-    expect(depois.lancamentos.find((l: { servicoId: string }) => l.servicoId === consulta).estado).toBe('depositado');
+    expect(depois.lancamentos.find((l: { servicoId: string }) => l.servicoId === consulta).estado).toBe('programado');
     expect(depois.lancamentos.find((l: { servicoId: string }) => l.servicoId === banco)).toMatchObject({ estado: 'aguardando_conclusao', depositoEm: null });
-    expect(depois.resumo.depositadoCentavos).toBe(24640 + 7040);
+    expect(depois.resumo.depositadoCentavos).toBe(0);
   });
 
   it('só a profissional vê os próprios ganhos, num período válido', async () => {

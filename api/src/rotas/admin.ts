@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
@@ -6,6 +6,7 @@ import { exigirAdmin } from '../auth.js';
 import type { Contexto } from '../contexto.js';
 import { documentos, indicacoes, profissionais, qualificacoes, usuarios } from '../db/schema.js';
 import { conflito, ErroApi, naoEncontrado } from '../erros.js';
+import { maisMeses } from '../financeiro.js';
 import * as v from '../validacao.js';
 import { documentosAtuais, documentosExigidos, enviarArquivo, ROTULO_DOCUMENTO } from './verificacao.js';
 
@@ -23,7 +24,7 @@ function maisUmMes(d: Date): string {
 }
 
 export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
-  // lista de espera: quem enviou primeiro aparece primeiro
+  // lista de espera: quem veio por convite com prioridade na frente; depois, quem enviou primeiro
   app.get('/api/admin/fila', async (req) => {
     exigirAdmin(req);
     const linhas = await ctx.db
@@ -34,13 +35,14 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
         uf: profissionais.uf,
         enviadoEm: profissionais.enviadoAnaliseEm,
         indicadoPor: indicador.nome,
+        prioridade: profissionais.prioridadeFila,
       })
       .from(profissionais)
       .innerJoin(usuarios, eq(usuarios.id, profissionais.usuarioId))
       .leftJoin(indicacoes, eq(indicacoes.indicadoId, profissionais.usuarioId))
       .leftJoin(indicador, eq(indicador.id, indicacoes.indicadorId))
       .where(eq(profissionais.situacao, 'em_analise'))
-      .orderBy(asc(profissionais.enviadoAnaliseEm));
+      .orderBy(desc(profissionais.prioridadeFila), asc(profissionais.enviadoAnaliseEm));
     return { fila: linhas.map((l, i) => ({ ...l, posicao: i + 1 })) };
   });
 
@@ -170,7 +172,7 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
     const admin = exigirAdmin(req);
     const { id } = idParam.parse(req.params);
     const [p] = await ctx.db
-      .select({ situacao: profissionais.situacao, cnpj: profissionais.cnpj, veiculo: profissionais.veiculoIncluso })
+      .select({ situacao: profissionais.situacao, cnpj: profissionais.cnpj, veiculo: profissionais.veiculoIncluso, taxaEspecialMeses: profissionais.taxaEspecialMeses, taxaEspecialAte: profissionais.taxaEspecialAte })
       .from(profissionais)
       .where(eq(profissionais.usuarioId, id));
     if (!p) throw naoEncontrado('Profissional não encontrada.');
@@ -190,6 +192,8 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
           aprovadoPor: admin.id,
           revisadoEm: agora.toISOString().slice(0, 10),
           proximaRevisao: maisUmMes(agora),
+          // o prazo da taxa especial do convite começa a contar na primeira aprovação
+          ...(p.taxaEspecialMeses && !p.taxaEspecialAte ? { taxaEspecialAte: maisMeses(agora, p.taxaEspecialMeses) } : {}),
           atualizadoEm: agora,
         })
         .where(eq(profissionais.usuarioId, id));

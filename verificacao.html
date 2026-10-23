@@ -71,7 +71,7 @@
       <ol class="etapas-verif">
         <!-- 1. contatos -->
         <li class="etapa-v" data-etapa="contatos">
-          <div class="ev-cab"><span class="ev-marca" aria-hidden="true"></span><div><h2>Confirme seu e-mail e WhatsApp</h2><p class="ev-sub">Mandamos um código de 6 números para cada um.</p></div></div>
+          <div class="ev-cab"><span class="ev-marca" aria-hidden="true"></span><div><h2 data-contatos-titulo>Confirme seu e-mail</h2><p class="ev-sub" data-contatos-sub>Mandamos um código de 6 números para ele.</p></div></div>
           <div class="ev-corpo">
             <div class="canal" data-canal="email">
               <div class="canal-cab"><p><strong>E-mail</strong> <span class="num" data-destino></span></p><span class="pill" data-estado-canal></span></div>
@@ -88,7 +88,7 @@
                 <p class="codigo-ajuda num"><span data-codigo-info></span> <button class="link" type="button" data-reenviar disabled>Reenviar código</button></p>
               </form>
             </div>
-            <div class="canal" data-canal="whatsapp">
+            <div class="canal" data-canal="whatsapp" hidden>
               <div class="canal-cab"><p><strong>WhatsApp</strong> <span class="num" data-destino></span></p><span class="pill" data-estado-canal></span></div>
               <div class="canal-acao" data-canal-acao>
                 <button class="btn btn-secundario" type="button" data-enviar-codigo>Enviar código</button>

@@ -87,7 +87,7 @@
       </section>
       <section class="cartao" aria-labelledby="t-ajuda">
         <h2 id="t-ajuda">Como funciona a resposta</h2>
-        <p class="ajuda-texto">A profissional aceita, recusa ou propõe outro horário. Nada fica marcado sem o seu aceite e o dela, e cada resposta chega no seu e-mail.</p>
+        <p class="ajuda-texto">A profissional aceita, recusa ou propõe outro horário. Quando ela aceita, você paga por Pix ou cartão, em até 12x (no cartão, com o acréscimo da taxa). O valor fica guardado com a Minha companhia e só vai para a profissional depois que você avaliar o atendimento. Se o pedido for cancelado, você recebe tudo de volta.</p>
       </section>
     </div>
   </div>
@@ -213,11 +213,22 @@
           <div class="pn-acoes"><button class="link pn-recusar" type="button" data-acao="cancelar">Cancelar pedido</button></div>
         </div>
       </li>`;
-    const linhaAgenda = (s, acao) => `<li data-id="${s.id}"><span class="ag-dia">${dia(s.inicio)}</span><span class="ag-hora">${faixa(s.inicio, s.horas)}</span><span class="ag-oque"><strong>${esc(s.tarefa)}</strong><small>${esc(s.profissional.nome)} · ${brl(s.totalCentavos)}</small></span>${acao}</li>`;
+    const linhaPagar = (s) => `<li class="pn" data-id="${s.id}">
+        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.tarefa)}</strong> com ${esc(s.profissional.nome)}</p><span class="pill pill-aviso">${s.respondaAte ? `Pague até ${mc.prazo(s.respondaAte)}` : 'Falta pagar'}</span></div>
+        ${para(s) ? `<p class="pn-tarefa">${para(s)}</p>` : ''}
+        <p class="pn-quando num">${dia(s.inicio)} · ${faixa(s.inicio, s.horas)} · ${veiculo(s)}</p>
+        <p class="pn-recado">${esc(primeiro(s.profissional.nome))} aceitou. O horário fica reservado até o pagamento; depois disso, o pedido se encerra.</p>
+        <div class="pn-pe">
+          <p class="pn-valor num"><span>${s.horas} h × ${brl(s.valorHoraCentavos)}</span><strong>${brl(s.totalCentavos)}</strong></p>
+          <div class="pn-acoes"><button class="btn btn-primario" type="button" data-pagar>Pagar ${brl(s.totalCentavos)}</button><button class="link pn-recusar" type="button" data-acao="cancelar">Cancelar pedido</button></div>
+        </div>
+      </li>`;
+    const FORMA = (p) => (!p || !p.metodo ? '' : p.metodo === 'PIX' ? 'pago por Pix' : p.parcelas > 1 ? `pago no cartão em ${p.parcelas}x` : 'pago no cartão');
+    const linhaAgenda = (s, acao) => `<li data-id="${s.id}"><span class="ag-dia">${dia(s.inicio)}</span><span class="ag-hora">${faixa(s.inicio, s.horas)}</span><span class="ag-oque"><strong>${esc(s.tarefa)}</strong><small>${esc(s.profissional.nome)} · ${brl(s.totalCentavos)}${s.pagamento && s.pagamento.situacao === 'pago' ? ` · ${FORMA(s.pagamento)}` : ''}</small></span>${acao}</li>`;
     const acaoAnterior = (s) => {
       if (s.situacao === 'recusado') return '<span class="ag-acao traco">Recusado</span>';
-      if (s.situacao === 'cancelado') return '<span class="ag-acao traco">Cancelado</span>';
-      if (s.situacao === 'expirado') return '<span class="ag-acao traco">Sem resposta no prazo</span>';
+      if (s.situacao === 'cancelado') return `<span class="ag-acao traco">${s.pagamento && s.pagamento.situacao === 'reembolsado' ? 'Cancelado · valor devolvido' : s.pagamento && s.pagamento.situacao === 'pago' ? 'Cancelado · devolução em andamento' : 'Cancelado'}</span>`;
+      if (s.situacao === 'expirado') return `<span class="ag-acao traco">${s.pagamento && s.pagamento.situacao === 'reembolsado' ? 'Prazo encerrado · valor devolvido' : 'Sem resposta no prazo'}</span>`;
       if (s.minhaNota) return `<span class="ag-acao ag-nota">${mc.estrelas(s.minhaNota)}</span>`;
       if (s.podeAvaliar) return '<span class="ag-acao"><button class="btn btn-secundario" type="button" data-avaliar>Avaliar</button></span>';
       return '<span class="ag-acao traco">Sem avaliação</span>';
@@ -227,11 +238,12 @@
       const agora = Date.now();
       const propostas = lista.filter((s) => s.situacao === 'proposta_alterada');
       const esperando = lista.filter((s) => s.situacao === 'solicitado');
-      const andamento = [...propostas, ...esperando];
+      const aPagar = lista.filter((s) => s.situacao === 'aguardando_pagamento').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+      const andamento = [...aPagar, ...propostas, ...esperando];
       const confirmados = lista.filter((s) => s.situacao === 'confirmado').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
       const anteriores = lista.filter((s) => ['realizado', 'recusado', 'cancelado', 'expirado'].includes(s.situacao));
 
-      $('[data-andamento]').innerHTML = [...propostas.map(linhaProposta), ...esperando.map(linhaEspera)].join('');
+      $('[data-andamento]').innerHTML = [...aPagar.map(linhaPagar), ...propostas.map(linhaProposta), ...esperando.map(linhaEspera)].join('');
       $('[data-sem-andamento]').hidden = andamento.length > 0;
       $('[data-conta-andamento]').textContent = mc.plural(andamento.length, 'pedido', 'pedidos');
 
@@ -249,7 +261,9 @@
         : 'Ninguém cadastrado ainda';
 
       const p = propostas[0];
-      achado.textContent = aviso || (p
+      achado.textContent = aviso || (aPagar.length
+        ? `${primeiro(aPagar[0].profissional.nome)} aceitou o pedido de ${aPagar[0].tarefa.toLowerCase()}. Pague para confirmar o atendimento.`
+        : p
         ? `${primeiro(p.profissional.nome)} propôs outro horário para ${p.tarefa.toLowerCase()}. Responda para confirmar.`
         : esperando.length === 1 ? `${primeiro(esperando[0].profissional.nome)} ainda vai responder o pedido de ${esperando[0].tarefa.toLowerCase()}.`
         : esperando.length ? `${esperando.length} pedidos esperam a resposta das profissionais.`
@@ -266,9 +280,26 @@
       try {
         const { servico } = await mc.api('POST', `/api/servicos/${s.id}/${acao}`);
         const quem = primeiro(s.profissional.nome);
-        aviso = acao === 'aceitar-proposta' ? `Confirmado: ${dia(servico.inicio).toLowerCase()}, das ${faixa(servico.inicio, servico.horas)}, com ${quem}.`
+        const pg = servico.pagamento;
+        aviso = acao === 'aceitar-proposta' ? `Novo horário aceito: ${dia(servico.inicio).toLowerCase()}, das ${faixa(servico.inicio, servico.horas)}, com ${quem}. Pague para confirmar.`
           : acao === 'recusar-proposta' ? `Proposta recusada. O pedido para ${quem} foi encerrado.`
+          : pg && pg.situacao === 'reembolsado' ? `Pedido cancelado. Devolvemos ${brl(s.totalCentavos + (pg.acrescimoCentavos || 0))}${pg.metodo === 'CARD' ? ' no cartão; a fatura pode levar alguns dias para mostrar' : ' por Pix'}. ${quem} vê o cancelamento no painel.`
+          : pg && pg.situacao === 'pago' ? `Pedido cancelado. A devolução do pagamento está em andamento; avisamos quando sair. ${quem} vê o cancelamento no painel.`
           : `Pedido cancelado. ${quem} vê o cancelamento no painel.`;
+      } catch (e) {
+        aviso = e.message;
+      }
+      await carrega();
+    };
+
+    // abre o checkout: a família paga fora e volta para pedidos?pago=<id>
+    const pagar = async (b, s) => {
+      b.disabled = true;
+      b.textContent = 'Abrindo o pagamento…';
+      try {
+        const { pagamento } = await mc.api('POST', `/api/servicos/${s.id}/pagamento`);
+        if (pagamento.url) { location.href = pagamento.url; return; }
+        aviso = 'Pagamento recebido. O atendimento está confirmado.';
       } catch (e) {
         aviso = e.message;
       }
@@ -279,6 +310,8 @@
       const porId = new Map(lista.map((s) => [s.id, s]));
       document.querySelectorAll('[data-gestao] [data-id]').forEach((li) => {
         const s = porId.get(li.dataset.id);
+        const botaoPagar = li.querySelector('[data-pagar]');
+        if (botaoPagar) botaoPagar.addEventListener('click', () => pagar(botaoPagar, s));
         li.querySelectorAll('[data-acao]').forEach((b) => {
           const acao = b.dataset.acao;
           if (acao === 'aceitar-proposta') b.addEventListener('click', () => agir(s, acao));
@@ -292,6 +325,23 @@
       });
     }
 
+    // volta do checkout: confere o pagamento (o aviso do gateway pode chegar uns segundos depois)
+    const voltou = new URLSearchParams(location.search).get('pago');
+    if (voltou) {
+      history.replaceState(null, '', location.pathname);
+      try {
+        let r = await mc.api('GET', `/api/servicos/${encodeURIComponent(voltou)}/pagamento`);
+        for (let i = 0; i < 3 && r.pagamento && r.pagamento.situacao === 'pendente'; i++) {
+          await new Promise((ok) => setTimeout(ok, 2000));
+          r = await mc.api('GET', `/api/servicos/${encodeURIComponent(voltou)}/pagamento`);
+        }
+        aviso = r.pagamento && r.pagamento.situacao === 'pago' && r.situacaoServico === 'confirmado'
+          ? 'Pagamento recebido. O atendimento está confirmado e o valor fica guardado até você avaliar.'
+          : r.pagamento && r.pagamento.situacao === 'reembolsado'
+          ? 'O pagamento chegou depois do prazo, e o pedido já tinha se encerrado. Devolvemos o valor.'
+          : 'Ainda não recebemos o pagamento. Se você já pagou, ele aparece aqui em alguns minutos.';
+      } catch (e) { aviso = e.message; }
+    }
     try { await carrega(); } catch (e) { achado.textContent = e.message; }
     $('[data-gestao]').hidden = false;
   })();

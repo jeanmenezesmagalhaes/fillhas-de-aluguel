@@ -25,8 +25,8 @@ O projeto na Vercel usa **Root Directory = `api`** e a predefinição Fastify. T
 
 - **Entrada:** `index.ts` exporta um handler `(req, res)`. A Vercel escolhe o primeiro arquivo entre `app`, `index`, `server`, `src/app`, `src/index` e `src/server` que importe `fastify`. Sem o `index.ts`, ela pegaria `src/app.ts`, que só monta o app.
 - **Build:** `npm run vercel-build` copia as telas para `api/public/` (`montar-public`) e aplica as migrations (`db:migrar`). As telas entram na função porque `src/iniciar.ts` aponta para `public/`.
-- **Variáveis:** `DATABASE_URL` (Postgres, obrigatória: sem ela o build e a função param com erro) e `SEGREDO_AGENDA`. Builds de preview também rodam as migrations no banco da `DATABASE_URL` deles.
-- **Pacotes só-ESM:** o carregador da Vercel não aceita `require()` de pacote ESM, embora o Node 22 aceite. Por isso o `@fastify/static` fica na 9.x: a 10.x puxa o `content-disposition` 3, que é só-ESM, e derruba a função ao carregar.
+- **Variáveis:** `DATABASE_URL` (Postgres, obrigatória: sem ela o build e a função param com erro), `SEGREDO_AGENDA`, `RESEND_API_KEY` e `EMAIL_REMETENTE` (para o código de e-mail sair) e, para cobrar de verdade, `ABACATEPAY_API_KEY`, `ABACATEPAY_WEBHOOK_SECRET` e `SITE_URL`. Builds de preview **não** rodam as migrations: com a mesma `DATABASE_URL` da produção, uma migration de branch mudaria o banco real. Com banco próprio no Preview (branch do Neon por preview), ligue `PREVIEW_COM_BANCO_PROPRIO=1` no ambiente Preview. Na Vercel a API roda sempre em modo de produção, mesmo sem `NODE_ENV`.
+- **Pacotes só-ESM:** o carregador da Vercel não aceita `require()` de pacote ESM, embora o Node 22 aceite. Por isso as telas não usam o `@fastify/static`: a 9.x tem o desvio do `allowedPath` (GHSA-8pvw-jcv7-9cmj) e a 10.x, que corrige, puxa o `content-disposition` 3, só-ESM, que derruba a função ao carregar. `src/telas.ts` serve só os nomes da lista, conferidos no caminho cru.
 - **Arquivos enviados:** o disco da função é só leitura. Documentos e fotos falham até existir um bucket.
 
 ## Stack
@@ -37,7 +37,8 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
 
 - **Uma pessoa, uma conta.** O papel vem das tabelas ligadas ao usuário: `contratantes` (família) e `profissionais`.
 - **Sessão:** cookie `mc_sessao` httpOnly, SameSite=Lax (Secure em produção), válido por 30 dias. O banco guarda só o hash SHA-256 do token. Pedidos que mudam algo vindos de outra origem são recusados.
-- **Login:** a mesma mensagem e o mesmo tempo de resposta para senha errada e e-mail sem conta. Cadastro e login aceitam 10 tentativas por minuto por IP.
+- **Login:** a mesma mensagem e o mesmo tempo de resposta para senha errada e e-mail sem conta. Cadastro e login aceitam 10 tentativas por minuto por IP, contadas no banco (tabela `tentativas`), para valer em todas as instâncias da Vercel. Além disso, 10 tentativas de entrar no mesmo e-mail, de qualquer IP, travam esse e-mail por 15 minutos (também para e-mail sem conta).
+- **Chave Pix:** trocar ou tirar pede a senha de novo (os erros somam no limite do login), manda um aviso para o e-mail da conta e a chave nova só recebe repasse 48 horas depois.
 - **Senha:** no mínimo 8 caracteres.
 - **Profissional:** começa em `rascunho`. O valor da hora é definido depois, no mínimo R$ 70 (7000 centavos, conferido também no banco). O valor não é exigido para entrar na lista de espera. O portfólio público só aparece com o perfil `aprovado` e o valor da hora definido.
 - **Verificação e lista de espera:**
@@ -94,10 +95,27 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
 - **Ganhos:**
   - `GET /api/profissionais/eu/ganhos?de=&ate=` traz o extrato da profissional pela data do atendimento. Sem datas, vai dos últimos 30 dias até os próximos 60; o máximo é 13 meses.
   - Cada lançamento traz bruto, desconto dado, taxa, líquido, estado (`previsto`, `aguardando_conclusao`, `programado`, `depositado`) e a data do depósito. A resposta também traz o resumo e os próximos depósitos por dia.
-  - Entra também o cancelamento em cima da hora feito pela família: menos de `CANCELAMENTO_TARDIO_HORAS` antes paga `CANCELAMENTO_TARDIO_PERCENT` do serviço.
+  - Cancelamento em cima da hora feito pela família (menos de `CANCELAMENTO_TARDIO_HORAS` antes) entrava com `CANCELAMENTO_TARDIO_PERCENT` do serviço. Com o pagamento devolvido, que é o caso de todo cancelamento no MVP, ele não entra mais.
+  - Serviço pago pelo gateway: fica `depositado` quando o repasse sai, na data do Pix. Antes disso, a data é uma estimativa: o dia útil seguinte à avaliação da família, ou ao fim dos 14 dias para avaliar. `pagamento` traz `{ metodo, parcelas }`.
   - Regras: `TAXA_PLATAFORMA_PERCENT` (12), `PRAZO_DEPOSITO_DIAS_UTEIS` (2, contando os feriados bancários nacionais), `CANCELAMENTO_TARDIO_HORAS` (24) e `CANCELAMENTO_TARDIO_PERCENT` (50).
-  - São propostas: a resposta traz `regras.definitivas: false` e `simulado: true`. Enquanto não houver gateway, é uma projeção, e `pagamento` vem null.
-- **Mensagens:** a interface `Mensageiro` (`src/mensagens.ts`) envia e-mail e WhatsApp. Fora de produção, a mensagem só vai para o log do servidor. Em produção sem provedor, o envio responde 503.
+  - São propostas: a resposta traz `regras.definitivas: false` e `simulado: true`. Serviços sem pagamento pelo gateway (os antigos) seguem a projeção de `PRAZO_DEPOSITO_DIAS_UTEIS`, com `pagamento` null.
+- **Pagamentos (MVP com AbacatePay):**
+  - A profissional aceita (ou a família aceita a proposta) e o serviço vai para `aguardando_pagamento`. O horário fica reservado, e `respondaAte` vira o prazo para a família pagar (24 h, ou até o início). Sem pagamento no prazo, vira `expirado`.
+  - `POST /api/servicos/:id/pagamento` abre o checkout hospedado do AbacatePay (Pix, ou cartão em até 12x com R$ 10 por parcela no mínimo) e devolve a `url`. No cartão, `passFeesToCustomer` faz a família pagar a taxa, inclusive a do parcelamento; o acréscimo fica em `acrescimoCentavos`. Abrir de novo reaproveita a cobrança aberta.
+  - A volta do checkout é `pedidos.html?pago=<id>`. A tela chama `GET /api/servicos/:id/pagamento`, que confere a cobrança com o gateway enquanto ela está pendente.
+  - O webhook (`POST /api/pagamentos/abacatepay?webhookSecret=…`) só aceita o segredo de `ABACATEPAY_WEBHOOK_SECRET`. O corpo só indica a cobrança: a situação vem sempre de uma consulta ao gateway. Reenvio não muda nada.
+  - Pago, o serviço vira `confirmado`. Se o pagamento chega quando o serviço já não espera (expirou ou foi cancelado), ele é devolvido na hora.
+  - O dinheiro fica no saldo da plataforma no AbacatePay. Não há split nem retenção do gateway: a retenção é a plataforma não repassar ainda.
+  - **Cancelamento:** todo cancelamento antes do início devolve tudo o que a família pagou (estorno integral, com o acréscimo do cartão), quem quer que cancele. Se o gateway recusar (saldo insuficiente, disputa), o serviço fica cancelado, o erro fica em `reembolsoErro`, e a equipe tenta de novo pela administração.
+  - **Repasse:** só depois do atendimento feito e da avaliação da família, ou do fim dos 14 dias para avaliar. A equipe libera na aba Pagamentos da administração, e a API manda por Pix (`/pix/send`) o valor do serviço menos a taxa da plataforma para a chave da profissional. Uma trava evita dois Pix com dois cliques. Falha fica como `falhou`, com o motivo, e dá para tentar de novo.
+  - A taxa do envio do Pix sai do valor enviado, então a profissional recebe o líquido menos essa taxa.
+  - **Chave Pix:** a profissional cadastra em `PATCH /api/profissionais/eu` com `chavePix: { tipo: 'CPF' | 'CNPJ' | 'PHONE' | 'EMAIL' | 'RANDOM', chave }` (ou null). CPF e CNPJ têm os dígitos conferidos, e o celular vai com DDD, sem +55.
+  - **Sem `ABACATEPAY_API_KEY`:** fora de produção, o pagamento é simulado. A cobrança abre `/api/pagamentos/simulado/:id`, uma tela da própria API com Pix e cartão de 1x a 12x, e o Pix do repasse só é registrado. Em produção sem a chave, abrir pagamento responde 503.
+  - **Interface `GatewayPagamento`** (`src/pagamentos.ts`): cobrar, consultar, estornar e enviar Pix. Trocar de gateway (Asaas, por exemplo) não mexe nas rotas.
+- **Mensagens:** a interface `Mensageiro` (`src/mensagens.ts`) envia e-mail e WhatsApp.
+  - **E-mail:** com `RESEND_API_KEY` e `EMAIL_REMETENTE` (de um domínio verificado no Resend), sai pelo Resend. Se o Resend recusar, o pedido responde 500 e o motivo vai para o log.
+  - **WhatsApp:** ainda sem provedor. A verificação por código fica desligada; `VERIFICAR_WHATSAPP=1` volta a exigi-la no cadastro profissional.
+  - **Sem provedor:** fora de produção, a mensagem só vai para o log do servidor. Em produção, o envio responde 503.
 - **Arquivos:** a interface `Armazenamento` (`src/armazenamento.ts`). Em desenvolvimento, os arquivos ficam em disco (`api/.data/arquivos`). Em produção, precisa de um bucket privado (S3 ou R2).
 - **Tarefas e mínimo de horas:**
   - A profissional escolhe as tarefas que faz, cada uma com o próprio mínimo de 1 a 12 horas.
@@ -117,7 +135,7 @@ Node 22 + TypeScript (rodando com tsx), Fastify 5, PostgreSQL com Drizzle ORM, Z
   - Sem resposta no prazo, o serviço passa a `expirado` e não pode mais ser aceito. Isso é conferido sempre que serviços são lidos ou alterados, sem tarefa agendada.
 - **Desconto e experiência:** `descontoAPartirHoras` (2 a 12) e `valorHoraDescontoCentavos` (no mínimo R$ 70 e menor que a hora) vão sempre juntos; mande os dois como null para tirar o desconto. O pedido com horas suficientes congela a hora com desconto. `anosExperiencia` vai de 0 a 60.
 - **Sem contato por fora:** telefone, e-mail ou link são recusados (400, "Não coloque telefone, e-mail ou link aqui.") nos textos que a outra parte lê: tarefa, observações, recado da proposta, comentário e resposta de avaliação, apresentação e nome das atividades. O `local` (endereço) pode ter números.
-- **Pedido de serviço:** o valor da hora fica congelado no pedido e respeita o mínimo de horas da profissional. Pode trazer `local` e `observacoes` (recado para a profissional). Situações: `solicitado`, `proposta_alterada`, `confirmado`, `recusado`, `cancelado`, `realizado`, `expirado`.
+- **Pedido de serviço:** o valor da hora fica congelado no pedido e respeita o mínimo de horas da profissional. Pode trazer `local` e `observacoes` (recado para a profissional). Situações: `solicitado`, `proposta_alterada`, `aguardando_pagamento`, `confirmado`, `recusado`, `cancelado`, `realizado`, `expirado`. Cada serviço traz `pagamento` (situação, forma, parcelas, acréscimo e situação do repasse) ou null.
 - **Proposta de outro horário:** a profissional propõe outro início ou outra duração, com recado; o pedido fica em `proposta_alterada` até a família aceitar (o novo horário passa a valer e o pedido é confirmado) ou recusar (o pedido se encerra).
 - **Lista de serviços:** cada item traz `papel` (de quem pergunta), `minhaNota`, `podeAvaliar` e, nos pedidos recebidos pela profissional, `notaFamilia`.
 - **Avaliação:**
@@ -140,7 +158,7 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET | `/api/sessao` | sempre 200: a conta, ou `usuario: null` sem sessão (para as telas públicas) |
 | GET, POST | `/api/pessoas` | família: pessoas acompanhadas |
 | DELETE | `/api/pessoas/:id` | família |
-| PATCH | `/api/profissionais/eu` | profissional: valor da hora, desconto, experiência, veículo, bairros, apresentação, `tarefas`, `aceitaOutras` e `disponibilidade` |
+| PATCH | `/api/profissionais/eu` | profissional: valor da hora, desconto, experiência, veículo, bairros, apresentação, `tarefas`, `aceitaOutras`, `disponibilidade` e `chavePix` |
 | POST | `/api/profissionais/eu/foto` | profissional: envia foto (multipart `arquivo`) |
 | GET | `/api/fotos/:id` | a foto (pública quando aprovada) |
 | GET | `/api/admin/fotos` | administração: fotos esperando conferência |
@@ -182,9 +200,15 @@ Todas respondem JSON. Erros vêm como `{ "erro": { "codigo", "mensagem", "campos
 | GET | `/api/servicos`, `/api/servicos/:id` | as duas partes |
 | POST | `/api/servicos/:id/aceitar` · `recusar` · `propor` · `concluir` | profissional |
 | POST | `/api/servicos/:id/aceitar-proposta` · `recusar-proposta` | família |
-| POST | `/api/servicos/:id/cancelar` | as duas partes, antes do início |
+| POST | `/api/servicos/:id/cancelar` | as duas partes, antes do início; devolve o que a família pagou |
+| POST | `/api/servicos/:id/pagamento` | família: abre (ou reaproveita) o checkout de um serviço aceito |
+| GET | `/api/servicos/:id/pagamento` | as duas partes: situação do pagamento, conferida com o gateway enquanto pendente |
+| POST | `/api/pagamentos/abacatepay?webhookSecret=` | webhook do AbacatePay |
+| GET, POST | `/api/pagamentos/simulado/:id` · `/pagar` | só sem chave do AbacatePay, fora de produção: a tela de pagamento simulado |
+| GET | `/api/admin/pagamentos` | administração: pagos e retidos, por etapa (`aguardando_atendimento`, `aguardando_avaliacao`, `liberar`, `estornar`, `repassado`) |
+| POST | `/api/admin/pagamentos/:id/repassar` · `estornar` | administração: envia o repasse por Pix; tenta de novo a devolução de um serviço cancelado |
 | POST, GET | `/api/servicos/:id/avaliacoes` | as duas partes |
 
 ## Ainda não existe
 
-Provedor real de e-mail e WhatsApp, bucket de arquivos em produção, recuperação de senha, telas de verificação, de indicações e de administração, revisão mensal automática dos documentos, regras do bônus de indicação, pagamentos, a busca pela API (busca.html continua com dados fixos) e o envio do pedido pelo resumo.html. Uma conta ainda não pode ter os dois papéis pelas rotas, embora o banco permita.
+Provedor real de e-mail e WhatsApp, bucket de arquivos em produção, recuperação de senha, telas de verificação, de indicações e de administração, revisão mensal automática dos documentos, regras do bônus de indicação, split e retenção pelo próprio gateway, devolução parcial, nota fiscal, a busca pela API (busca.html continua com dados fixos) e o envio do pedido pelo resumo.html. Uma conta ainda não pode ter os dois papéis pelas rotas, embora o banco permita.

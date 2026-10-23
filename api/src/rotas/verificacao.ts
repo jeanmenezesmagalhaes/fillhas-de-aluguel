@@ -1,5 +1,5 @@
 import { createHash, randomInt, randomUUID } from 'node:crypto';
-import { and, count, desc, eq, inArray, isNull, lt, ne } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNull, lt, ne, or, sql } from 'drizzle-orm';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { exigirProfissional, exigirUsuario } from '../auth.js';
@@ -121,11 +121,19 @@ export async function lerEnvio(req: FastifyRequest) {
   };
 }
 
-export async function posicaoNaFila(db: Db, enviadoEm: Date) {
+// quem tem prioridade (convite especial) passa na frente de quem não tem
+export async function posicaoNaFila(db: Db, enviadoEm: Date, prioridade = false) {
   const [r] = await db
     .select({ n: count() })
     .from(profissionais)
-    .where(and(eq(profissionais.situacao, 'em_analise'), lt(profissionais.enviadoAnaliseEm, enviadoEm)));
+    .where(
+      and(
+        eq(profissionais.situacao, 'em_analise'),
+        prioridade
+          ? and(eq(profissionais.prioridadeFila, true), lt(profissionais.enviadoAnaliseEm, enviadoEm))
+          : or(eq(profissionais.prioridadeFila, true), lt(profissionais.enviadoAnaliseEm, enviadoEm)),
+      ),
+    );
   return (r?.n ?? 0) + 1;
 }
 
@@ -157,7 +165,8 @@ export async function situacaoDaVerificacao(ctx: Contexto, usuarioId: string) {
   });
   const itens = {
     email: !!linha!.emailVerificadoEm,
-    whatsapp: !!linha!.celularVerificadoEm,
+    // com a verificação do WhatsApp desligada, o item não entra no que falta
+    whatsapp: !ctx.verificarWhatsapp || !!linha!.celularVerificadoEm,
     dadosFiscais: !!p.cpf,
     endereco: !!p.cep,
     documentos: docs.every((d) => d.situacao === 'enviado' || d.situacao === 'aprovado'),
@@ -171,7 +180,7 @@ export async function situacaoDaVerificacao(ctx: Contexto, usuarioId: string) {
     veiculoIncluso: p.veiculoIncluso,
     contatos: {
       email: { destino: mascararEmail(linha!.email), verificado: itens.email },
-      whatsapp: { destino: mascararCelular(linha!.celular), verificado: itens.whatsapp },
+      whatsapp: { destino: mascararCelular(linha!.celular), verificado: !!linha!.celularVerificadoEm, exigido: ctx.verificarWhatsapp },
     },
     dadosFiscais: p.cpf
       ? { cpf: v.mascararCpf(p.cpf), cnpj: p.cnpj ? v.mascararCnpj(p.cnpj) : null, razaoSocial: p.razaoSocial }
@@ -184,7 +193,7 @@ export async function situacaoDaVerificacao(ctx: Contexto, usuarioId: string) {
     podeEnviar: PODE_EDITAR.includes(p.situacao) && falta.length === 0,
     filaDeEspera:
       p.situacao === 'em_analise' && p.enviadoAnaliseEm
-        ? { desde: p.enviadoAnaliseEm, posicao: await posicaoNaFila(ctx.db, p.enviadoAnaliseEm) }
+        ? { desde: p.enviadoAnaliseEm, posicao: await posicaoNaFila(ctx.db, p.enviadoAnaliseEm, p.prioridadeFila) }
         : null,
     motivoCorrecao: p.situacao === 'correcao' ? p.motivoCorrecao : null,
   };
@@ -250,11 +259,14 @@ export function rotasVerificacao(app: FastifyInstance, ctx: Contexto, limite: { 
       .limit(1);
     const invalido = (msg: string) => new ErroApi(422, 'codigo_invalido', msg, { codigo: msg });
     if (!ultimo || ultimo.expiraEm <= agora) throw invalido('Este código expirou. Peça um novo.');
-    if (ultimo.tentativas >= MAX_TENTATIVAS) throw invalido('Muitas tentativas com este código. Peça um novo.');
-    if (ultimo.codigoHash !== hashCodigo(u.id, dados.codigo)) {
-      await ctx.db.update(verificacoes).set({ tentativas: ultimo.tentativas + 1 }).where(eq(verificacoes.id, ultimo.id));
-      throw invalido('Código incorreto. Confira e tente de novo.');
-    }
+    // conta a tentativa numa só instrução antes de conferir: pedidos em paralelo não passam do limite
+    const [contada] = await ctx.db
+      .update(verificacoes)
+      .set({ tentativas: sql`${verificacoes.tentativas} + 1` })
+      .where(and(eq(verificacoes.id, ultimo.id), lt(verificacoes.tentativas, MAX_TENTATIVAS)))
+      .returning({ id: verificacoes.id });
+    if (!contada) throw invalido('Muitas tentativas com este código. Peça um novo.');
+    if (ultimo.codigoHash !== hashCodigo(u.id, dados.codigo)) throw invalido('Código incorreto. Confira e tente de novo.');
     await ctx.db.transaction(async (tx) => {
       await tx.update(verificacoes).set({ confirmadoEm: agora }).where(eq(verificacoes.id, ultimo.id));
       await tx

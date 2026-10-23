@@ -4,6 +4,7 @@ import { criarApp } from '../src/app.js';
 import { abrirBanco, type Banco } from '../src/db/index.js';
 import { profissionais, usuarios } from '../src/db/schema.js';
 import type { Mensagem } from '../src/mensagens.js';
+import { gatewaySimulado, type GatewaySimulado } from '../src/pagamentos.js';
 
 export interface Ambiente {
   app: FastifyInstance;
@@ -11,13 +12,17 @@ export interface Ambiente {
   relogio: { agora: Date; avancar: (ms: number) => void };
   // mensagens que seriam enviadas por e-mail e WhatsApp
   mensagens: Mensagem[];
+  // gateway de pagamento simulado: cobranças, Pix enviados e falhas forçadas
+  gateway: GatewaySimulado;
   fechar: () => Promise<void>;
 }
 
 export const HORA = 60 * 60 * 1000;
 export const DIA = 24 * HORA;
 
-export async function ambiente(op: { limiteTentativas?: number } = {}): Promise<Ambiente> {
+export const SEGREDO_WEBHOOK = 'segredo-do-webhook-de-teste';
+
+export async function ambiente(op: { limiteTentativas?: number; verificarWhatsapp?: boolean } = {}): Promise<Ambiente> {
   const banco = await abrirBanco('memory://');
   const relogio = {
     agora: new Date('2026-10-20T12:00:00Z'),
@@ -26,18 +31,23 @@ export async function ambiente(op: { limiteTentativas?: number } = {}): Promise<
     },
   };
   const mensagens: Mensagem[] = [];
+  const gateway = gatewaySimulado();
   const app = await criarApp({
+    pagamentos: gateway,
+    segredoWebhook: SEGREDO_WEBHOOK,
     db: banco.db,
     mensageiro: { enviar: async (m) => void mensagens.push(m) },
     agora: () => relogio.agora,
     site: false,
     limiteTentativas: op.limiteTentativas ?? 1000,
+    verificarWhatsapp: op.verificarWhatsapp,
   });
   return {
     app,
     banco,
     relogio,
     mensagens,
+    gateway,
     fechar: async () => {
       await app.close();
       await banco.fechar();
@@ -128,4 +138,20 @@ export function ultimoCodigo(amb: Ambiente, destino: string) {
 
 export async function tornarAdmin(amb: Ambiente, usuarioId: string) {
   await amb.banco.db.update(usuarios).set({ admin: true }).where(eq(usuarios.id, usuarioId));
+}
+
+type Cliente = ReturnType<typeof cliente>;
+
+// A família abre o pagamento de um serviço aceito e paga na tela simulada.
+export async function pagar(fam: Cliente, servicoId: string, metodo: 'PIX' | 'CARD' = 'PIX', parcelas = 1) {
+  const aberto = await fam.post(`/api/servicos/${servicoId}/pagamento`);
+  if (aberto.status !== 200) throw new Error(`pagamento não abriu: ${JSON.stringify(aberto.corpo)}`);
+  const cobranca = String(aberto.corpo.pagamento.url).split('/').pop();
+  return fam.post(`/api/pagamentos/simulado/${cobranca}/pagar`, { metodo, parcelas });
+}
+
+// aceite da profissional seguido do pagamento da família: o serviço fica confirmado
+export async function aceitarEPagar(pro: Cliente, fam: Cliente, servicoId: string) {
+  await pro.post(`/api/servicos/${servicoId}/aceitar`);
+  await pagar(fam, servicoId);
 }

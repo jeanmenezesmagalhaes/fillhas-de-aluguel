@@ -93,7 +93,7 @@ export function rotasFotos(app: FastifyInstance, ctx: Contexto) {
     });
     for (const a of antigas) await ctx.armazenamento.remover(a.chave);
     // como o PATCH do perfil: a conta inteira em `usuario`, e a foto também no topo
-    return reply.status(201).send({ ...(await fotoDaConta(ctx.db, u.id)), usuario: await dadosDaConta(ctx.db, u.id) });
+    return reply.status(201).send({ ...(await fotoDaConta(ctx.db, u.id)), usuario: await dadosDaConta(ctx.db, u.id, ctx.agora()) });
   });
 
   // A foto aprovada e no ar é pública (o endereço muda a cada foto, então pode ficar em

@@ -211,6 +211,10 @@ button { font: inherit; }
 .cartao-entrar h1 { font-size: var(--fs-title); line-height: 30px; }
 .cartao-entrar .achado { margin-top: 6px; color: var(--muted); font-size: 16px; }
 .modos[hidden] { display: none; }
+/* convite especial da equipe, no cadastro da profissional */
+.convite-aviso { display: grid; gap: 6px; margin-top: 20px; padding: 14px 16px; border-radius: 8px; background: #e6f0ea; }
+.convite-aviso[hidden] { display: none; }
+.convite-aviso ul { margin: 0; padding-left: 18px; }
 .modos { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 24px; padding: 4px; border-radius: 8px; background: var(--raised); }
 .modo { height: 40px; border: 1px solid transparent; border-radius: var(--radius-control); background: none; color: var(--muted); font: inherit; font-weight: 500; cursor: pointer; }
 .modo[aria-pressed="true"] { border-color: var(--border); background: var(--surface); color: var(--text); }
