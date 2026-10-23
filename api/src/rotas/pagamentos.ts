@@ -19,7 +19,6 @@ const idParam = z.object({ id: v.uuid });
 // o que muda a taxa da plataforma para a profissional (convite especial)
 export const beneficioDaProfissional = {
   taxaEspecialPercentual: profissionais.taxaEspecialPercentual,
-  taxaEspecialMeses: profissionais.taxaEspecialMeses,
   taxaEspecialAte: profissionais.taxaEspecialAte,
 };
 const DIA_MS = 86_400_000;

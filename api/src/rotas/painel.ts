@@ -17,6 +17,7 @@ import {
   usuarios,
 } from '../db/schema.js';
 import { dataBrasilia, percentualDaTaxa, REGRAS, taxaDe } from '../financeiro.js';
+import { beneficioDaLinha, colunasDoBeneficio } from './convites.js';
 import { beneficioDaProfissional } from './pagamentos.js';
 import { documentosAtuais, documentosExigidos } from './verificacao.js';
 
@@ -284,10 +285,7 @@ export function rotasPainel(app: FastifyInstance, ctx: Contexto) {
             enviadoAnaliseEm: profissionais.enviadoAnaliseEm,
             aprovadoEm: profissionais.aprovadoEm,
             proximaRevisao: profissionais.proximaRevisao,
-            taxaEspecialPercentual: profissionais.taxaEspecialPercentual,
-            taxaEspecialMeses: profissionais.taxaEspecialMeses,
-            taxaEspecialAte: profissionais.taxaEspecialAte,
-            prioridadeFila: profissionais.prioridadeFila,
+            ...colunasDoBeneficio,
             convite: convites.codigo,
           },
           pedidos: sql<number>`(select count(*) from ${servicos} where ${servicos.contratanteId} = ${usuarios.id} or ${servicos.profissionalId} = ${usuarios.id})`.mapWith(Number),
@@ -352,10 +350,7 @@ export function rotasPainel(app: FastifyInstance, ctx: Contexto) {
                 aprovadoEm: pro.aprovadoEm,
                 proximaRevisao: pro.proximaRevisao,
                 convite: pro.convite,
-                beneficio:
-                  pro.taxaEspecialPercentual != null || pro.prioridadeFila
-                    ? { taxaPercentual: pro.taxaEspecialPercentual, taxaMeses: pro.taxaEspecialMeses, taxaAte: pro.taxaEspecialAte, prioridadeFila: pro.prioridadeFila }
-                    : null,
+                beneficio: beneficioDaLinha({ ...pro, prioridadeFila: !!pro.prioridadeFila }),
               }
             : null,
           falta,

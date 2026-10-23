@@ -23,35 +23,38 @@ describe('convites especiais', () => {
     await curioso.post('/api/profissionais', profissional());
     expect((await curioso.post('/api/admin/convites', { nome: 'Maria' })).status).toBe(403);
 
-    // taxa igual ou maior que a padrão não é benefício
-    expect((await admin.post('/api/admin/convites', { nome: 'Maria', taxaPercentual: 12 })).corpo.erro.campos.taxaPercentual).toBeTruthy();
-    expect((await admin.post('/api/admin/convites', { nome: 'Maria', taxaMeses: 3 })).corpo.erro.campos.taxaMeses).toBeTruthy();
+    // só os pacotes padrão; taxa e prazo não vêm de fora
+    expect((await admin.post('/api/admin/convites', { nome: 'Maria', pacote: 'vip' })).corpo.erro.campos.pacote).toBeTruthy();
     expect((await admin.post('/api/admin/convites', { nome: 'Maria', enviarEmail: true })).corpo.erro.campos.email).toBeTruthy();
+    const pacotes = (await admin.get('/api/admin/convites')).corpo.pacotes;
+    expect(pacotes.map((p: { id: string }) => p.id)).toEqual(['boas_vindas', 'parceria']);
+    expect(pacotes[1]).toMatchObject({ nome: 'Parceria', taxaPercentual: 6, taxaDias: 180, prioridadeFila: true, isencaoMeses: 12 });
 
     const criado = await admin.post('/api/admin/convites', {
       nome: 'Maria Souza',
       email: 'Maria.Souza@exemplo.com',
       mensagem: 'Foi um prazer conhecer você na feira.',
-      taxaPercentual: 5,
-      taxaMeses: 6,
-      prioridadeFila: true,
+      // tentar mudar a taxa não muda nada: vale o pacote
+      taxaPercentual: 0,
       enviarEmail: true,
     });
     expect(criado.status).toBe(201);
     const { convite } = criado.corpo;
-    expect(convite).toMatchObject({ situacao: 'ativo', usos: 0, usosMaximos: 1, email: 'maria.souza@exemplo.com' });
+    expect(convite).toMatchObject({ situacao: 'ativo', usos: 0, usosMaximos: 1, email: 'maria.souza@exemplo.com', pacote: 'boas_vindas', nomePacote: 'Boas-vindas', taxaPercentual: 6, taxaDias: 90, prioridadeFila: true, isencaoMeses: 6 });
     expect(convite.codigo).toMatch(/^MC-[A-Z0-9]{8}$/);
     expect(criado.corpo.envio).toEqual({ ok: true });
     const email = amb.mensagens.at(-1)!;
     expect(email).toMatchObject({ canal: 'email', destino: 'maria.souza@exemplo.com' });
     expect(email.texto).toContain(`/entrar?perfil=pro&modo=criar&convite=${convite.codigo}`);
-    expect(email.texto).toContain('taxa da plataforma de 5% (no lugar de 12%) nos primeiros 6 meses');
+    expect(email.texto).toContain('Com o convite Boas-vindas você tem:');
+    expect(email.texto).toContain('taxa da plataforma de 6% (no lugar de 12%) nos primeiros 90 dias depois da aprovação');
     expect(email.texto).toContain('prioridade na análise');
+    expect(email.texto).toContain('cadastro e mensalidade sem custo nos primeiros 6 meses');
 
     // a tela de cadastro mostra o convite sem precisar de conta
     const publico = await cliente(amb.app).get(`/api/convites/${convite.codigo.toLowerCase()}`);
-    expect(publico.corpo.convite).toMatchObject({ nome: 'Maria', emailExigido: true, mensagem: 'Foi um prazer conhecer você na feira.' });
-    expect(publico.corpo.convite.beneficios).toHaveLength(2);
+    expect(publico.corpo.convite).toMatchObject({ nome: 'Maria', pacote: 'Boas-vindas', emailExigido: true, mensagem: 'Foi um prazer conhecer você na feira.' });
+    expect(publico.corpo.convite.beneficios).toHaveLength(3);
 
     // o convite com e-mail só vale para aquele e-mail
     const outra = await cliente(amb.app).post('/api/profissionais', profissional({ codigoConvite: convite.codigo }));
@@ -62,7 +65,8 @@ describe('convites especiais', () => {
     const r = await maria.post('/api/profissionais', profissional({ nome: 'Maria Souza', email: 'maria.souza@exemplo.com', codigoConvite: convite.codigo }));
     expect(r.status).toBe(201);
     const [p] = await amb.banco.db.select().from(profissionais).where(eq(profissionais.usuarioId, r.corpo.usuario.id));
-    expect(p).toMatchObject({ conviteId: convite.id, taxaEspecialPercentual: 5, taxaEspecialMeses: 6, taxaEspecialAte: null, prioridadeFila: true });
+    // os prazos só começam na aprovação
+    expect(p).toMatchObject({ conviteId: convite.id, beneficioPacote: 'boas_vindas', taxaEspecialPercentual: 6, taxaEspecialDias: 90, taxaEspecialAte: null, prioridadeFila: true, isencaoMeses: 6, isencaoAte: null });
 
     // usado: não vale de novo
     expect((await cliente(amb.app).get(`/api/convites/${convite.codigo}`)).status).toBe(410);
@@ -73,7 +77,7 @@ describe('convites especiais', () => {
 
   it('convite de vários usos, vencido ou cancelado', async () => {
     const admin = await adminNovo();
-    const { convite } = (await admin.post('/api/admin/convites', { nome: 'Turma do Senac', usosMaximos: 2, validadeDias: 3, prioridadeFila: true })).corpo;
+    const { convite } = (await admin.post('/api/admin/convites', { nome: 'Turma do Senac', pacote: 'parceria', usosMaximos: 2, validadeDias: 3 })).corpo;
     expect((await cliente(amb.app).post('/api/profissionais', profissional({ codigoConvite: convite.codigo }))).status).toBe(201);
     amb.relogio.avancar(3 * DIA + HORA);
     const vencido = await cliente(amb.app).post('/api/profissionais', profissional({ codigoConvite: convite.codigo }));
@@ -107,9 +111,15 @@ describe('benefício na taxa', () => {
     const admin = await adminNovo();
     const pro = await profissionalAprovada(amb);
     await amb.banco.db.update(profissionais).set({ aprovadoEm: amb.relogio.agora }).where(eq(profissionais.slug, pro.slug));
-    const b = await admin.put(`/api/admin/profissionais/${pro.usuario.id}/beneficio`, { taxaPercentual: 5, taxaMeses: 1, prioridadeFila: false });
-    expect(b.corpo.beneficio).toMatchObject({ taxaPercentual: 5, taxaMeses: 1 });
-    expect(new Date(b.corpo.beneficio.taxaAte).getTime()).toBeGreaterThan(amb.relogio.agora.getTime() + 27 * DIA);
+    // já aprovada: os prazos do pacote começam agora
+    const b = await admin.put(`/api/admin/profissionais/${pro.usuario.id}/beneficio`, { pacote: 'boas_vindas' });
+    expect(b.corpo.beneficio).toMatchObject({ pacote: 'boas_vindas', nome: 'Boas-vindas', taxaPercentual: 6, taxaDias: 90, prioridadeFila: true, isencaoMeses: 6 });
+    expect(new Date(b.corpo.beneficio.taxaAte).getTime()).toBe(amb.relogio.agora.getTime() + 90 * DIA);
+    expect(new Date(b.corpo.beneficio.isencaoAte).getTime()).toBeGreaterThan(amb.relogio.agora.getTime() + 180 * DIA);
+    expect((await admin.put(`/api/admin/profissionais/${pro.usuario.id}/beneficio`, { pacote: null })).corpo.beneficio).toBeNull();
+    await admin.put(`/api/admin/profissionais/${pro.usuario.id}/beneficio`, { pacote: 'boas_vindas' });
+    // para testar o fim sem pedir atendimento a 90 dias, o prazo acaba daqui a 10 dias
+    await amb.banco.db.update(profissionais).set({ taxaEspecialAte: new Date(amb.relogio.agora.getTime() + 10 * DIA) }).where(eq(profissionais.slug, pro.slug));
 
     const fam = cliente(amb.app);
     await fam.post('/api/contas', familia());
@@ -122,18 +132,18 @@ describe('benefício na taxa', () => {
     const dentro = await pede(2);
     const depois = await pede(40);
     const itens = (await admin.get('/api/admin/pagamentos')).corpo.pagamentos;
-    // 4 h de R$ 70: 5% dentro do prazo, 12% depois
-    expect(itens.find((i: { servico: { id: string } }) => i.servico.id === dentro)).toMatchObject({ taxaPercentual: 5, taxaCentavos: 1400, repasseCentavos: 26600 });
+    // 4 h de R$ 70: 6% dentro do prazo, 12% depois
+    expect(itens.find((i: { servico: { id: string } }) => i.servico.id === dentro)).toMatchObject({ taxaPercentual: 6, taxaCentavos: 1680, repasseCentavos: 26320 });
     expect(itens.find((i: { servico: { id: string } }) => i.servico.id === depois)).toMatchObject({ taxaPercentual: 12, taxaCentavos: 3360 });
 
     const g = (await pro.c.get('/api/profissionais/eu/ganhos?ate=' + new Date(amb.relogio.agora.getTime() + 50 * DIA).toISOString().slice(0, 10))).corpo;
-    expect(g.taxaEspecial).toMatchObject({ percentual: 5, meses: 1 });
-    expect(g.lancamentos.find((l: { servicoId: string }) => l.servicoId === dentro).taxaCentavos).toBe(1400);
+    expect(g.taxaEspecial).toMatchObject({ percentual: 6, dias: 90 });
+    expect(g.lancamentos.find((l: { servicoId: string }) => l.servicoId === dentro).taxaCentavos).toBe(1680);
 
     // o painel conta a receita com a taxa de cada profissional
     const resumo = (await admin.get('/api/admin/resumo')).corpo;
     expect(resumo.financeiro.recebidoCentavos).toBeGreaterThanOrEqual(56000);
-    expect(resumo.financeiro.receitaPrevistaCentavos).toBeGreaterThanOrEqual(1400 + 3360);
+    expect(resumo.financeiro.receitaPrevistaCentavos).toBeGreaterThanOrEqual(1680 + 3360);
   });
 });
 

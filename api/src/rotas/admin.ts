@@ -6,7 +6,7 @@ import { exigirAdmin } from '../auth.js';
 import type { Contexto } from '../contexto.js';
 import { documentos, indicacoes, profissionais, qualificacoes, usuarios } from '../db/schema.js';
 import { conflito, ErroApi, naoEncontrado } from '../erros.js';
-import { maisMeses } from '../financeiro.js';
+import { maisDias, maisMeses } from '../financeiro.js';
 import * as v from '../validacao.js';
 import { documentosAtuais, documentosExigidos, enviarArquivo, ROTULO_DOCUMENTO } from './verificacao.js';
 
@@ -172,7 +172,7 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
     const admin = exigirAdmin(req);
     const { id } = idParam.parse(req.params);
     const [p] = await ctx.db
-      .select({ situacao: profissionais.situacao, cnpj: profissionais.cnpj, veiculo: profissionais.veiculoIncluso, taxaEspecialMeses: profissionais.taxaEspecialMeses, taxaEspecialAte: profissionais.taxaEspecialAte })
+      .select({ situacao: profissionais.situacao, cnpj: profissionais.cnpj, veiculo: profissionais.veiculoIncluso, taxaEspecialDias: profissionais.taxaEspecialDias, taxaEspecialAte: profissionais.taxaEspecialAte, isencaoMeses: profissionais.isencaoMeses, isencaoAte: profissionais.isencaoAte })
       .from(profissionais)
       .where(eq(profissionais.usuarioId, id));
     if (!p) throw naoEncontrado('Profissional não encontrada.');
@@ -192,8 +192,9 @@ export function rotasAdmin(app: FastifyInstance, ctx: Contexto) {
           aprovadoPor: admin.id,
           revisadoEm: agora.toISOString().slice(0, 10),
           proximaRevisao: maisUmMes(agora),
-          // o prazo da taxa especial do convite começa a contar na primeira aprovação
-          ...(p.taxaEspecialMeses && !p.taxaEspecialAte ? { taxaEspecialAte: maisMeses(agora, p.taxaEspecialMeses) } : {}),
+          // os prazos do pacote de convite começam a contar na primeira aprovação
+          ...(p.taxaEspecialDias && !p.taxaEspecialAte ? { taxaEspecialAte: maisDias(agora, p.taxaEspecialDias) } : {}),
+          ...(p.isencaoMeses && !p.isencaoAte ? { isencaoAte: maisMeses(agora, p.isencaoMeses) } : {}),
           atualizadoEm: agora,
         })
         .where(eq(profissionais.usuarioId, id));

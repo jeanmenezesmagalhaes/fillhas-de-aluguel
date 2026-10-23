@@ -68,19 +68,41 @@ export function diasUteisDepois(iso: string, n: number): string {
 
 export const taxaDe = (brutoCentavos: number, percentual = REGRAS.taxaPercentual) => Math.round((brutoCentavos * percentual) / 100);
 
+// Pacotes de convite. São sempre os mesmos e sempre acabam: a taxa da plataforma cai pela metade
+// por um número de dias contado da aprovação, a profissional passa na frente da fila de análise e
+// fica isenta da cobrança de cadastro ou mensalidade por alguns meses (guardado para quando essa
+// cobrança existir). O percentual é calculado na criação do convite e fica gravado nele, então mudar
+// a taxa padrão depois não muda um convite já enviado.
+export const PACOTES = {
+  boas_vindas: { nome: 'Boas-vindas', fatorTaxa: 0.5, taxaDias: 90, prioridadeFila: true, isencaoMeses: 6 },
+  parceria: { nome: 'Parceria', fatorTaxa: 0.5, taxaDias: 180, prioridadeFila: true, isencaoMeses: 12 },
+} as const;
+export type Pacote = keyof typeof PACOTES;
+export const NOMES_PACOTES = Object.keys(PACOTES) as [Pacote, ...Pacote[]];
+
+// os valores do pacote hoje, prontos para gravar no convite ou na profissional
+export const termosDoPacote = (p: Pacote) => ({
+  pacote: p,
+  taxaPercentual: Math.round(REGRAS.taxaPercentual * PACOTES[p].fatorTaxa),
+  taxaDias: PACOTES[p].taxaDias,
+  prioridadeFila: PACOTES[p].prioridadeFila,
+  isencaoMeses: PACOTES[p].isencaoMeses,
+});
+
 export interface Beneficio {
   taxaEspecialPercentual: number | null;
-  taxaEspecialMeses: number | null;
   taxaEspecialAte: Date | null;
 }
 
-// Taxa que vale para um atendimento da profissional, pela data dele. Com prazo em meses, a
-// taxa especial vale até `taxaEspecialAte`; antes da aprovação (sem a data marcada), ainda vale.
+// Taxa que vale para um atendimento da profissional, pela data dele: a especial até
+// `taxaEspecialAte`. Antes da aprovação a data ainda não existe, e a especial vale.
 export function percentualDaTaxa(b: Beneficio | null | undefined, quando: Date): number {
   if (!b || b.taxaEspecialPercentual == null) return REGRAS.taxaPercentual;
-  if (b.taxaEspecialMeses != null && b.taxaEspecialAte && quando >= b.taxaEspecialAte) return REGRAS.taxaPercentual;
+  if (b.taxaEspecialAte && quando >= b.taxaEspecialAte) return REGRAS.taxaPercentual;
   return b.taxaEspecialPercentual;
 }
+
+export const maisDias = (d: Date, dias: number) => new Date(d.getTime() + dias * DIA_MS);
 
 // a data `meses` meses depois, no mesmo dia (ou no último dia do mês, quando ele não existe)
 export function maisMeses(d: Date, meses: number): Date {

@@ -8,27 +8,28 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>Painel da equipe · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="admin-painel.css?v=2">
+<link rel="stylesheet" href="admin-painel.css?v=7">
+<link rel="stylesheet" href="equipe.css?v=1">
 </head>
 <body>
 
-<div class="app" data-gestao hidden>
-  <nav class="lateral" id="menu" aria-label="Administração" data-lateral>
-    <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg><span><strong>minha companhia</strong><small>Equipe</small></span></a>
-    <button class="fechar-menu" type="button" data-fechar-menu hidden>Fechar menu</button>
-    <a class="nav-item" href="#visao" data-nav="visao"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2.5h5v5H2zM9 2.5h5v3H9zM9 7.5h5v6H9zM2 9.5h5v4H2z"/></svg>Visão geral</a>
-    <a class="nav-item" href="#usuarios" data-nav="usuarios"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5" r="2.5"/><path d="M1.5 13.5c.4-2.4 2.2-4 4.5-4s4.1 1.6 4.5 4M11 3a2.5 2.5 0 0 1 0 4.6M12.5 9.6c1.1.6 1.8 1.9 2 3.9"/></svg>Usuários</a>
-    <a class="nav-item" href="#convites" data-nav="convites"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12v8.5H2zM2 4.5l6 4.5 6-4.5"/></svg>Convites</a>
-    <p class="grupo">Conferência</p>
-    <a class="nav-item" href="admin"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h6l3 3v10H4zM10 1.5v3h3M6.5 9.5l1.5 1.5 3-3"/></svg>Cadastros e documentos<span class="contagem num" data-n-conferencia></span></a>
-    <a class="nav-item" href="admin#pagamentos"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4h13v8.5h-13zM1.5 6.5h13M4 10h3"/></svg>Repasses<span class="contagem num" data-n-repasses></span></a>
-    <div class="pe"><strong data-nome-conta>Equipe</strong><button type="button" data-sair>Sair</button></div>
+<div class="eq-app" data-gestao hidden>
+  <nav class="eq-lateral" id="menu" aria-label="Administração" data-lateral>
+    <a class="eq-marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg><span><strong>minha companhia</strong><small>Equipe</small></span></a>
+    <button class="eq-fechar" type="button" data-fechar-menu hidden>Fechar menu</button>
+    <a class="eq-nav" href="#visao" data-nav="visao" aria-current="page"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2.5h5v5H2zM9 2.5h5v3H9zM9 7.5h5v6H9zM2 9.5h5v4H2z"/></svg>Visão geral</a>
+    <a class="eq-nav" href="#usuarios" data-nav="usuarios"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5" r="2.5"/><path d="M1.5 13.5c.4-2.4 2.2-4 4.5-4s4.1 1.6 4.5 4M11 3a2.5 2.5 0 0 1 0 4.6M12.5 9.6c1.1.6 1.8 1.9 2 3.9"/></svg>Usuários</a>
+    <a class="eq-nav" href="#convites" data-nav="convites"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12v8.5H2zM2 4.5l6 4.5 6-4.5"/></svg>Convites</a>
+    <span class="eq-separa" aria-hidden="true"></span>
+    <a class="eq-nav" href="admin" data-nav="conferencia"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h6l3 3v10H4zM10 1.5v3h3M6.5 9.5l1.5 1.5 3-3"/></svg>Conferência<span class="eq-contagem" data-n-conferencia></span></a>
+    <a class="eq-nav" href="admin#pagamentos" data-nav="repasses"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4h13v8.5h-13zM1.5 6.5h13M4 10h3"/></svg>Repasses<span class="eq-contagem" data-n-repasses></span></a>
+    <div class="eq-pe"><strong data-nome-conta>Equipe</strong><button type="button" data-sair>Sair</button></div>
   </nav>
 
-  <header class="topo">
-    <button class="menu-botao" type="button" aria-controls="menu" aria-expanded="false" data-menu><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>Menu</button>
-    <span class="titulo-curto" data-titulo-curto>Visão geral</span>
-    <form class="topo-busca" role="search" data-busca-topo>
+  <header class="eq-topo">
+    <button class="eq-menu" type="button" aria-controls="menu" aria-expanded="false" data-menu><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>Menu</button>
+    <span class="eq-titulo-curto" data-titulo-curto>Visão geral</span>
+    <form class="eq-busca" role="search" data-busca-topo>
       <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
       <label class="vh" for="busca-topo">Buscar conta</label>
       <input id="busca-topo" name="busca" type="search" placeholder="Buscar conta por nome, e-mail, celular ou CPF" autocomplete="off">
@@ -36,7 +37,7 @@
     <p class="carimbo" aria-live="polite"><span data-carimbo></span> <button type="button" data-atualizar>Atualizar</button></p>
   </header>
 
-  <main class="folha">
+  <main class="eq-folha">
     <!-- visão geral -->
     <section data-tela="visao" aria-labelledby="h-visao">
       <div class="titulo">
@@ -56,7 +57,7 @@
             <div class="kpi"><dt>Profissionais no ar</dt><dd><span class="carregando-linha"></span></dd></div>
           </dl>
 
-          <section class="painel" aria-labelledby="h-fat">
+          <section class="painel" aria-labelledby="h-fat" data-bloco="fat">
             <header><h2 id="h-fat">Faturamento</h2><p class="legenda" data-legenda-fat><span><i style="background:var(--chart-1)"></i>Este mês</span><span><i style="background:var(--chart-muted)"></i>Meses anteriores</span></p></header>
             <div class="fat">
               <div class="fat-grafico"><p class="meta" data-fat-titulo>Recebido das famílias por mês</p><div data-grafico-fat></div></div>
@@ -64,7 +65,7 @@
             </div>
           </section>
 
-          <section class="painel" aria-labelledby="h-caminho">
+          <section class="painel" aria-labelledby="h-caminho" data-bloco="caminho">
             <header><h2 id="h-caminho">Caminho da profissional</h2><span class="meta num" data-caminho-meta></span></header>
             <div class="caminho-barra" data-caminho-barra aria-hidden="true"></div>
             <div class="etapas" data-etapas></div>
@@ -73,16 +74,15 @@
         </div>
 
         <div class="vg-lado">
-          <section class="painel" aria-labelledby="h-espera">
-            <header><h2 id="h-espera">Esperando a equipe</h2><span class="meta num" data-espera-meta></span></header>
+          <section class="painel" aria-labelledby="h-espera" data-bloco="espera">
+            <header><h2 id="h-espera">Esperando a equipe</h2><a class="link-cartao" href="admin">Conferir</a></header>
             <ul class="linhas" data-espera></ul>
-            <footer><a class="btn pequeno" href="admin">Abrir a conferência</a></footer>
           </section>
-          <section class="painel" aria-labelledby="h-pedidos">
+          <section class="painel" aria-labelledby="h-pedidos" data-bloco="pedidos">
             <header><h2 id="h-pedidos">Pedidos</h2><span class="meta num" data-pedidos-meta></span></header>
             <dl class="chave" data-pedidos></dl>
           </section>
-          <section class="painel" aria-labelledby="h-recentes">
+          <section class="painel" aria-labelledby="h-recentes" data-bloco="recentes">
             <header><h2 id="h-recentes">Cadastros recentes</h2><a class="link-cartao" href="#usuarios">Ver todos</a></header>
             <ul class="linhas" data-recentes></ul>
           </section>
@@ -148,23 +148,21 @@
 
       <div class="cv">
         <section class="painel" aria-labelledby="h-novo">
-          <header><h2 id="h-novo">Novo convite</h2><span class="meta">a taxa especial começa a contar na aprovação</span></header>
+          <header><h2 id="h-novo">Novo convite</h2><span class="meta">um link de cadastro com o pacote escolhido</span></header>
           <form class="form-convite" data-form-convite novalidate>
-            <div class="campo"><label for="c-nome">Para quem</label><input class="entrada" id="c-nome" name="nome" type="text" autocomplete="off" placeholder="Maria Souza"><p class="erro" data-erro="nome" hidden></p></div>
+            <div class="campo"><label for="c-nome">Para quem</label><input class="entrada" id="c-nome" name="nome" type="text" autocomplete="off" placeholder="Ex.: Maria Souza"><p class="erro" data-erro="nome" hidden></p></div>
             <div class="campo"><label for="c-email">E-mail <span class="opc">(opcional)</span></label><input class="entrada" id="c-email" name="email" type="email" autocomplete="off" inputmode="email"><p class="ajuda">Com e-mail, só ela consegue usar.</p><p class="erro" data-erro="email" hidden></p></div>
             <div class="campo"><label for="c-celular">WhatsApp <span class="opc">(opcional)</span></label><input class="entrada" id="c-celular" name="celular" type="tel" autocomplete="off" inputmode="tel" placeholder="(19) 99999-0000"><p class="erro" data-erro="celular" hidden></p></div>
             <div class="campo"><label for="c-validade">Vale por</label><select class="entrada" id="c-validade" name="validadeDias"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option></select><p class="erro" data-erro="validadeDias" hidden></p></div>
 
-            <fieldset class="beneficios">
-              <legend>Benefícios</legend>
-              <div class="campo"><label for="c-taxa">Taxa da plataforma</label><select class="entrada" id="c-taxa" name="taxaPercentual" data-opcoes-taxa><option value="">Padrão</option></select><p class="erro" data-erro="taxaPercentual" hidden></p></div>
-              <div class="campo"><label for="c-meses">Por quanto tempo</label><select class="entrada" id="c-meses" name="taxaMeses"><option value="">Sem prazo</option><option value="1">1 mês</option><option value="3">3 meses</option><option value="6" selected>6 meses</option><option value="12">12 meses</option></select><p class="erro" data-erro="taxaMeses" hidden></p></div>
-              <label class="marcar"><input type="checkbox" name="prioridadeFila"><span>Prioridade na análise<small>passa na frente da lista de espera</small></span></label>
+            <fieldset class="pacotes" data-pacotes>
+              <legend>Pacote de boas-vindas</legend>
+              <p class="ajuda">Os benefícios são sempre os mesmos e têm fim. Os prazos contam da aprovação do perfil.</p>
             </fieldset>
 
-            <div class="campo largo"><label for="c-mensagem">Recado para ela <span class="opc">(opcional)</span></label><textarea id="c-mensagem" name="mensagem" rows="2" maxlength="600" placeholder="Foi um prazer conhecer você na feira de Campinas."></textarea><p class="erro" data-erro="mensagem" hidden></p></div>
+            <div class="campo largo"><label for="c-mensagem">Recado para ela <span class="opc">(opcional)</span></label><textarea id="c-mensagem" name="mensagem" rows="2" maxlength="600" placeholder="Ex.: Foi um prazer conhecer você na feira de Campinas."></textarea><p class="erro" data-erro="mensagem" hidden></p></div>
             <div class="campo"><label for="c-usos">Quantas pessoas podem usar</label><input class="entrada num" id="c-usos" name="usosMaximos" type="number" min="1" max="500" step="1" value="1" inputmode="numeric"><p class="ajuda">Mais de 1 para uma turma ou parceria.</p><p class="erro" data-erro="usosMaximos" hidden></p></div>
-            <div class="campo"><label for="c-obs">Anotação da equipe <span class="opc">(só a equipe vê)</span></label><input class="entrada" id="c-obs" name="observacao" type="text" maxlength="300" placeholder="Parceria com o Senac"><p class="erro" data-erro="observacao" hidden></p></div>
+            <div class="campo"><label for="c-obs">Anotação da equipe <span class="opc">(só a equipe vê)</span></label><input class="entrada" id="c-obs" name="observacao" type="text" maxlength="300" placeholder="Ex.: parceria com o Senac"><p class="erro" data-erro="observacao" hidden></p></div>
             <p class="erro largo" data-erro-geral role="alert" hidden></p>
             <div class="botoes">
               <label class="marcar"><input type="checkbox" name="enviarEmail"> Enviar por e-mail agora</label>
@@ -202,7 +200,8 @@
 </main>
 
 <script src="gestao.js"></script>
+<script src="equipe.js?v=1"></script>
 <script src="graficos.js?v=1"></script>
-<script src="admin-painel.js?v=2"></script>
+<script src="admin-painel.js?v=7"></script>
 </body>
 </html>

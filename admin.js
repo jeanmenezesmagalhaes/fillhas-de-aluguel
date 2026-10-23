@@ -287,6 +287,13 @@
 
   $$('[data-aba]').forEach((b) => b.addEventListener('click', () => {
     $$('[data-aba]').forEach((o) => o.setAttribute('aria-selected', String(o === b)));
+    // no menu lateral, a aba de pagamentos é o item Repasses; as outras, a Conferência
+    const repasses = b.dataset.aba === 'pagamentos';
+    $('[data-nav="conferencia"]').removeAttribute('aria-current');
+    $('[data-nav="repasses"]').removeAttribute('aria-current');
+    $(`[data-nav="${repasses ? 'repasses' : 'conferencia'}"]`).setAttribute('aria-current', 'page');
+    $('[data-titulo-curto]').textContent = repasses ? 'Repasses' : 'Conferência';
+    try { history.replaceState(null, '', b.dataset.aba === 'fila' ? location.pathname : `#${b.dataset.aba}`); } catch (_) { /* arquivo local */ }
     $('#aba-fila').hidden = b.dataset.aba !== 'fila';
     $('#aba-cursos').hidden = b.dataset.aba !== 'cursos';
     $('#aba-docs').hidden = b.dataset.aba !== 'docs';
@@ -377,9 +384,10 @@
     $('[data-nome-conta]').textContent = nome;
     $('[data-sair]').addEventListener('click', sair);
     carregaCursos(); carregaDocs(); carregaFotos(); carregaPagamentos();
-    // vindo do painel com #pagamentos (ou #fotos, #cursos, #docs), já abre a aba
-    const aba = document.querySelector(`[data-aba="${location.hash.slice(1)}"]`);
-    if (aba) aba.click();
+    // #pagamentos, #fotos, #cursos ou #docs abre a aba (vindo do painel ou do item Repasses do menu)
+    const abaDoEndereco = () => { const aba = document.querySelector(`[data-aba="${location.hash.slice(1)}"]`); if (aba) aba.click(); };
+    window.addEventListener('hashchange', abaDoEndereco);
+    abaDoEndereco();
     try { fila = (await chamar('GET', '/api/admin/fila')).fila; desenhaFila(); if (fila[0] && matchMedia('(min-width: 901px)').matches) abre(fila[0].id); } catch (e) { $('[data-achado]').textContent = e.message; }
   };
   (async () => {
@@ -390,7 +398,7 @@
     if (temApi) {
       modoApi = true;
       const eu = r.ok ? (await r.json()).usuario : null;
-      if (!eu || !eu.papeis.includes('admin')) { $('[data-gestao]').remove(); $('[data-fora]').hidden = false; $('.topo-conta').hidden = true; return; }
+      if (!eu || !eu.papeis.includes('admin')) { $('[data-gestao]').remove(); $('[data-fora]').hidden = false; return; }
       comeca(eu.nome, () => (window.mc ? mc.sair('mc-admin', '/') : (location.href = '/')));
       return;
     }

@@ -75,7 +75,10 @@ export function rotasGanhos(app: FastifyInstance, ctx: Contexto) {
       )
       .orderBy(asc(servicos.inicio));
 
-    const [beneficio] = await ctx.db.select(beneficioDaProfissional).from(profissionais).where(eq(profissionais.usuarioId, u.id));
+    const [beneficio] = await ctx.db
+      .select({ ...beneficioDaProfissional, dias: profissionais.taxaEspecialDias })
+      .from(profissionais)
+      .where(eq(profissionais.usuarioId, u.id));
 
     const lancamentos = linhas.flatMap((s) => {
       const fim = new Date(s.inicio.getTime() + s.horas * HORA_MS);
@@ -159,10 +162,10 @@ export function rotasGanhos(app: FastifyInstance, ctx: Contexto) {
       // sem pagamento real ainda: valores e datas seguem as regras propostas
       simulado: true,
       regras: REGRAS,
-      // taxa menor de convite especial: o percentual e até quando vale (null: sem prazo ou ainda sem aprovação)
+      // taxa menor do pacote de convite: o percentual, por quantos dias e até quando (null antes da aprovação)
       taxaEspecial:
         beneficio?.taxaEspecialPercentual != null
-          ? { percentual: beneficio.taxaEspecialPercentual, meses: beneficio.taxaEspecialMeses, ate: beneficio.taxaEspecialAte }
+          ? { percentual: beneficio.taxaEspecialPercentual, dias: beneficio.dias, ate: beneficio.taxaEspecialAte }
           : null,
       resumo: {
         atendimentosFeitos: feitos.length,

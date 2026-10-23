@@ -126,20 +126,26 @@ export const profissionais = pgTable(
     motivoCorrecao: text('motivo_correcao'),
     aprovadoEm: quando('aprovado_em'),
     aprovadoPor: uuid('aprovado_por').references(() => usuarios.id, { onDelete: 'set null' }),
-    // Benefício de convite especial (ou dado pela equipe): taxa da plataforma menor por um
-    // tempo e lugar na frente da lista de espera. Os meses contam a partir da aprovação, quando
-    // `taxaEspecialAte` é marcada; sem meses, a taxa especial não acaba.
+    // Benefício de um pacote de convite (ou dado pela equipe): taxa da plataforma menor por
+    // `taxaEspecialDias`, lugar na frente da lista de espera e isenção da cobrança de cadastro ou
+    // mensalidade por `isencaoMeses`. Os prazos contam da aprovação, quando as datas `…Ate` são
+    // marcadas; todo benefício tem fim.
     conviteId: uuid('convite_id').references((): AnyPgColumn => convites.id, { onDelete: 'set null' }),
+    beneficioPacote: text('beneficio_pacote'),
     taxaEspecialPercentual: smallint('taxa_especial_percentual'),
-    taxaEspecialMeses: smallint('taxa_especial_meses'),
+    taxaEspecialDias: smallint('taxa_especial_dias'),
     taxaEspecialAte: quando('taxa_especial_ate'),
     prioridadeFila: boolean('prioridade_fila').notNull().default(false),
+    isencaoMeses: smallint('isencao_meses'),
+    isencaoAte: quando('isencao_ate'),
     criadoEm: quando('criado_em').notNull().defaultNow(),
     atualizadoEm: quando('atualizado_em').notNull().defaultNow(),
   },
   (t) => [
     check('taxa_especial_faixa', sql`${t.taxaEspecialPercentual} is null or ${t.taxaEspecialPercentual} between 0 and 100`),
-    check('taxa_especial_meses_faixa', sql`${t.taxaEspecialMeses} is null or ${t.taxaEspecialMeses} between 1 and 60`),
+    check('taxa_especial_com_prazo', sql`(${t.taxaEspecialPercentual} is null) = (${t.taxaEspecialDias} is null)`),
+    check('taxa_especial_dias_faixa', sql`${t.taxaEspecialDias} is null or ${t.taxaEspecialDias} between 1 and 730`),
+    check('isencao_meses_faixa', sql`${t.isencaoMeses} is null or ${t.isencaoMeses} between 1 and 36`),
     check('cpf_formato', sql`${t.cpf} is null or ${t.cpf} ~ '^[0-9]{11}$'`),
     check('cnpj_formato', sql`${t.cnpj} is null or ${t.cnpj} ~ '^[0-9]{14}$'`),
     check('cep_formato', sql`${t.cep} is null or ${t.cep} ~ '^[0-9]{8}$'`),
@@ -170,9 +176,12 @@ export const convites = pgTable(
     celular: text('celular'),
     // recado da equipe, mostrado no cadastro e no e-mail
     mensagem: text('mensagem'),
-    taxaPercentual: smallint('taxa_percentual'),
-    taxaMeses: smallint('taxa_meses'),
+    // o pacote e os termos dele no dia da criação (ver PACOTES em financeiro.ts)
+    pacote: text('pacote').notNull().default('boas_vindas'),
+    taxaPercentual: smallint('taxa_percentual').notNull(),
+    taxaDias: smallint('taxa_dias').notNull(),
     prioridadeFila: boolean('prioridade_fila').notNull().default(false),
+    isencaoMeses: smallint('isencao_meses').notNull(),
     usosMaximos: smallint('usos_maximos').notNull().default(1),
     usos: smallint('usos').notNull().default(0),
     expiraEm: quando('expira_em'),
@@ -184,8 +193,10 @@ export const convites = pgTable(
     canceladoEm: quando('cancelado_em'),
   },
   (t) => [
-    check('convite_taxa_faixa', sql`${t.taxaPercentual} is null or ${t.taxaPercentual} between 0 and 100`),
-    check('convite_meses_faixa', sql`${t.taxaMeses} is null or ${t.taxaMeses} between 1 and 60`),
+    check('convite_taxa_faixa', sql`${t.taxaPercentual} between 0 and 100`),
+    check('convite_dias_faixa', sql`${t.taxaDias} between 1 and 730`),
+    check('convite_isencao_faixa', sql`${t.isencaoMeses} between 1 and 36`),
+    check('convite_pacote', sql`${t.pacote} in ('boas_vindas', 'parceria')`),
     check('convite_usos_faixa', sql`${t.usosMaximos} between 1 and 500 and ${t.usos} between 0 and ${t.usosMaximos}`),
     index('convites_por_criacao').on(t.criadoEm),
   ],

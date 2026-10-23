@@ -29,6 +29,12 @@
   const tom = (id) => { let h = 0; for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) % 360; return `hsl(${Math.round(h / 45) * 45} 40% 90%)`; };
   const inicial = (u) => `<span class="inicial" style="background:${tom(u.id)}" aria-hidden="true">${esc(String(u.nome).trim()[0] || '?').toUpperCase()}</span>`;
 
+  // pacotes de exemplo, iguais aos da API com a taxa padrão de 12% (financeiro.ts, PACOTES)
+  const PACOTES_EXEMPLO = [
+    { id: 'boas_vindas', nome: 'Boas-vindas', taxaPercentual: 6, taxaDias: 90, prioridadeFila: true, isencaoMeses: 6, beneficios: ['taxa da plataforma de 6% (no lugar de 12%) nos primeiros 90 dias depois da aprovação', 'prioridade na análise do cadastro', 'cadastro e mensalidade sem custo nos primeiros 6 meses'] },
+    { id: 'parceria', nome: 'Parceria', taxaPercentual: 6, taxaDias: 180, prioridadeFila: true, isencaoMeses: 12, beneficios: ['taxa da plataforma de 6% (no lugar de 12%) nos primeiros 180 dias depois da aprovação', 'prioridade na análise do cadastro', 'cadastro e mensalidade sem custo nos primeiros 12 meses'] },
+  ];
+
   // --- exemplo sem API ---
   const exemplo = (() => {
     const dia = (n) => new Date(Date.now() - n * 86400000).toISOString();
@@ -55,15 +61,15 @@
       ],
     };
     const usuarios = [
-      { id: 'u1', nome: 'Rita Moraes', email: 'rita.moraes@exemplo.com', celular: '19977774321', admin: false, emailVerificadoEm: null, celularVerificadoEm: null, criadoEm: dia(0), papeis: ['profissional'], pedidos: 0, realizados: 0, pagoCentavos: 0, ultimoAcesso: dia(0), profissional: { slug: 'rita-moraes', situacao: 'rascunho', cidade: 'Campinas', uf: 'SP', valorHoraCentavos: null, temChavePix: false, convite: 'MC-7K2P9QXA', beneficio: { taxaPercentual: 5, taxaMeses: 6, taxaAte: null, prioridadeFila: true } }, falta: ['email', 'dadosFiscais', 'endereco', 'documentos', 'valorHora'] },
+      { id: 'u1', nome: 'Rita Moraes', email: 'rita.moraes@exemplo.com', celular: '19977774321', admin: false, emailVerificadoEm: null, celularVerificadoEm: null, criadoEm: dia(0), papeis: ['profissional'], pedidos: 0, realizados: 0, pagoCentavos: 0, ultimoAcesso: dia(0), profissional: { slug: 'rita-moraes', situacao: 'rascunho', cidade: 'Campinas', uf: 'SP', valorHoraCentavos: null, temChavePix: false, convite: 'MC-7K2P9QXA', beneficio: { ...PACOTES_EXEMPLO[0], pacote: 'boas_vindas', taxaAte: null, isencaoAte: null } }, falta: ['email', 'dadosFiscais', 'endereco', 'documentos', 'valorHora'] },
       { id: 'u2', nome: 'Carla Mendes', email: 'carla.mendes@exemplo.com', celular: '19988881234', admin: false, emailVerificadoEm: dia(1), celularVerificadoEm: null, criadoEm: dia(1), papeis: ['familia'], pedidos: 0, realizados: 0, pagoCentavos: 0, ultimoAcesso: dia(1), profissional: null, falta: [] },
       { id: 'u3', nome: 'Patrícia Gomes', email: 'patricia.gomes@exemplo.com', celular: '19988776655', admin: false, emailVerificadoEm: dia(5), celularVerificadoEm: dia(5), criadoEm: dia(2), papeis: ['profissional'], pedidos: 0, realizados: 0, pagoCentavos: 0, ultimoAcesso: dia(1), profissional: { slug: 'patricia-gomes', situacao: 'em_analise', cidade: 'Campinas', uf: 'SP', valorHoraCentavos: 8000, temChavePix: true, convite: null, beneficio: null }, falta: [] },
       { id: 'u4', nome: 'Ana Oliveira', email: 'ana.oliveira@exemplo.com', celular: '19988880000', admin: false, emailVerificadoEm: dia(90), celularVerificadoEm: dia(90), criadoEm: dia(90), papeis: ['profissional'], pedidos: 34, realizados: 31, pagoCentavos: 868000, ultimoAcesso: dia(2), profissional: { slug: 'ana-oliveira', situacao: 'aprovado', cidade: 'Campinas', uf: 'SP', valorHoraCentavos: 7000, temChavePix: true, aprovadoEm: dia(80), proximaRevisao: dia(-10).slice(0, 10), convite: null, beneficio: null }, falta: [] },
       { id: 'u5', nome: 'Mariana Costa', email: 'mariana.costa@exemplo.com', celular: '19999990000', admin: false, emailVerificadoEm: dia(60), celularVerificadoEm: null, criadoEm: dia(60), papeis: ['familia'], pedidos: 12, realizados: 10, pagoCentavos: 268000, ultimoAcesso: dia(5), profissional: null, falta: [] },
     ];
     let convites = [
-      { id: 'c1', codigo: 'MC-7K2P9QXA', nome: 'Rita Moraes', email: 'rita.moraes@exemplo.com', celular: '19977774321', mensagem: null, taxaPercentual: 5, taxaMeses: 6, prioridadeFila: true, usosMaximos: 1, usos: 1, expiraEm: dia(-20), observacao: 'Feira de Campinas', criadoEm: dia(10), enviadoEm: dia(10), canceladoEm: null, situacao: 'usado', link: '/entrar?perfil=pro&modo=criar&convite=MC-7K2P9QXA', beneficios: ['taxa da plataforma de 5% (no lugar de 12%) nos primeiros 6 meses depois da aprovação', 'prioridade na análise do cadastro'], criadoPor: 'Equipe', cadastradas: [{ id: 'u1', nome: 'Rita Moraes', situacao: 'rascunho' }] },
-      { id: 'c2', codigo: 'MC-SNC4Q8TB', nome: 'Turma do Senac', email: null, celular: null, mensagem: 'Bem-vindas!', taxaPercentual: 0, taxaMeses: 3, prioridadeFila: false, usosMaximos: 20, usos: 2, expiraEm: dia(-25), observacao: 'Parceria com o Senac', criadoEm: dia(5), enviadoEm: null, canceladoEm: null, situacao: 'ativo', link: '/entrar?perfil=pro&modo=criar&convite=MC-SNC4Q8TB', beneficios: ['sem taxa da plataforma nos primeiros 3 meses depois da aprovação'], criadoPor: 'Equipe', cadastradas: [{ id: 'u8', nome: 'Lúcia Ferraz', situacao: 'aprovado' }, { id: 'u9', nome: 'Denise Rocha', situacao: 'rascunho' }] },
+      { id: 'c1', codigo: 'MC-7K2P9QXA', nome: 'Rita Moraes', email: 'rita.moraes@exemplo.com', celular: '19977774321', mensagem: null, pacote: 'boas_vindas', nomePacote: 'Boas-vindas', taxaPercentual: 6, taxaDias: 90, prioridadeFila: true, isencaoMeses: 6, usosMaximos: 1, usos: 1, expiraEm: dia(-20), observacao: 'Feira de Campinas', criadoEm: dia(10), enviadoEm: dia(10), canceladoEm: null, situacao: 'usado', link: '/entrar?perfil=pro&modo=criar&convite=MC-7K2P9QXA', beneficios: PACOTES_EXEMPLO[0].beneficios, criadoPor: 'Equipe', cadastradas: [{ id: 'u1', nome: 'Rita Moraes', situacao: 'rascunho' }] },
+      { id: 'c2', codigo: 'MC-SNC4Q8TB', nome: 'Turma do Senac', email: null, celular: null, mensagem: 'Bem-vindas!', pacote: 'parceria', nomePacote: 'Parceria', taxaPercentual: 6, taxaDias: 180, prioridadeFila: true, isencaoMeses: 12, usosMaximos: 20, usos: 2, expiraEm: dia(-25), observacao: 'Parceria com o Senac', criadoEm: dia(5), enviadoEm: null, canceladoEm: null, situacao: 'ativo', link: '/entrar?perfil=pro&modo=criar&convite=MC-SNC4Q8TB', beneficios: PACOTES_EXEMPLO[1].beneficios, criadoPor: 'Equipe', cadastradas: [{ id: 'u8', nome: 'Lúcia Ferraz', situacao: 'aprovado' }, { id: 'u9', nome: 'Denise Rocha', situacao: 'rascunho' }] },
     ];
     const erro = (status, mensagem) => { const e = new Error(mensagem); e.status = status; throw e; };
     return {
@@ -78,15 +84,16 @@
             && (!f || (f === 'familias' && u.papeis.includes('familia')) || (f === 'profissionais' && u.profissional) || (u.profissional && u.profissional.situacao === f) || (f === 'admins' && u.admin)));
           return { pagina: 1, porPagina: 50, total: lista.length, usuarios: lista };
         }
-        if (url === '/api/admin/convites' && metodo === 'GET') return { taxaPadrao: 12, resumo: { ativos: convites.filter((c) => c.situacao === 'ativo').length, cadastradas: 3, aprovadas: 1 }, convites };
+        if (url === '/api/admin/convites' && metodo === 'GET') return { taxaPadrao: 12, pacotes: PACOTES_EXEMPLO, resumo: { ativos: convites.filter((c) => c.situacao === 'ativo').length, cadastradas: 3, aprovadas: 1 }, convites };
         if (url === '/api/admin/convites') {
-          const c = { ...corpo, email: corpo.email || null, celular: corpo.celular || null, id: `c${Date.now()}`, codigo: 'MC-EXEMPLO2', usos: 0, situacao: 'ativo', link: '/entrar?perfil=pro&modo=criar&convite=MC-EXEMPLO2', beneficios: beneficiosEmTexto(corpo, 12), criadoEm: new Date().toISOString(), expiraEm: new Date(Date.now() + corpo.validadeDias * 86400000).toISOString(), cadastradas: [] };
+          const { id: pacote, nome: nomePacote, ...termos } = PACOTES_EXEMPLO.find((x) => x.id === corpo.pacote);
+          const c = { ...corpo, ...termos, pacote, nomePacote, email: corpo.email || null, celular: corpo.celular || null, id: `c${Date.now()}`, codigo: 'MC-EXEMPLO2', usos: 0, situacao: 'ativo', link: '/entrar?perfil=pro&modo=criar&convite=MC-EXEMPLO2', criadoEm: new Date().toISOString(), expiraEm: new Date(Date.now() + corpo.validadeDias * 86400000).toISOString(), cadastradas: [] };
           convites = [c, ...convites];
           return { convite: c, envio: corpo.enviarEmail ? { ok: true } : null };
         }
         const m = url.match(/\/api\/admin\/convites\/([^/]+)\/(cancelar|enviar)$/);
         if (m) { if (m[2] === 'cancelar') convites = convites.map((c) => (c.id === m[1] ? { ...c, situacao: 'cancelado' } : c)); return { ok: true }; }
-        if (/\/api\/admin\/profissionais\/[^/]+\/beneficio$/.test(url)) return { beneficio: corpo };
+        if (/\/api\/admin\/profissionais\/[^/]+\/beneficio$/.test(url)) { const pk = PACOTES_EXEMPLO.find((x) => x.id === corpo.pacote); return { beneficio: pk ? { ...pk, pacote: pk.id, taxaAte: null, isencaoAte: null } : null }; }
         erro(404, 'Não encontrado.');
       },
     };
@@ -95,37 +102,23 @@
   let modoApi = false;
   const chamar = (metodo, url, corpo) => (modoApi ? window.mc.api(metodo, url, corpo) : exemplo.chamar(metodo, url, corpo));
   const origem = () => (location.origin && location.origin !== 'null' ? location.origin : 'https://minhacompanhia.com.br');
-  let taxaPadrao = 12;
 
-  // os benefícios em frases, iguais às do e-mail que a API manda
-  function beneficiosEmTexto(b, padrao = taxaPadrao) {
-    const itens = [];
-    if (b.taxaPercentual != null) {
-      const taxa = b.taxaPercentual === 0 ? 'sem taxa da plataforma' : `taxa da plataforma de ${b.taxaPercentual}% (no lugar de ${padrao}%)`;
-      itens.push(b.taxaMeses ? `${taxa} nos primeiros ${b.taxaMeses === 1 ? 'mês' : `${b.taxaMeses} meses`} depois da aprovação` : taxa);
-    }
-    if (b.prioridadeFila) itens.push('prioridade na análise do cadastro');
-    return itens;
-  }
+  // os pacotes vêm da API (GET /api/admin/convites); estes são os de exemplo e o ponto de partida
+  let pacotes = PACOTES_EXEMPLO;
 
   // --- telas ---
   const TITULOS = { visao: 'Visão geral', usuarios: 'Usuários', convites: 'Convites' };
   const carregou = new Set();
-  const menu = $('[data-lateral]');
-  const fechaMenu = () => { menu.classList.remove('aberta'); $('[data-menu]').setAttribute('aria-expanded', 'false'); };
   const mostra = () => {
     const nome = TITULOS[location.hash.slice(1)] ? location.hash.slice(1) : 'visao';
     $$('[data-tela]').forEach((s) => { s.hidden = s.dataset.tela !== nome; });
     $$('[data-nav]').forEach((a) => { if (a.dataset.nav === nome) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('[data-titulo-curto]').textContent = TITULOS[nome];
     document.title = `${TITULOS[nome]} · Painel da equipe · Minha companhia`;
-    fechaMenu();
+    window.equipe.fechaMenu();
     if (!carregou.has(nome)) { carregou.add(nome); ({ visao: carregaResumo, usuarios: carregaUsuarios, convites: carregaConvites })[nome](); }
   };
   window.addEventListener('hashchange', () => { mostra(); window.scrollTo(0, 0); });
-  $('[data-menu]').addEventListener('click', () => { menu.classList.add('aberta'); $('[data-menu]').setAttribute('aria-expanded', 'true'); $('[data-fechar-menu]').hidden = false; $('[data-fechar-menu]').focus(); });
-  $('[data-fechar-menu]').addEventListener('click', () => { fechaMenu(); $('[data-menu]').focus(); });
-  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && menu.classList.contains('aberta')) { fechaMenu(); $('[data-menu]').focus(); } });
 
   // atalhos para a lista de contas já filtrada
   const irParaUsuarios = ({ filtro = '', grupo = '', busca = '' } = {}) => {
@@ -158,12 +151,10 @@
   const chave = (dt, dd, sub, forte) => `<div${forte ? ' class="forte"' : ''}><dt>${dt}${sub ? `<small>${sub}</small>` : ''}</dt><dd class="num">${dd}</dd></div>`;
 
   const desenhaResumo = (r) => {
-    taxaPadrao = r.taxaPadrao;
     const f = r.financeiro;
     const atual = f.meses[f.meses.length - 1];
     const anterior = f.meses[f.meses.length - 2];
     const nomeMes = (m) => MESES_LONGOS[Number(m.mes.slice(5, 7)) - 1];
-    const esperando = r.conferencia.fila + r.conferencia.documentos + r.conferencia.cursos + r.conferencia.fotos;
 
     // o achado: o que pede a equipe agora, em uma frase
     const partes = [];
@@ -221,11 +212,11 @@
       linhaLista('Revisão nos próximos 7 dias', p.revisaoEm7Dias, { alvo: 'filtro:aprovado' }),
       linhaLista('E-mail não confirmado', r.contas.emailPendente, { sub: 'famílias e profissionais', alvo: 'filtro:email_pendente' }),
       linhaLista('Famílias sem nenhum pedido', r.contas.familiasSemPedido, { sub: `de ${r.contas.familias} famílias`, alvo: 'filtro:familias_sem_pedido' }),
+      linhaLista('Vieram por convite', r.convites.cadastradas, { sub: `${r.convites.aprovadas} já no ar`, alvo: 'filtro:por_convite' }),
+      linhaLista('Convites ativos', r.convites.ativos, { sub: `de ${plural(r.convites.total, 'criado', 'criados')}`, alvo: '#convites' }),
     ].join('');
 
-    $('[data-espera-meta]').textContent = esperando ? plural(esperando, 'item', 'itens') : '';
-    $('[data-n-conferencia]').textContent = esperando || '';
-    $('[data-n-repasses]').textContent = f.paraRepassar + f.repassesFalhos || '';
+    window.equipe.contagens(r);
     $('[data-espera]').innerHTML = [
       linhaLista('Cadastros na fila', r.conferencia.fila, { alvo: 'admin' }),
       linhaLista('Documentos para conferir', r.conferencia.documentos, { alvo: 'admin#docs' }),
@@ -247,7 +238,7 @@
       chave('Nota das famílias', r.pedidos.avaliacaoMedia == null ? '—' : `${String(r.pedidos.avaliacaoMedia).replace('.', ',')} de 5`, plural(r.pedidos.avaliacoes, 'avaliação', 'avaliações')),
     ].join('');
 
-    $('[data-recentes]').innerHTML = r.recentes.length ? r.recentes.slice(0, 5).map((u) => {
+    $('[data-recentes]').innerHTML = r.recentes.length ? r.recentes.slice(0, 4).map((u) => {
       const [cl, rotulo] = u.situacao ? SIT_PRO[u.situacao] || ['', u.situacao] : ['', u.tipo === 'familia' ? 'Família' : 'Conta'];
       return `<li class="recente"><span><strong>${esc(u.nome)}</strong><small>${ha(u.criadoEm)}</small></span><span class="pill ${cl}">${rotulo}</span></li>`;
     }).join('') : '<li class="vazio">Nenhum cadastro ainda.</li>';
@@ -269,12 +260,14 @@
   const marcaGrupo = () => $$('[data-grupo]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.grupo === grupoAtual)));
   $$('[data-grupo]').forEach((b) => b.addEventListener('click', () => { grupoAtual = b.dataset.grupo; $('[data-filtros]').filtro.value = ''; marcaGrupo(); pagina = 1; carregaUsuarios(); }));
 
+  // o benefício como a equipe precisa ler: o pacote e quando cada parte acaba
   const beneficioTexto = (b) => {
-    if (!b || (b.taxaPercentual == null && !b.prioridadeFila)) return 'Nenhum';
+    if (!b) return 'Nenhum pacote';
     const partes = [];
-    if (b.taxaPercentual != null) partes.push(`taxa de ${b.taxaPercentual}%${b.taxaMeses ? ` por ${plural(b.taxaMeses, 'mês', 'meses')}${b.taxaAte ? ` (até ${data(b.taxaAte)})` : ' depois da aprovação'}` : ''}`);
+    if (b.taxaPercentual != null) partes.push(`taxa de ${b.taxaPercentual}% ${b.taxaAte ? `até ${data(b.taxaAte)}` : `por ${b.taxaDias} dias a partir da aprovação`}`);
     if (b.prioridadeFila) partes.push('prioridade na fila');
-    return partes.join(' · ');
+    if (b.isencaoMeses) partes.push(`sem cadastro e mensalidade ${b.isencaoAte ? `até ${data(b.isencaoAte)}` : `por ${plural(b.isencaoMeses, 'mês', 'meses')} a partir da aprovação`}`);
+    return `${b.nome || 'Benefício'}: ${partes.join(' · ')}`;
   };
   const linhaUsuario = (u) => {
     const pro = u.profissional;
@@ -286,7 +279,7 @@
         <td><button type="button" class="quem" data-abrir aria-expanded="false" aria-controls="det-${esc(u.id)}">${inicial(u)}<span><strong>${esc(u.nome)}</strong>${sub}</span></button></td>
         <td class="cel-situacao"><span class="pill ${cl}">${rot}</span>${pro && pro.convite ? ' <span class="pill">Convite</span>' : ''}</td>
         <td class="so-mesa">${pro ? `${esc(pro.cidade)}/${esc(pro.uf)}` : '<span class="sub">—</span>'}</td>
-        <td class="n cel-pedidos num">${u.pedidos}<span class="sub">${u.realizados} feitos</span></td>
+        <td class="n cel-pedidos num">${u.pedidos}<span class="so-cel"> ${u.pedidos === 1 ? 'pedido' : 'pedidos'}</span><span class="sub">${plural(u.realizados, 'feito', 'feitos')}</span></td>
         <td class="n so-mesa num">${u.pagoCentavos ? brl(u.pagoCentavos) : '<span class="sub">—</span>'}<span class="sub">${pro ? 'recebido' : 'pago'}</span></td>
         <td class="n so-mesa">${ha(u.ultimoAcesso)}<span class="sub num">desde ${data(u.criadoEm)}</span></td>
         <td class="cel-seta"><svg class="seta" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></td>
@@ -299,7 +292,7 @@
             ${det('Conta criada', `<span class="num">${data(u.criadoEm)}</span>`)}
           </dl></div>
           <div class="bloco"><h3>${pro ? 'Atendimento' : 'Pedidos'}</h3><dl class="chave">
-            ${det('Pedidos', `<span class="num">${u.pedidos} · ${u.realizados} feitos</span>`)}
+            ${det('Pedidos', `<span class="num">${u.pedidos} · ${plural(u.realizados, 'feito', 'feitos')}</span>`)}
             ${det(pro ? 'Recebido' : 'Pago', `<span class="num">${brl(u.pagoCentavos)}</span>`)}
             ${pro ? det('Valor da hora', pro.valorHoraCentavos ? `<span class="num">${brl(pro.valorHoraCentavos)}</span>` : 'não definido') : ''}
             ${pro ? det('Chave Pix', pro.temChavePix ? 'cadastrada' : 'não cadastrada') : ''}
@@ -310,9 +303,8 @@
             ${pro.convite ? `<p class="sub num">convite ${esc(pro.convite)}</p>` : ''}
             ${pro.motivoCorrecao && pro.situacao === 'correcao' ? `<p class="sub">Correção pedida: ${esc(pro.motivoCorrecao)}</p>` : ''}
             <form class="form-beneficio" data-form-beneficio hidden novalidate>
-              <label>Taxa<select class="entrada" name="taxaPercentual">${opcoesTaxa(pro.beneficio && pro.beneficio.taxaPercentual)}</select></label>
-              <label>Por quanto tempo<select class="entrada" name="taxaMeses">${[['', 'Sem prazo'], ['1', '1 mês'], ['3', '3 meses'], ['6', '6 meses'], ['12', '12 meses']].map(([v, t]) => `<option value="${v}"${String((pro.beneficio && pro.beneficio.taxaMeses) || '') === v ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
-              <label class="marcar"><input type="checkbox" name="prioridadeFila"${pro.beneficio && pro.beneficio.prioridadeFila ? ' checked' : ''}> Prioridade na fila</label>
+              <label class="largo">Pacote<select class="entrada" name="pacote"><option value="">Nenhum pacote</option>${pacotes.map((pk) => `<option value="${esc(pk.id)}"${pro.beneficio && pro.beneficio.pacote === pk.id ? ' selected' : ''}>${esc(pk.nome)}</option>`).join('')}</select></label>
+              <p class="sub largo">${pro.aprovadoEm || pro.situacao === 'aprovado' ? 'Já aprovada: os prazos começam hoje.' : 'Os prazos começam na aprovação.'}</p>
               <p class="erro" data-erro-beneficio hidden></p>
               <div class="botoes"><button class="btn primario pequeno" type="submit">Salvar benefício</button><button class="acao" type="button" data-cancelar>Cancelar</button></div>
             </form>
@@ -327,10 +319,6 @@
         </div>
       </td></tr>`;
   };
-  function opcoesTaxa(atual) {
-    const ops = [['', `Padrão (${taxaPadrao}%)`], ['0', 'Isenta (0%)'], ...Array.from({ length: Math.max(0, taxaPadrao - 1) }, (_, i) => [String(i + 1), `${i + 1}%`])];
-    return ops.map(([v, t]) => `<option value="${v}"${String(atual ?? '') === v ? ' selected' : ''}>${t}</option>`).join('');
-  }
   const ligaUsuarios = (corpo) => $$('tr[data-usuario]', corpo).forEach((tr) => {
     const det = tr.nextElementSibling;
     const abre = () => {
@@ -346,14 +334,12 @@
     if (!f) return;
     const erro = $('[data-erro-beneficio]', f);
     const editar = $('[data-editar-beneficio]', det);
-    editar.addEventListener('click', () => { f.hidden = false; editar.hidden = true; f.taxaPercentual.focus(); });
+    editar.addEventListener('click', () => { f.hidden = false; editar.hidden = true; f.pacote.focus(); });
     $('[data-cancelar]', f).addEventListener('click', () => { f.hidden = true; editar.hidden = false; });
     f.addEventListener('submit', async (ev) => {
       ev.preventDefault();
       erro.hidden = true;
-      const num = (v) => (v === '' ? null : Number(v));
-      const corpo = { taxaPercentual: num(f.taxaPercentual.value), taxaMeses: num(f.taxaMeses.value), prioridadeFila: f.prioridadeFila.checked };
-      if (corpo.taxaPercentual == null) corpo.taxaMeses = null;
+      const corpo = { pacote: f.pacote.value || null };
       const botao = $('[type="submit"]', f);
       botao.disabled = true;
       try {
@@ -408,7 +394,7 @@
   const form = $('[data-form-convite]');
   const textoConvite = (c, link) => {
     const nome = (c.nome || '').trim().split(/\s+/)[0] || '[nome]';
-    const bs = c.beneficios && c.beneficios.length ? `\n\nCom este convite você tem:\n${c.beneficios.map((b) => `• ${b}`).join('\n')}` : '';
+    const bs = c.beneficios && c.beneficios.length ? `\n\nCom o convite ${c.nomePacote || 'especial'} você tem:\n${c.beneficios.map((b) => `• ${b}`).join('\n')}` : '';
     return `Olá, ${nome}! Você recebeu um convite especial para atender pela Minha companhia, acompanhando pais e mães idosos em consultas, banco, mercado e passeios.${c.mensagem ? `\n\n${c.mensagem}` : ''}${bs}\n\nCrie sua conta por aqui: ${link}`;
   };
   const whatsapp = (c) => `https://wa.me/${c.celular ? `55${String(c.celular).replace(/\D/g, '')}` : ''}?text=${encodeURIComponent(textoConvite(c, origem() + c.link))}`;
@@ -426,9 +412,7 @@
       nome: form.nome.value.trim(),
       email: form.email.value.trim() || undefined,
       celular: form.celular.value.trim() || undefined,
-      taxaPercentual: num(form.taxaPercentual),
-      taxaMeses: form.taxaPercentual.value === '' ? undefined : num(form.taxaMeses),
-      prioridadeFila: form.prioridadeFila.checked,
+      pacote: (form.querySelector('[name="pacote"]:checked') || {}).value || 'boas_vindas',
       usosMaximos: num(form.usosMaximos) ?? 1,
       validadeDias: num(form.validadeDias) ?? 30,
       mensagem: form.mensagem.value.trim() || undefined,
@@ -439,12 +423,18 @@
   // mostra a mensagem como ela vai chegar, enquanto a equipe escreve
   const previa = () => {
     const c = lerForm();
-    $('[data-previa]').textContent = textoConvite({ ...c, beneficios: beneficiosEmTexto(c) }, `${origem()}/entrar?…convite=MC-…`);
-    form.taxaMeses.disabled = form.taxaPercentual.value === '';
+    const pk = pacotes.find((x) => x.id === c.pacote) || pacotes[0];
+    $('[data-previa]').textContent = textoConvite({ ...c, nomePacote: pk.nome, beneficios: pk.beneficios }, `${origem()}/entrar?…convite=MC-…`);
   };
   form.addEventListener('input', previa);
   form.addEventListener('change', previa);
-  const preencheTaxa = () => { const atual = form.taxaPercentual.value; form.taxaPercentual.innerHTML = opcoesTaxa(atual).replace(`Padrão (${taxaPadrao}%)`, `Padrão (${taxaPadrao}%), sem desconto`); };
+  // os pacotes como cartões de escolha, com os benefícios de cada um à vista
+  const desenhaPacotes = () => {
+    const caixa = $('[data-pacotes]');
+    const atual = (form.querySelector('[name="pacote"]:checked') || {}).value || 'boas_vindas';
+    $$('.pacote', caixa).forEach((el) => el.remove());
+    caixa.insertAdjacentHTML('beforeend', pacotes.map((pk) => `<label class="pacote"><input type="radio" name="pacote" value="${esc(pk.id)}"${pk.id === atual ? ' checked' : ''}><span><strong>${esc(pk.nome)}</strong><ul>${pk.beneficios.map((b) => `<li>${esc(b[0].toUpperCase() + b.slice(1))}</li>`).join('')}</ul></span></label>`).join(''));
+  };
 
   const SIT_CADASTRO = { rascunho: 'não finalizou', correcao: 'em correção', em_analise: 'na fila', aprovado: 'no ar', vencido: 'revisão vencida' };
   const linhaConvite = (c) => {
@@ -454,7 +444,7 @@
     return `<tr class="linha-convite" data-convite="${esc(c.id)}">
       <td><strong>${esc(c.nome)}</strong><span class="sub">${contato}</span>${c.observacao ? `<span class="sub">${esc(c.observacao)}</span>` : ''}</td>
       <td class="cel-situacao"><span class="pill ${cl}">${rot}</span></td>
-      <td class="so-mesa">${c.beneficios.length ? `<ul class="beneficio">${c.beneficios.map((b) => `<li>${esc(b[0].toUpperCase() + b.slice(1))}</li>`).join('')}</ul>` : '<span class="sub">só o convite</span>'}</td>
+      <td class="so-mesa"><span class="beneficio-pacote">${esc(c.nomePacote || 'Convite')}</span>${c.beneficios.length ? `<ul class="beneficio">${c.beneficios.map((b) => `<li>${esc(b[0].toUpperCase() + b.slice(1))}</li>`).join('')}</ul>` : ''}</td>
       <td class="n so-mesa num">${c.usos} de ${c.usosMaximos}${quem}</td>
       <td class="n so-mesa num">${c.expiraEm ? data(c.expiraEm) : '—'}<span class="sub">${c.enviadoEm ? `e-mail em ${data(c.enviadoEm)}` : 'sem e-mail'}</span></td>
       <td class="cel-acoes">${c.situacao === 'ativo' ? `<div class="acoes">
@@ -471,9 +461,9 @@
     try {
       const r = await chamar('GET', '/api/admin/convites');
       convites = r.convites;
-      taxaPadrao = r.taxaPadrao;
-      preencheTaxa(); previa();
-      $('[data-convites-sub]').innerHTML = `Links de cadastro com taxa menor e prioridade na análise. <strong>${plural(r.resumo.ativos, 'ativo', 'ativos')}</strong>, ${plural(r.resumo.cadastradas, 'profissional cadastrada', 'profissionais cadastradas')} por convite, ${plural(r.resumo.aprovadas, 'já no ar', 'já no ar')}.`;
+      if (r.pacotes && r.pacotes.length) pacotes = r.pacotes;
+      desenhaPacotes(); previa();
+      $('[data-convites-sub]').innerHTML = `Links de cadastro com um pacote de boas-vindas, sempre com fim definido. <strong>${plural(r.resumo.ativos, 'ativo', 'ativos')}</strong>, ${plural(r.resumo.cadastradas, 'profissional cadastrada', 'profissionais cadastradas')} por convite, ${plural(r.resumo.aprovadas, 'já no ar', 'já no ar')}.`;
       $('[data-convites-meta]').textContent = plural(convites.length, 'convite', 'convites');
       corpo.innerHTML = convites.length ? convites.map(linhaConvite).join('') : '<tr><td colspan="6"><p class="vazio">Nenhum convite criado ainda. O primeiro sai pelo formulário acima.</p></td></tr>';
       carimbo();
@@ -523,7 +513,7 @@
       pronto.hidden = false;
       $('[data-copiar-novo]', pronto).addEventListener('click', (e) => copiar(link, e.currentTarget));
       form.reset();
-      preencheTaxa(); previa();
+      desenhaPacotes(); previa();
       carregaConvites();
       pronto.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (e) {
@@ -539,7 +529,10 @@
     $('[data-sair]').addEventListener('click', sair);
     $('[data-fora]').remove();
     $('[data-gestao]').hidden = false;
-    preencheTaxa(); previa();
+    desenhaPacotes(); previa();
+    // vindo da busca de outra tela da equipe (admin-painel?busca=…#usuarios)
+    const busca = new URLSearchParams(location.search).get('busca');
+    if (busca) { $('[data-filtros]').busca.value = busca; $('[data-busca-topo]').busca.value = busca; }
     mostra();
     // o resumo também alimenta as contagens da barra lateral, em qualquer tela
     if (!carregou.has('visao')) { carregou.add('visao'); carregaResumo(); }

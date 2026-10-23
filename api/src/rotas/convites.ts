@@ -7,7 +7,7 @@ import type { Contexto } from '../contexto.js';
 import type { Db } from '../db/index.js';
 import { convites, profissionais, usuarios } from '../db/schema.js';
 import { conflito, ErroApi, naoEncontrado } from '../erros.js';
-import { maisMeses, REGRAS } from '../financeiro.js';
+import { maisDias, maisMeses, NOMES_PACOTES, PACOTES, REGRAS, termosDoPacote, type Pacote } from '../financeiro.js';
 import * as v from '../validacao.js';
 
 const DIA_MS = 86_400_000;
@@ -25,12 +25,7 @@ const novoCodigo = () => `MC-${Array.from({ length: 8 }, () => LETRAS[randomInt(
 const vazioParaNada = (x: unknown) => (x === '' || x === null ? undefined : x);
 const opcional = <T extends z.ZodType>(t: T) => z.preprocess(vazioParaNada, t.optional());
 
-const taxaPercentual = z
-  .number({ error: 'Informe a taxa em %.' })
-  .int('Use um número inteiro.')
-  .min(0, 'A taxa não pode ser negativa.')
-  .max(100, 'Confira a taxa.');
-const taxaMeses = z.number({ error: 'Informe os meses.' }).int('Use um número inteiro.').min(1, 'Pelo menos 1 mês.').max(60, 'No máximo 60 meses.');
+const pacote = z.enum(NOMES_PACOTES, { error: 'Escolha o pacote do convite.' });
 
 const novoConvite = z
   .object({
@@ -38,34 +33,18 @@ const novoConvite = z
     email: opcional(v.email),
     celular: opcional(v.celular),
     mensagem: opcional(z.string().trim().max(600, 'Use no máximo 600 caracteres.')),
-    taxaPercentual: z.preprocess(vazioParaNada, taxaPercentual.optional()),
-    taxaMeses: z.preprocess(vazioParaNada, taxaMeses.optional()),
-    prioridadeFila: z.boolean().default(false),
+    pacote: pacote.default('boas_vindas'),
     usosMaximos: z.number().int().min(1, 'Pelo menos 1 uso.').max(500, 'No máximo 500 usos.').default(1),
     validadeDias: z.number().int().min(1, 'Pelo menos 1 dia.').max(365, 'No máximo 365 dias.').default(30),
     observacao: opcional(z.string().trim().max(300, 'Use no máximo 300 caracteres.')),
     enviarEmail: z.boolean().default(false),
   })
   .superRefine((d, c) => {
-    if (d.taxaMeses != null && d.taxaPercentual == null) c.addIssue({ code: 'custom', path: ['taxaMeses'], message: 'Defina a taxa especial antes do prazo.' });
-    if (d.taxaPercentual != null && d.taxaPercentual >= REGRAS.taxaPercentual) {
-      c.addIssue({ code: 'custom', path: ['taxaPercentual'], message: `Use uma taxa menor que a padrão (${REGRAS.taxaPercentual}%).` });
-    }
     if (d.enviarEmail && !d.email) c.addIssue({ code: 'custom', path: ['email'], message: 'Informe o e-mail para enviar o convite.' });
   });
 
-const beneficio = z
-  .object({
-    taxaPercentual: taxaPercentual.nullable(),
-    taxaMeses: taxaMeses.nullable(),
-    prioridadeFila: z.boolean(),
-  })
-  .superRefine((d, c) => {
-    if (d.taxaMeses != null && d.taxaPercentual == null) c.addIssue({ code: 'custom', path: ['taxaMeses'], message: 'Defina a taxa especial antes do prazo.' });
-    if (d.taxaPercentual != null && d.taxaPercentual >= REGRAS.taxaPercentual) {
-      c.addIssue({ code: 'custom', path: ['taxaPercentual'], message: `Use uma taxa menor que a padrão (${REGRAS.taxaPercentual}%).` });
-    }
-  });
+// null tira o benefício
+const beneficio = z.object({ pacote: pacote.nullable() });
 
 const idParam = z.object({ id: v.uuid });
 
@@ -77,16 +56,67 @@ const situacaoDe = (c: Convite, agora: Date): Situacao =>
 
 export const linkDoConvite = (codigo: string) => `/entrar?perfil=pro&modo=criar&convite=${codigo}`;
 
-// os benefícios em frases, para o e-mail e para a tela do cadastro
-export function beneficiosEmTexto(b: { taxaPercentual: number | null; taxaMeses: number | null; prioridadeFila: boolean }): string[] {
+interface Termos {
+  taxaPercentual: number | null;
+  taxaDias: number | null;
+  prioridadeFila: boolean;
+  isencaoMeses: number | null;
+}
+
+// os benefícios em frases, para o e-mail, a tela do cadastro e o painel
+export function beneficiosEmTexto(b: Termos): string[] {
   const itens: string[] = [];
-  if (b.taxaPercentual != null) {
+  if (b.taxaPercentual != null && b.taxaDias) {
     const taxa = b.taxaPercentual === 0 ? 'sem taxa da plataforma' : `taxa da plataforma de ${b.taxaPercentual}% (no lugar de ${REGRAS.taxaPercentual}%)`;
-    itens.push(b.taxaMeses ? `${taxa} nos primeiros ${b.taxaMeses === 1 ? 'mês' : `${b.taxaMeses} meses`} depois da aprovação` : taxa);
+    itens.push(`${taxa} nos primeiros ${b.taxaDias} dias depois da aprovação`);
   }
   if (b.prioridadeFila) itens.push('prioridade na análise do cadastro');
+  if (b.isencaoMeses) itens.push(`cadastro e mensalidade sem custo nos primeiros ${b.isencaoMeses === 1 ? 'mês' : `${b.isencaoMeses} meses`}`);
   return itens;
 }
+
+const nomeDoPacote = (p: string | null) => (p && p in PACOTES ? PACOTES[p as Pacote].nome : null);
+
+// os pacotes como estão hoje, para a tela de convites escolher e mostrar
+export const pacotesHoje = () =>
+  NOMES_PACOTES.map((id) => {
+    const t = termosDoPacote(id);
+    return { id, nome: PACOTES[id].nome, ...t, beneficios: beneficiosEmTexto(t) };
+  });
+
+// os campos do benefício na profissional, com o pacote e as datas de fim
+export const beneficioDaLinha = (p: {
+  beneficioPacote: string | null;
+  taxaEspecialPercentual: number | null;
+  taxaEspecialDias: number | null;
+  taxaEspecialAte: Date | null;
+  prioridadeFila: boolean;
+  isencaoMeses: number | null;
+  isencaoAte: Date | null;
+}) =>
+  p.beneficioPacote || p.taxaEspecialPercentual != null || p.prioridadeFila
+    ? {
+        pacote: p.beneficioPacote,
+        nome: nomeDoPacote(p.beneficioPacote),
+        taxaPercentual: p.taxaEspecialPercentual,
+        taxaDias: p.taxaEspecialDias,
+        taxaAte: p.taxaEspecialAte,
+        prioridadeFila: p.prioridadeFila,
+        isencaoMeses: p.isencaoMeses,
+        isencaoAte: p.isencaoAte,
+        beneficios: beneficiosEmTexto({ taxaPercentual: p.taxaEspecialPercentual, taxaDias: p.taxaEspecialDias, prioridadeFila: p.prioridadeFila, isencaoMeses: p.isencaoMeses }),
+      }
+    : null;
+
+export const colunasDoBeneficio = {
+  beneficioPacote: profissionais.beneficioPacote,
+  taxaEspecialPercentual: profissionais.taxaEspecialPercentual,
+  taxaEspecialDias: profissionais.taxaEspecialDias,
+  taxaEspecialAte: profissionais.taxaEspecialAte,
+  prioridadeFila: profissionais.prioridadeFila,
+  isencaoMeses: profissionais.isencaoMeses,
+  isencaoAte: profissionais.isencaoAte,
+};
 
 const dataBr = (d: Date) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
 
@@ -97,7 +127,7 @@ async function enviarPorEmail(ctx: Contexto, c: Convite, origem: string) {
     '',
     ...(c.mensagem ? [c.mensagem, ''] : []),
     'Você recebeu um convite especial para atender pela Minha companhia, acompanhando pais e mães idosos em consultas, banco, mercado e passeios.',
-    ...(itens.length ? ['', 'Com este convite você tem:', ...itens.map((i) => `- ${i}`)] : []),
+    ...(itens.length ? ['', `Com o convite ${nomeDoPacote(c.pacote) ?? 'especial'} você tem:`, ...itens.map((i) => `- ${i}`)] : []),
     '',
     `Crie sua conta por este link: ${origem}${linkDoConvite(c.codigo)}`,
     ...(c.expiraEm ? ['', `O convite vale até ${dataBr(c.expiraEm)}.`] : []),
@@ -135,9 +165,11 @@ export async function usarConvite(tx: Db, codigo: string | undefined, email: str
   }
   return {
     conviteId: c.id,
+    beneficioPacote: c.pacote,
     taxaEspecialPercentual: c.taxaPercentual,
-    taxaEspecialMeses: c.taxaMeses,
+    taxaEspecialDias: c.taxaDias,
     prioridadeFila: c.prioridadeFila,
+    isencaoMeses: c.isencaoMeses,
   };
 }
 
@@ -156,6 +188,7 @@ export function rotasConvites(app: FastifyInstance, ctx: Contexto, op: { limite:
         codigo,
         nome: c.nome.trim().split(/\s+/)[0],
         mensagem: c.mensagem,
+        pacote: nomeDoPacote(c.pacote),
         // com e-mail, a tela já sabe qual usar
         emailExigido: !!c.email,
         beneficios: beneficiosEmTexto(c),
@@ -186,11 +219,13 @@ export function rotasConvites(app: FastifyInstance, ctx: Contexto, op: { limite:
       situacao: situacaoDe(c, agora),
       link: linkDoConvite(c.codigo),
       beneficios: beneficiosEmTexto(c),
+      nomePacote: nomeDoPacote(c.pacote),
       criadoPor,
       cadastradas: quem.filter((q) => q.conviteId === c.id).map(({ id, nome, situacao }) => ({ id, nome, situacao })),
     }));
     return {
       taxaPadrao: REGRAS.taxaPercentual,
+      pacotes: pacotesHoje(),
       resumo: {
         ativos: itens.filter((i) => i.situacao === 'ativo').length,
         cadastradas: quem.length,
@@ -214,9 +249,7 @@ export function rotasConvites(app: FastifyInstance, ctx: Contexto, op: { limite:
           email: d.email ?? null,
           celular: d.celular ?? null,
           mensagem: d.mensagem ?? null,
-          taxaPercentual: d.taxaPercentual ?? null,
-          taxaMeses: d.taxaMeses ?? null,
-          prioridadeFila: d.prioridadeFila,
+          ...termosDoPacote(d.pacote),
           usosMaximos: d.usosMaximos,
           expiraEm: new Date(agora.getTime() + d.validadeDias * DIA_MS),
           observacao: d.observacao ?? null,
@@ -231,7 +264,7 @@ export function rotasConvites(app: FastifyInstance, ctx: Contexto, op: { limite:
       envio = await enviar(c, req);
       if (envio.ok) c.enviadoEm = agora;
     }
-    return reply.status(201).send({ convite: { ...c, situacao: situacaoDe(c, agora), link: linkDoConvite(c.codigo), beneficios: beneficiosEmTexto(c), cadastradas: [] }, envio });
+    return reply.status(201).send({ convite: { ...c, situacao: situacaoDe(c, agora), link: linkDoConvite(c.codigo), beneficios: beneficiosEmTexto(c), nomePacote: nomeDoPacote(c.pacote), cadastradas: [] }, envio });
   });
 
   // um e-mail que falha não desfaz o convite: a tela mostra o erro e o link para mandar de outro jeito
@@ -270,8 +303,8 @@ export function rotasConvites(app: FastifyInstance, ctx: Contexto, op: { limite:
     return { ok: true };
   });
 
-  // benefício dado direto a uma profissional já cadastrada (sem convite). Já aprovada, o prazo
-  // da taxa começa agora; senão, começa na aprovação.
+  // Pacote dado direto a uma profissional já cadastrada (sem convite), ou retirado com null. Já
+  // aprovada, os prazos começam agora; senão, começam na aprovação.
   app.put('/api/admin/profissionais/:id/beneficio', async (req) => {
     exigirAdmin(req);
     const { id } = idParam.parse(req.params);
@@ -279,22 +312,21 @@ export function rotasConvites(app: FastifyInstance, ctx: Contexto, op: { limite:
     const [p] = await ctx.db.select({ aprovadoEm: profissionais.aprovadoEm }).from(profissionais).where(eq(profissionais.usuarioId, id));
     if (!p) throw naoEncontrado('Profissional não encontrada.');
     const agora = ctx.agora();
+    const t = b.pacote ? termosDoPacote(b.pacote) : null;
     const [r] = await ctx.db
       .update(profissionais)
       .set({
-        taxaEspecialPercentual: b.taxaPercentual,
-        taxaEspecialMeses: b.taxaMeses,
-        taxaEspecialAte: b.taxaMeses && p.aprovadoEm ? maisMeses(agora, b.taxaMeses) : null,
-        prioridadeFila: b.prioridadeFila,
+        beneficioPacote: t?.pacote ?? null,
+        taxaEspecialPercentual: t?.taxaPercentual ?? null,
+        taxaEspecialDias: t?.taxaDias ?? null,
+        taxaEspecialAte: t && p.aprovadoEm ? maisDias(agora, t.taxaDias) : null,
+        prioridadeFila: t?.prioridadeFila ?? false,
+        isencaoMeses: t?.isencaoMeses ?? null,
+        isencaoAte: t && p.aprovadoEm ? maisMeses(agora, t.isencaoMeses) : null,
         atualizadoEm: agora,
       })
       .where(eq(profissionais.usuarioId, id))
-      .returning({
-        taxaPercentual: profissionais.taxaEspecialPercentual,
-        taxaMeses: profissionais.taxaEspecialMeses,
-        taxaAte: profissionais.taxaEspecialAte,
-        prioridadeFila: profissionais.prioridadeFila,
-      });
-    return { beneficio: r };
+      .returning(colunasDoBeneficio);
+    return { beneficio: beneficioDaLinha(r!) };
   });
 }
