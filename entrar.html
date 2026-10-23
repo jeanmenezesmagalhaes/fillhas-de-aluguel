@@ -7,7 +7,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>Entrar · Minha companhia</title>
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="resumo.css?v=7">
+<link rel="stylesheet" href="resumo.css?v=8">
 </head>
 <body>
 
@@ -28,6 +28,8 @@
       <button type="button" class="modo" data-modo="entrar" aria-pressed="true">Entrar</button>
       <button type="button" class="modo" data-modo="criar" aria-pressed="false">Criar conta</button>
     </div>
+
+    <div class="convite-aviso" data-convite hidden></div>
 
     <form class="form-entrar" novalidate data-form>
       <div class="campo" data-so="criar" hidden>
@@ -115,6 +117,23 @@
     botoes.forEach((b) => b.addEventListener('click', () => { modo = b.dataset.modo; aplica(); }));
     aplica();
 
+    // convite especial da equipe (?convite=MC-…): mostra para quem é e o que traz, antes do cadastro
+    const convite = pro && /^MC-[A-Z0-9]{8}$/i.test(params.get('convite') || '') ? params.get('convite').toUpperCase() : null;
+    if (convite && /^https?:$/.test(location.protocol)) {
+      fetch(`/api/convites/${encodeURIComponent(convite)}`, { credentials: 'same-origin' })
+        .then(async (r) => ({ ok: r.ok, dados: await r.json().catch(() => ({})) }))
+        .then(({ ok, dados }) => {
+          const caixa = document.querySelector('[data-convite]');
+          const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+          if (!ok) { caixa.innerHTML = `<p>${esc((dados.erro && dados.erro.mensagem) || 'Este convite não vale mais.')}</p>`; caixa.hidden = false; return; }
+          const c = dados.convite;
+          caixa.innerHTML = `<p><strong>Convite especial para ${esc(c.nome)}</strong></p>${c.mensagem ? `<p>${esc(c.mensagem)}</p>` : ''}${c.beneficios.length ? `<ul>${c.beneficios.map((b) => `<li>${esc(b[0].toUpperCase() + b.slice(1))}</li>`).join('')}</ul>` : ''}${c.emailExigido ? '<p class="campo-ajuda">Use o e-mail em que você recebeu o convite.</p>' : ''}`;
+          caixa.hidden = false;
+          modo = 'criar'; aplica();
+        })
+        .catch(() => { /* sem o convite na tela, o cadastro segue e a API confere o código */ });
+    }
+
     const erro = (campo, msg) => { const p = form.querySelector(`[data-erro="${campo}"]`); p.textContent = msg; p.hidden = !msg; form[campo].setAttribute('aria-invalid', String(!!msg)); if (msg) form[campo].setAttribute('aria-describedby', p.id = `erro-${campo}`); else form[campo].removeAttribute('aria-describedby'); return !msg; };
     const avisa = (msg) => { geral.textContent = msg; geral.hidden = !msg; };
     const lembra = (nome, email) => { try { localStorage.setItem(chave, JSON.stringify({ nome, email })); } catch (_) { /* sem armazenamento: segue sem lembrar */ } };
@@ -145,7 +164,7 @@
 
       const url = criar ? (pro ? '/api/profissionais' : '/api/contas') : '/api/sessoes';
       const corpo = criar
-        ? { nome: form.nome.value.trim(), email, celular: form.celular.value, senha: form.senha.value, aceitaTermos: true, codigoIndicacao: params.get('indicacao') || undefined, ...(pro ? { cidade: form.cidade.value.trim(), uf: form.uf.value.trim() } : {}) }
+        ? { nome: form.nome.value.trim(), email, celular: form.celular.value, senha: form.senha.value, aceitaTermos: true, codigoIndicacao: params.get('indicacao') || undefined, ...(pro ? { cidade: form.cidade.value.trim(), uf: form.uf.value.trim(), codigoConvite: params.get('convite') || undefined } : {}) }
         : { email, senha: form.senha.value };
       enviar.disabled = true;
       try {

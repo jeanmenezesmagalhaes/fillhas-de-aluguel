@@ -218,13 +218,82 @@
       });
     });
   };
+  // pagamentos: o que está retido, o que liberar para a profissional e o que devolver
+  const brl = (c) => (c / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const dm = (iso) => { const d = new Date(iso); return `${p2(d.getDate())}/${p2(d.getMonth() + 1)}`; };
+  const TIPO_PIX = { CPF: 'CPF', CNPJ: 'CNPJ', PHONE: 'celular', EMAIL: 'e-mail', RANDOM: 'chave aleatória' };
+  const chavePix = (p) => (!p.chavePix ? null : p.tipoChavePix === 'CPF' ? cpf(p.chavePix) : p.tipoChavePix === 'CNPJ' ? cnpj(p.chavePix) : p.tipoChavePix === 'PHONE' ? fone(p.chavePix) : p.chavePix);
+  const forma = (i) => (i.metodo === 'PIX' ? 'por Pix' : i.metodo === 'CARD' ? `no cartão${i.parcelas > 1 ? ` em ${i.parcelas}x` : ''}${i.acrescimoCentavos ? ` (mais ${brl(i.acrescimoCentavos)} da taxa do cartão)` : ''}` : '');
+  const GRUPOS = [
+    ['liberar', 'Para liberar', 'A família avaliou, ou o prazo de avaliar terminou.'],
+    ['estornar', 'Devoluções que falharam', 'Serviço cancelado com o dinheiro ainda retido. Tente de novo ou devolva pelo painel do AbacatePay.'],
+    ['aguardando_avaliacao', 'Esperando a avaliação da família', ''],
+    ['aguardando_atendimento', 'Pagos, atendimento ainda não feito', ''],
+    ['repassado', 'Repassados nos últimos 30 dias', ''],
+  ];
+  const itemPagamento = (i) => {
+    const s = i.servico;
+    const pix = chavePix(i.profissional);
+    const pill = i.etapa === 'repassado' ? ['pill-ok', 'Repassado']
+      : i.etapa === 'estornar' ? ['pill-aviso', 'Devolver']
+      : i.repasse.situacao === 'falhou' ? ['pill-aviso', 'Repasse falhou']
+      : i.repasse.situacao === 'enviando' ? ['', 'Enviando']
+      : i.etapa === 'liberar' ? ['pill-ok', 'Pronto para liberar'] : ['', 'Retido'];
+    const avaliacao = i.avaliacao ? `A família avaliou com ${i.avaliacao.nota} de 5 em ${dm(i.avaliacao.criadoEm)}.`
+      : i.liberaEm ? `Sem avaliação da família; libera em ${dm(i.liberaEm)}.` : '';
+    return `<li class="doc" data-pag="${esc(i.id)}">
+      <div class="doc-cab"><p class="doc-nome">${esc(s.tarefa)} <span class="curso-de">de ${esc(i.familia)} com ${esc(i.profissional.nome)}</span></p><span class="pill ${pill[0]}">${pill[1]}</span></div>
+      <p class="curso-det num">Atendimento em ${dataHora(s.inicio)}, ${s.horas} h${s.realizadoEm ? ` · feito em ${dm(s.realizadoEm)}` : ''}${s.canceladoEm ? ` · cancelado em ${dm(s.canceladoEm)}` : ''}</p>
+      <p class="doc-arquivo num">A família pagou ${brl(i.valorCentavos)} ${esc(forma(i))}${i.pagoEm ? ` em ${dm(i.pagoEm)}` : ''}.${i.comprovanteUrl ? ` <a href="${esc(i.comprovanteUrl)}" target="_blank" rel="noopener">Comprovante</a>` : ''}</p>
+      ${i.etapa === 'estornar' ? '' : `<p class="doc-arquivo num">Repasse: ${brl(i.repasseCentavos)} (${brl(i.valorCentavos)} menos ${brl(i.taxaCentavos)} de taxa) ${pix ? `para o ${TIPO_PIX[i.profissional.tipoChavePix]} ${esc(pix)}` : '<strong>sem chave Pix cadastrada</strong>'}${i.repasse.repassadoEm ? `, enviado em ${dataHora(i.repasse.repassadoEm)}` : ''}.${i.repasse.comprovanteUrl ? ` <a href="${esc(i.repasse.comprovanteUrl)}" target="_blank" rel="noopener">Comprovante do Pix</a>` : ''}</p>`}
+      ${avaliacao && i.etapa !== 'repassado' && i.etapa !== 'estornar' ? `<p class="curso-det">${esc(avaliacao)}</p>` : ''}
+      ${i.repasse.erro && i.etapa !== 'repassado' ? `<p class="doc-motivo">Última tentativa: ${esc(i.repasse.erro)}</p>` : ''}
+      ${i.reembolsoErro ? `<p class="doc-motivo">Devolução recusada: ${esc(i.reembolsoErro)}</p>` : ''}
+      ${i.etapa === 'liberar' && i.repasse.situacao !== 'enviando' ? `<div class="doc-acoes"><button class="btn btn-primario" type="button" data-repassar ${pix ? '' : 'disabled'}>Enviar ${brl(i.repasseCentavos)} por Pix</button></div>` : ''}
+      ${i.etapa === 'estornar' ? '<div class="doc-acoes"><button class="btn btn-primario" type="button" data-estornar>Tentar a devolução de novo</button></div>' : ''}
+      <p class="campo-erro" data-erro-pag hidden></p>
+    </li>`;
+  };
+  const carregaPagamentos = async () => {
+    const caixa = $('[data-pag-grupos]');
+    let r = null;
+    try { r = await chamar('GET', '/api/admin/pagamentos'); } catch (e) { caixa.innerHTML = `<p class="campo-erro">${esc(e.message)}</p>`; return; }
+    if (!r || !r.pagamentos) { caixa.innerHTML = '<p class="vazio">Os pagamentos aparecem com a API ligada.</p>'; return; }
+    const lista = r.pagamentos;
+    const pendentes = lista.filter((i) => i.etapa === 'liberar' || i.etapa === 'estornar').length;
+    $('[data-n-pagamentos]').textContent = pendentes ? `(${pendentes})` : '';
+    $('[data-pag-resumo]').textContent = `${brl(r.resumo.retidoCentavos)} retidos · ${brl(r.resumo.liberarCentavos)} para liberar${r.gateway === 'simulado' ? ' · simulado' : ''}`;
+    caixa.innerHTML = GRUPOS.map(([etapa, titulo, sub]) => {
+      const doGrupo = lista.filter((i) => i.etapa === etapa);
+      if (!doGrupo.length && etapa !== 'liberar') return '';
+      return `<h3 class="tf-sub">${titulo} <span class="meta num">${doGrupo.length}</span></h3>${sub ? `<p class="adm-sub">${sub}</p>` : ''}
+        <ul class="cursos-adm">${doGrupo.length ? doGrupo.map(itemPagamento).join('') : '<li class="vazio">Nada para liberar agora.</li>'}</ul>`;
+    }).join('');
+    $$('[data-pag]', caixa).forEach((li) => {
+      const id = li.dataset.pag; const erro = $('[data-erro-pag]', li);
+      const falha = (e) => { erro.textContent = e.message; erro.hidden = false; };
+      // dois toques: o primeiro pede confirmação, o segundo envia
+      const confirmaEFaz = (b, texto, acao) => b.addEventListener('click', async () => {
+        if (!b.dataset.confirmar) { b.dataset.confirmar = '1'; b.dataset.texto = b.textContent; b.textContent = texto; return; }
+        b.disabled = true; erro.hidden = true;
+        try { await acao(); carregaPagamentos(); } catch (e) { falha(e); b.disabled = false; delete b.dataset.confirmar; b.textContent = b.dataset.texto; carregaPagamentos(); }
+      });
+      const rep = $('[data-repassar]', li);
+      if (rep) confirmaEFaz(rep, 'Confirmar o envio do Pix', () => chamar('POST', `/api/admin/pagamentos/${encodeURIComponent(id)}/repassar`));
+      const est = $('[data-estornar]', li);
+      if (est) confirmaEFaz(est, 'Confirmar a devolução', () => chamar('POST', `/api/admin/pagamentos/${encodeURIComponent(id)}/estornar`));
+    });
+  };
+
   $$('[data-aba]').forEach((b) => b.addEventListener('click', () => {
     $$('[data-aba]').forEach((o) => o.setAttribute('aria-selected', String(o === b)));
     $('#aba-fila').hidden = b.dataset.aba !== 'fila';
     $('#aba-cursos').hidden = b.dataset.aba !== 'cursos';
     $('#aba-docs').hidden = b.dataset.aba !== 'docs';
     $('#aba-fotos').hidden = b.dataset.aba !== 'fotos';
+    $('#aba-pagamentos').hidden = b.dataset.aba !== 'pagamentos';
     if (b.dataset.aba === 'fotos') carregaFotos();
+    if (b.dataset.aba === 'pagamentos') carregaPagamentos();
     if (b.dataset.aba === 'cursos') carregaCursos();
     if (b.dataset.aba === 'docs') carregaDocs();
   }));
@@ -307,7 +376,10 @@
     $('[data-fora]').remove(); $('[data-gestao]').hidden = false;
     $('[data-nome-conta]').textContent = nome;
     $('[data-sair]').addEventListener('click', sair);
-    carregaCursos(); carregaDocs(); carregaFotos();
+    carregaCursos(); carregaDocs(); carregaFotos(); carregaPagamentos();
+    // vindo do painel com #pagamentos (ou #fotos, #cursos, #docs), já abre a aba
+    const aba = document.querySelector(`[data-aba="${location.hash.slice(1)}"]`);
+    if (aba) aba.click();
     try { fila = (await chamar('GET', '/api/admin/fila')).fila; desenhaFila(); if (fila[0] && matchMedia('(min-width: 901px)').matches) abre(fila[0].id); } catch (e) { $('[data-achado]').textContent = e.message; }
   };
   (async () => {

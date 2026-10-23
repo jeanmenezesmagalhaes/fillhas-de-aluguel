@@ -9,7 +9,7 @@
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="resumo.css?v=6">
 <link rel="stylesheet" href="gestao.css?v=24">
-<link rel="stylesheet" href="verificacao.css?v=3">
+<link rel="stylesheet" href="verificacao.css?v=6">
 </head>
 <body class="pagina-gestao">
 
@@ -140,6 +140,37 @@
           </div>
           <p class="campo-erro" data-cnh-erro hidden></p>
         </div>
+      </section>
+
+      <!-- chave Pix do repasse: salva sozinha -->
+      <section class="cartao" id="pix" aria-labelledby="t-pix">
+        <div class="cartao-cab"><h2 id="t-pix">Onde você recebe</h2><span class="pill" data-pix-pill>Falta cadastrar</span></div>
+        <p class="ex-sub">A família paga quando contrata, e o valor fica guardado com a Minha companhia. Depois que ela avalia o atendimento, enviamos o seu valor, já sem a taxa, por Pix para esta chave.</p>
+        <form class="pix-form" data-form-pix novalidate>
+          <div class="campo">
+            <label for="pix-tipo">Tipo da chave</label>
+            <select id="pix-tipo" name="tipo">
+              <option value="CPF">CPF</option>
+              <option value="PHONE">Celular</option>
+              <option value="EMAIL">E-mail</option>
+              <option value="CNPJ">CNPJ</option>
+              <option value="RANDOM">Chave aleatória</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="pix-chave">Chave Pix</label>
+            <input id="pix-chave" name="chave" maxlength="120" autocomplete="off" spellcheck="false">
+            <p class="campo-erro" data-erro="pix" hidden></p>
+          </div>
+          <div class="campo pix-senha">
+            <label for="pix-senha">Sua senha</label>
+            <input id="pix-senha" name="senhaAtual" type="password" autocomplete="current-password" maxlength="200">
+            <p class="ajuda-texto">Para trocar a chave, confirme com a senha da conta. Por segurança, a chave nova recebe repasses 48 horas depois da troca, e avisamos você por e-mail.</p>
+            <p class="campo-erro" data-erro="pix-senha" hidden></p>
+          </div>
+          <div class="doc-acoes"><button class="btn btn-primario" type="submit">Salvar chave</button></div>
+          <p class="ex-msg" data-pix-msg role="status"></p>
+        </form>
       </section>
 
       <!-- cursos: cada um com o certificado, validado pela equipe -->

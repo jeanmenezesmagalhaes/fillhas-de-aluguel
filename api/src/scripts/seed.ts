@@ -2,17 +2,21 @@
 // Profissionais: Ana Oliveira e Cláudia Ramos, aprovadas; Joana Prado na lista de espera, com
 // documentos enviados e indicada pela Ana. Famílias: Mariana Costa (mãe Helena) e Rafael Souza
 // (mãe Dirce). Equipe Minha Companhia com acesso de administração. Pedidos em todas as
-// situações, com datas contadas a partir de hoje.
+// situações, com datas contadas a partir de hoje, e pagamentos simulados dos confirmados e feitos.
 import { createHash, randomUUID } from 'node:crypto';
 import { inArray, or, sql } from 'drizzle-orm';
 import { armazenamentoEmDisco } from '../armazenamento.js';
 import { gerarHashSenha } from '../auth.js';
 import { slugDoNome } from '../rotas/contas.js';
 import { abrirBanco } from '../db/index.js';
-import { avaliacoes, contratantes, disponibilidade, documentos, indicacoes, pessoasAcompanhadas, profissionais, qualificacoes, servicos, tarefasProfissional, usuarios } from '../db/schema.js';
+import { avaliacoes, contratantes, disponibilidade, documentos, indicacoes, pagamentos, pessoasAcompanhadas, profissionais, qualificacoes, servicos, tarefasProfissional, usuarios } from '../db/schema.js';
 
-if (process.env.NODE_ENV === 'production') {
-  console.error('O seed só roda fora de produção.');
+// A conta da equipe tem senha conhecida: com um Postgres que não seja desta máquina (o Neon
+// do .env.local, por exemplo), o seed criaria um administrador aberto em produção.
+const destino = process.env.DATABASE_URL ?? '';
+const postgresRemoto = /^postgres(ql)?:\/\//.test(destino) && !/@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(destino);
+if (process.env.NODE_ENV === 'production' || process.env.VERCEL || postgresRemoto) {
+  console.error('O seed só roda fora de produção, no PGlite ou num Postgres local.');
   process.exit(1);
 }
 
@@ -97,6 +101,8 @@ await banco.db.transaction(async (tx) => {
     revisadoEm: dia(em(-19, 12)),
     proximaRevisao: dia(em(11, 12)),
     cpf: '10000000108',
+    chavePix: '10000000108',
+    tipoChavePix: 'CPF',
     ...endereco,
     aprovadoEm: em(-19, 12),
   });
@@ -240,8 +246,25 @@ await banco.db.transaction(async (tx) => {
       { ...doMariana, ...daAna(2), tarefa: 'Passeio no Taquaral', inicio: em(-1, 10), horas: 2, situacao: 'confirmado' },
       { ...doMariana, ...daAna(2), tarefa: 'Banco', inicio: em(-6, 10), horas: 2, situacao: 'realizado', realizadoEm: em(-6, 12) },
       { ...doRafael, ...daAna(4), tarefa: 'Consulta médica', inicio: em(-11, 8), horas: 4, situacao: 'realizado', realizadoEm: em(-11, 12) },
+      // Ana aceitou; falta a Mariana pagar até amanhã
+      { ...doMariana, ...daAna(2), tarefa: 'Mercado e farmácia', local: 'Rua Maria Monteiro, 120', inicio: em(4, 15), horas: 2, situacao: 'aguardando_pagamento', respondaAte: em(1, 20) },
     ])
-    .returning({ id: servicos.id });
+    .returning({ id: servicos.id, horas: servicos.horas, valorHora: servicos.valorHoraCentavos });
+
+  // pagamentos simulados: confirmados e feitos já pagos, com o dinheiro retido até o repasse
+  const pago = (i: number, metodo: 'PIX' | 'CARD', pagoEm: Date, parcelas: number | null = null) => ({
+    servicoId: feitos[i]!.id,
+    gateway: 'simulado',
+    cobrancaId: `seed_${randomUUID()}`,
+    url: '',
+    valorCentavos: feitos[i]!.horas * feitos[i]!.valorHora,
+    situacao: 'pago' as const,
+    metodo,
+    parcelas,
+    acrescimoCentavos: metodo === 'CARD' ? Math.ceil((feitos[i]!.horas * feitos[i]!.valorHora + 60) / 0.96) - feitos[i]!.horas * feitos[i]!.valorHora : 0,
+    pagoEm,
+  });
+  await tx.insert(pagamentos).values([pago(3, 'CARD', em(-2, 10), 3), pago(4, 'PIX', em(-3, 18)), pago(5, 'PIX', em(-8, 9)), pago(6, 'CARD', em(-13, 11), 2)]);
 
   const consultaDoRafael = feitos[6]!.id;
   await tx.insert(avaliacoes).values([

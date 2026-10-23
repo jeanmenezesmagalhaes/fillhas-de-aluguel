@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { montarIcs } from '../src/rotas/agenda.js';
-import { ambiente, cliente, DIA, familia, HORA, profissionalAprovada, type Ambiente } from './ajuda.js';
+import { aceitarEPagar, ambiente, cliente, DIA, familia, HORA, pagar, profissionalAprovada, type Ambiente } from './ajuda.js';
 
 let amb: Ambiente;
 beforeAll(async () => {
@@ -48,9 +48,9 @@ describe('arquivo da agenda', () => {
     const banco = await pedir('Banco');
     const mercado = await pedir('Mercado');
     const esperando = await pedir('Passeio');
-    await pro.c.post(`/api/servicos/${consulta}/aceitar`);
-    await pro.c.post(`/api/servicos/${banco}/aceitar`);
-    await pro.c.post(`/api/servicos/${mercado}/aceitar`);
+    await aceitarEPagar(pro.c, fam, consulta);
+    await aceitarEPagar(pro.c, fam, banco);
+    await aceitarEPagar(pro.c, fam, mercado);
     await fam.post(`/api/servicos/${mercado}/cancelar`);
 
     const daPro = (await assinar((await pro.c.get('/api/agenda/link')).corpo.url));
@@ -87,6 +87,7 @@ describe('arquivo da agenda', () => {
     const link = (await fam.get('/api/agenda/link')).corpo.url;
     expect((await assinar(link)).body).not.toContain(id);
     await fam.post(`/api/servicos/${id}/aceitar-proposta`);
+    await pagar(fam, id);
     const ics = (await assinar(link)).body;
     const inicio = new Date(amanha.getTime() + 2 * HORA).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     expect(ics).toContain(`DTSTART:${inicio}`);

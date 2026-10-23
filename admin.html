@@ -10,14 +10,14 @@
 <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="resumo.css?v=6">
 <link rel="stylesheet" href="gestao.css?v=24">
-<link rel="stylesheet" href="verificacao.css?v=4">
+<link rel="stylesheet" href="verificacao.css?v=6">
 </head>
 <body class="pagina-gestao">
 
 <header class="topo" data-topo>
   <div class="topo-dentro">
     <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
-    <nav class="topo-nav" aria-label="Administração"><a href="admin" aria-current="page">Conferência</a><span class="topo-conta"><span data-nome-conta>Equipe</span><button class="link" type="button" data-sair>Sair</button></span></nav>
+    <nav class="topo-nav" aria-label="Administração"><a href="admin-painel">Painel</a><a href="admin" aria-current="page">Conferência</a><span class="topo-conta"><span data-nome-conta>Equipe</span><button class="link" type="button" data-sair>Sair</button></span></nav>
   </div>
 </header>
 
@@ -34,7 +34,14 @@
     <button type="button" role="tab" aria-selected="false" aria-controls="aba-cursos" data-aba="cursos">Cursos para validar <span class="num" data-n-cursos></span></button>
     <button type="button" role="tab" aria-selected="false" aria-controls="aba-docs" data-aba="docs">Documentos avulsos <span class="num" data-n-docs></span></button>
     <button type="button" role="tab" aria-selected="false" aria-controls="aba-fotos" data-aba="fotos">Fotos <span class="num" data-n-fotos></span></button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="aba-pagamentos" data-aba="pagamentos">Pagamentos <span class="num" data-n-pagamentos></span></button>
   </div>
+
+  <section class="cartao adm-cursos" id="aba-pagamentos" role="tabpanel" hidden aria-labelledby="t-pag-adm">
+    <div class="cartao-cab"><h2 id="t-pag-adm">Pagamentos</h2><span class="meta num" data-pag-resumo></span></div>
+    <p class="adm-sub">A família paga quando contrata, e o valor fica retido. O repasse sai por Pix para a chave da profissional, já sem a taxa, depois que a família avalia o atendimento ou quando o prazo de avaliar termina.</p>
+    <div data-pag-grupos></div>
+  </section>
 
   <section class="cartao adm-cursos" id="aba-cursos" role="tabpanel" hidden aria-labelledby="t-cursos-adm">
     <div class="cartao-cab"><h2 id="t-cursos-adm">Cursos para validar</h2><span class="meta">do mais antigo ao mais novo</span></div>
@@ -76,6 +83,6 @@
 </main>
 
 <script src="gestao.js"></script>
-<script src="admin.js?v=4"></script>
+<script src="admin.js?v=6"></script>
 </body>
 </html>

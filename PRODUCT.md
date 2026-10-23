@@ -51,7 +51,8 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
   - **pedidos.html**, para a família: em andamento (incluindo a proposta de outro horário), confirmados e anteriores, com avaliação de 1 a 5.
 
   Com a API rodando, as duas usam a sessão real e os pedidos do banco: as ações (aceitar, recusar, propor, aceitar a proposta, cancelar, marcar como feito, avaliar) ficam gravadas. A profissional vê a nota de cada família no pedido e avalia as famílias em "Feitos recentemente". Abertas como arquivo, sem a API, continuam na demonstração ("mc-pro"/"mc-conta" no navegador, ações só na tela).
-- Não implementar ainda: upload real, WhatsApp, tracking, pagamentos, e-mails, chat, operações administrativas, contratações reais, publicação como serviço operacional.
+- Não implementar ainda: upload real, WhatsApp, tracking, e-mails, chat, operações administrativas, contratações reais, publicação como serviço operacional.
+- **Pagamento (decidido pelo usuário em 20/10/2026, MVP para validar):** a família paga quando a profissional aceita, por Pix ou cartão em até 12x, pelo AbacatePay. O acréscimo do cartão (inclusive o do parcelamento) fica com a família. O dinheiro fica retido e só vai para a profissional depois que a família avalia o atendimento (ou quando acabam os 14 dias para avaliar); a equipe libera o repasse por Pix na administração. Todo cancelamento devolve tudo à família. Asaas (split com Conta Escrow) fica para quando o volume crescer.
 - Todos os dados são demonstrativos. Decidido em 20/10/2026, a pedido do usuário: as telas não mostram avisos de protótipo (faixa no topo, "amostra", "fictício", "ilustrativo", navegação de revisão, mapa das telas no rodapé). O caráter demonstrativo fica registrado aqui e em docs/PASSAGEM.md, não na tela.
 - **Cobertura nacional (decidido em 20/10/2026):** a Minha companhia atende o Brasil todo, nas cidades com profissionais cadastradas. Campinas não é limite nem padrão da busca. A busca por cidade é um campo de texto, com sugestões das cidades atendidas; os bairros dependem da cidade escolhida. Sem cidade, a listagem mostra o Brasil todo. Uma cidade sem profissionais leva a uma mensagem e ao botão "Ver todas as cidades".
 - **Orçamento por horas:** a profissional define o valor da hora; a contratante escolhe as horas estimadas (1 h, 2 h, 3 h…). Algumas profissionais definem um tempo mínimo (ex.: 2 h) e o orçamento precisa respeitá-lo. Valor mínimo da hora na plataforma: R$70/h.
@@ -59,7 +60,7 @@ Fase atual: **protótipo estático para validação**. O objetivo é o usuário 
 - **Veículo:** a contratante precisa saber, antes de contratar, se o veículo da profissional está incluso. Pesa na decisão.
 - **Proposta de modelo (20/10/2026, a validar):** o valor da hora já cobre o veículo quando ele é incluso; deslocamento e acompanhamento externo deixam de ser cobranças separadas.
 - A visão da cuidadora não exibe a taxa cobrada ao cliente.
-- **Indefinido:** modelo de recebimento da taxa da plataforma (R$15 é só exemplo, nunca apresentar como decidido); valor, finalidade, periodicidade, método e relação com publicação do pagamento da cuidadora (`pagamento.html`).
+- **Taxa da plataforma:** sai do valor da profissional (12%, ainda proposta, em `TAXA_PLATAFORMA_PERCENT`). A família paga só o serviço, mais o acréscimo do cartão quando paga no cartão. O R$ 15 cobrado da família ficou só no histórico.
 - **Nome definido (20/10/2026):** "Minha companhia". Substitui o provisório "Filha de Aluguel"; marca em escolha entre três direções (`docs/marca/direcoes.html`).
 
 ## Brand Commitments

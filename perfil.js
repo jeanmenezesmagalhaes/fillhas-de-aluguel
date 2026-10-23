@@ -398,6 +398,47 @@
     }
   });
 
+  // --- chave Pix do repasse: salva sozinha ---
+  const formPix = $('[data-form-pix]');
+  const ROTULO_PIX = { CPF: 'CPF', PHONE: 'Celular', EMAIL: 'E-mail', CNPJ: 'CNPJ', RANDOM: 'Chave aleatória' };
+  const EXEMPLO_PIX = { CPF: '000.000.000-00', PHONE: '(19) 99999-0000', EMAIL: 'voce@exemplo.com', CNPJ: '00.000.000/0000-00', RANDOM: '0a1b2c3d-…' };
+  function marcaPix(pix) {
+    const pill = $('[data-pix-pill]');
+    pill.className = `pill ${pix ? 'pill-ok' : 'pill-aviso'}`;
+    pill.textContent = pix ? `${ROTULO_PIX[pix.tipo]} cadastrado` : 'Falta cadastrar';
+    if (pix) { formPix.tipo.value = pix.tipo; formPix.chave.value = pix.chave; }
+    formPix.chave.placeholder = EXEMPLO_PIX[formPix.tipo.value];
+  }
+  formPix.tipo.addEventListener('change', () => { formPix.chave.placeholder = EXEMPLO_PIX[formPix.tipo.value]; });
+  formPix.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const msg = $('[data-pix-msg]');
+    const erro = $('[data-erro="pix"]', formPix);
+    const erroSenha = $('[data-erro="pix-senha"]', formPix);
+    erro.hidden = true; erroSenha.hidden = true;
+    formPix.senhaAtual.removeAttribute('aria-invalid');
+    const pix = { tipo: formPix.tipo.value, chave: formPix.chave.value.trim() };
+    if (!pix.chave) { erro.textContent = 'Informe a chave Pix.'; erro.hidden = false; return; }
+    msg.textContent = 'Salvando…'; msg.className = 'ex-msg';
+    try {
+      const salvo = modoApi ? (await mc.api('PATCH', '/api/profissionais/eu', { chavePix: pix, senhaAtual: formPix.senhaAtual.value || undefined })).usuario.profissional.chavePix : pix;
+      marcaPix(salvo);
+      formPix.senhaAtual.value = '';
+      msg.textContent = salvo && salvo.recebeAPartirDe
+        ? `Pronto. Por segurança, esta chave recebe repasses a partir de ${new Date(salvo.recebeAPartirDe).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}. Enviamos um aviso para o seu e-mail.`
+        : 'Pronto. Os próximos repasses vão para esta chave.';
+    } catch (e) {
+      msg.textContent = '';
+      if (e.campos && e.campos.senhaAtual) {
+        erroSenha.textContent = e.campos.senhaAtual; erroSenha.hidden = false;
+        formPix.senhaAtual.setAttribute('aria-invalid', 'true'); formPix.senhaAtual.focus();
+        return;
+      }
+      erro.textContent = (e.campos && (e.campos['chavePix.chave'] || e.campos['chavePix.tipo'])) || e.message;
+      erro.hidden = false;
+    }
+  });
+
   // --- veículo e CNH: salva ao escolher ---
   const veiculoMsg = $('[data-veiculo-msg]');
   const cnh = $('[data-cnh]');
@@ -540,6 +581,7 @@
       let publico = {};
       try { publico = (await mc.api('GET', `/api/profissionais/${encodeURIComponent(p.slug)}`)).profissional; } catch (_) { /* fica em branco */ }
       desenha({ ...publico, ...p, tarefas: p.tarefas || publico.tarefas || [], aceitaOutras: p.aceitaOutras ?? publico.aceitaOutras ?? true });
+      marcaPix(p.chavePix || null);
       // a foto nova (em conferência ou recusada) aparece para ela; senão, a que está no ar
       if (p.foto) marcaFoto(p.foto.url, p.foto.situacao, p.foto.motivoRecusa);
       else if (p.fotoUrl || publico.fotoUrl) marcaFoto(p.fotoUrl || publico.fotoUrl, 'aprovada');
@@ -557,6 +599,7 @@
     let salvo = null;
     try { salvo = JSON.parse(localStorage.getItem('mc-perfil')); } catch (_) { /* sem armazenamento */ }
     desenha({ ...EXEMPLO, ...(salvo || {}) });
+    marcaPix(null);
     cursos = EXEMPLO.cursos.map((c) => ({ ...c }));
     desenhaCursos();
   })();

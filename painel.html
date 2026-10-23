@@ -258,7 +258,14 @@
         <p class="pn-tarefa">${esc(s.tarefa)}${s.local ? ` · ${esc(s.local)}` : ''}</p>
         <p class="pn-status" role="status"><strong>Proposta enviada:</strong> ${dia(s.proposta.inicio).toLowerCase()}, das ${faixa(s.proposta.inicio, s.proposta.horas)} (${s.proposta.horas} h). Aguardando a resposta de ${esc(primeiro(s.contratante.nome))}.</p>
       </li>`;
-    const linhaAgenda = (s, fim) => `<li data-id="${s.id}"><span class="ag-dia">${dia(s.inicio)}</span><span class="ag-hora">${faixa(s.inicio, s.horas)}</span><span class="ag-oque"><strong>${esc(s.tarefa)}</strong><small>${esc(s.contratante.nome)}${s.local ? ` · ${esc(s.local)}` : ''}</small></span>${fim}</li>`;
+    // aceito, esperando a família pagar: o horário fica reservado até o prazo
+    const linhaPagamento = (s) => `<li class="pn resolvido proposto" data-id="${s.id}">
+        <div class="pn-cab"><p class="pn-quem"><strong>${esc(s.contratante.nome)}</strong>${paraQuem(s)}</p><span class="pill">Aguardando pagamento</span></div>
+        <p class="pn-tarefa">${esc(s.tarefa)} · ${dia(s.inicio)}, ${faixa(s.inicio, s.horas)}</p>
+        <p class="pn-status" role="status">Você aceitou. O horário fica reservado até ${esc(primeiro(s.contratante.nome))} pagar${s.respondaAte ? `, até ${mc.prazo(s.respondaAte)}` : ''}. Com o pagamento, ele entra na sua agenda.</p>
+      </li>`;
+    const REPASSE = { aguardando: 'repasse depois da avaliação', enviando: 'repasse sendo enviado', falhou: 'repasse sendo enviado', enviado: 'repasse enviado' };
+    const linhaAgenda = (s, fim) => `<li data-id="${s.id}"><span class="ag-dia">${dia(s.inicio)}</span><span class="ag-hora">${faixa(s.inicio, s.horas)}</span><span class="ag-oque"><strong>${esc(s.tarefa)}</strong><small>${esc(s.contratante.nome)}${s.local ? ` · ${esc(s.local)}` : ''}${s.pagamento && s.pagamento.situacao === 'pago' ? ` · ${REPASSE[s.pagamento.repasseSituacao] || ''}` : ''}</small></span>${fim}</li>`;
 
     // semanas de segunda a domingo que tocam o mês, com o feito e o confirmado de cada uma
     const semanasDoMes = (ano, mes, feitos, conf) => {
@@ -312,11 +319,12 @@
       const agora = Date.now();
       const novos = lista.filter((s) => s.situacao === 'solicitado').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
       const propostas = lista.filter((s) => s.situacao === 'proposta_alterada');
+      const aPagar = lista.filter((s) => s.situacao === 'aguardando_pagamento').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
       const conf = lista.filter((s) => s.situacao === 'confirmado').sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
       const feitos = lista.filter((s) => s.situacao === 'realizado' && agora - new Date(s.realizadoEm) <= PRAZO);
 
-      $('[data-novos]').innerHTML = [...novos.map(linhaNovo), ...propostas.map(linhaProposta)].join('');
-      $('[data-sem-novos]').hidden = novos.length + propostas.length > 0;
+      $('[data-novos]').innerHTML = [...novos.map(linhaNovo), ...propostas.map(linhaProposta), ...aPagar.map(linhaPagamento)].join('');
+      $('[data-sem-novos]').hidden = novos.length + propostas.length + aPagar.length > 0;
       $('[data-conta-novos]').textContent = mc.plural(novos.length, 'pedido', 'pedidos');
 
       // já começou: pede para marcar como feito; ainda vai acontecer: salvar na agenda do celular
@@ -340,7 +348,7 @@
       const proximo = conf.find((s) => new Date(s.inicio) > agora);
       achado.textContent = aviso || (novos.length
         ? `${novos.length === 1 ? '1 pedido espera' : `${novos.length} pedidos esperam`} sua resposta.`
-        : `Tudo respondido${propostas.length ? `, e ${propostas.length === 1 ? 'uma proposta espera' : `${propostas.length} propostas esperam`} a família` : ''}. Próximo atendimento: ${proximo ? `${dia(proximo.inicio).toLowerCase()}, ${mc.hora(proximo.inicio)}` : 'nenhum marcado'}.`);
+        : `Tudo respondido${propostas.length ? `, e ${propostas.length === 1 ? 'uma proposta espera' : `${propostas.length} propostas esperam`} a família` : ''}${aPagar.length ? `. ${aPagar.length === 1 ? '1 aceite espera' : `${aPagar.length} aceites esperam`} o pagamento` : ''}. Próximo atendimento: ${proximo ? `${dia(proximo.inicio).toLowerCase()}, ${mc.hora(proximo.inicio)}` : 'nenhum marcado'}.`);
       aviso = '';
       liga(lista);
     };
@@ -356,7 +364,7 @@
       try {
         await mc.api('POST', `/api/servicos/${s.id}/${acao}`, corpo);
         const quem = primeiro(s.contratante.nome);
-        aviso = acao === 'aceitar' ? `Pedido de ${quem} aceito. O atendimento entrou na sua agenda.`
+        aviso = acao === 'aceitar' ? `Pedido de ${quem} aceito. Ele entra na sua agenda quando a família pagar.`
           : acao === 'recusar' ? `Pedido de ${quem} recusado. A família pode escolher outra profissional.`
           : acao === 'propor' ? `Proposta enviada. Aguardando a resposta de ${quem}.`
           : `Atendimento com ${quem} marcado como feito. Avalie a família em até 14 dias.`;

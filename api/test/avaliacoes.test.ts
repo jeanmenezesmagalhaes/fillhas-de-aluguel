@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ambiente, cliente, DIA, familia, HORA, profissionalAprovada, type Ambiente } from './ajuda.js';
+import { ambiente, cliente, DIA, familia, HORA, pagar, profissionalAprovada, type Ambiente } from './ajuda.js';
 
 let amb: Ambiente;
 beforeAll(async () => {
@@ -18,7 +18,9 @@ async function servicoRealizado() {
   const pedido = await fam.post('/api/servicos', { profissional: pro.slug, tarefa: 'Consulta', inicio, horas: 4, pessoaAcompanhadaId: pessoa.id });
   expect(pedido.status).toBe(201);
   const id = pedido.corpo.servico.id as string;
-  expect((await pro.c.post(`/api/servicos/${id}/aceitar`)).corpo.servico.situacao).toBe('confirmado');
+  expect((await pro.c.post(`/api/servicos/${id}/aceitar`)).corpo.servico.situacao).toBe('aguardando_pagamento');
+  await pagar(fam, id);
+  expect((await fam.get(`/api/servicos/${id}`)).corpo.servico.situacao).toBe('confirmado');
   amb.relogio.avancar(DIA + 4 * HORA);
   expect((await pro.c.post(`/api/servicos/${id}/concluir`)).corpo.servico.situacao).toBe('realizado');
   return { pro, fam, id, familiaId: conta.corpo.usuario.id as string };
@@ -75,7 +77,7 @@ describe('proposta de outro horário', () => {
     expect(new Date(p.corpo.servico.inicio).toISOString()).toBe(inicio);
     expect((await pro.c.post(`/api/servicos/${id}/aceitar-proposta`)).status).toBe(403);
     const a = await fam.post(`/api/servicos/${id}/aceitar-proposta`);
-    expect(a.corpo.servico).toMatchObject({ situacao: 'confirmado', horas: 3, totalCentavos: 21000, proposta: null });
+    expect(a.corpo.servico).toMatchObject({ situacao: 'aguardando_pagamento', horas: 3, totalCentavos: 21000, proposta: null });
     expect(new Date(a.corpo.servico.inicio).toISOString()).toBe(novoInicio);
   });
 

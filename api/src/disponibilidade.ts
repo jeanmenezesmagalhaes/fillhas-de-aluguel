@@ -110,7 +110,8 @@ export async function conferirHorario(
     .where(
       and(
         eq(servicos.profissionalId, profissionalId),
-        eq(servicos.situacao, 'confirmado'),
+        // o aceito que espera o pagamento da família já segura o horário
+        inArray(servicos.situacao, ['aguardando_pagamento', 'confirmado']),
         lt(servicos.inicio, fim),
         sql`${servicos.inicio} + make_interval(hours => ${servicos.horas}::int) > ${inicio}`,
         ...(op.ignorarServico ? [ne(servicos.id, op.ignorarServico)] : []),
@@ -122,13 +123,14 @@ export async function conferirHorario(
   }
 }
 
-// Pedidos e propostas que passaram do prazo sem resposta. Roda antes de ler ou mudar
+// Pedidos e propostas que passaram do prazo sem resposta, e aceites que a família não
+// pagou no prazo. Roda antes de ler ou mudar
 // serviços, para não precisar de uma tarefa agendada.
 export async function expirarVencidos(db: Db, agora: Date) {
   await db
     .update(servicos)
     .set({ situacao: 'expirado', atualizadoEm: agora })
-    .where(and(inArray(servicos.situacao, ['solicitado', 'proposta_alterada']), lt(servicos.respondaAte, agora)));
+    .where(and(inArray(servicos.situacao, ['solicitado', 'proposta_alterada', 'aguardando_pagamento']), lt(servicos.respondaAte, agora)));
 }
 
 // prazo para responder: 24 horas, ou até o início se ele vier antes

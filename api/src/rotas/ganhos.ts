@@ -3,9 +3,11 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { exigirProfissional } from '../auth.js';
 import type { Contexto } from '../contexto.js';
-import { pessoasAcompanhadas, servicos, usuarios } from '../db/schema.js';
+import { avaliacoes, pagamentos, pessoasAcompanhadas, profissionais, servicos, usuarios } from '../db/schema.js';
+import { PRAZO_AVALIACAO_MS } from '../avaliacoes.js';
 import { ErroApi } from '../erros.js';
-import { dataBrasilia, diasUteisDepois, REGRAS, taxaDe } from '../financeiro.js';
+import { dataBrasilia, diasUteisDepois, percentualDaTaxa, REGRAS, taxaDe } from '../financeiro.js';
+import { beneficioDaProfissional } from './pagamentos.js';
 
 const HORA_MS = 3_600_000;
 const DIA_MS = 86_400_000;
@@ -48,10 +50,20 @@ export function rotasGanhos(app: FastifyInstance, ctx: Contexto) {
         canceladoPor: servicos.canceladoPor,
         familia: usuarios.nome,
         pessoa: pessoasAcompanhadas.nome,
+        pagamento: {
+          situacao: pagamentos.situacao,
+          metodo: pagamentos.metodo,
+          parcelas: pagamentos.parcelas,
+          repasse: pagamentos.repasseSituacao,
+          repassadoEm: pagamentos.repassadoEm,
+        },
+        avaliadoPelaFamilia: avaliacoes.id,
       })
       .from(servicos)
       .innerJoin(usuarios, eq(usuarios.id, servicos.contratanteId))
       .leftJoin(pessoasAcompanhadas, eq(pessoasAcompanhadas.id, servicos.pessoaAcompanhadaId))
+      .leftJoin(pagamentos, eq(pagamentos.servicoId, servicos.id))
+      .leftJoin(avaliacoes, and(eq(avaliacoes.servicoId, servicos.id), eq(avaliacoes.sentido, 'familia_avalia_profissional')))
       .where(
         and(
           eq(servicos.profissionalId, u.id),
@@ -62,6 +74,8 @@ export function rotasGanhos(app: FastifyInstance, ctx: Contexto) {
         ),
       )
       .orderBy(asc(servicos.inicio));
+
+    const [beneficio] = await ctx.db.select(beneficioDaProfissional).from(profissionais).where(eq(profissionais.usuarioId, u.id));
 
     const lancamentos = linhas.flatMap((s) => {
       const fim = new Date(s.inicio.getTime() + s.horas * HORA_MS);
@@ -77,11 +91,20 @@ export function rotasGanhos(app: FastifyInstance, ctx: Contexto) {
           s.canceladoPor === 'contratante' &&
           s.canceladoEm &&
           s.inicio.getTime() - s.canceladoEm.getTime() < REGRAS.cancelamentoTardioHoras * HORA_MS;
-        if (!tardio) return [];
+        // com o pagamento devolvido (no MVP, todo cancelamento devolve tudo), não há o que receber
+        if (!tardio || s.pagamento?.situacao === 'reembolsado') return [];
         tipo = 'cancelamento_tardio';
         bruto = Math.round((total * REGRAS.cancelamentoTardioPercentual) / 100);
         depositoEm = diasUteisDepois(dataBrasilia(s.inicio), REGRAS.prazoDepositoDiasUteis);
         estado = depositoEm <= hoje ? 'depositado' : 'programado';
+      } else if (s.pagamento?.situacao === 'pago' && (s.situacao === 'realizado' || s.inicio > agora)) {
+        // Pagamento de verdade: cai na conta quando a equipe libera o repasse, depois da avaliação
+        // da família (ou do fim do prazo de avaliar). Até lá, a data é uma estimativa: o dia útil
+        // seguinte à avaliação, ou ao fim do prazo.
+        const enviado = s.pagamento.repasse === 'enviado' && s.pagamento.repassadoEm;
+        const libera = s.avaliadoPelaFamilia ? hoje : dataBrasilia(new Date((s.realizadoEm ?? fim).getTime() + PRAZO_AVALIACAO_MS));
+        depositoEm = enviado ? dataBrasilia(s.pagamento.repassadoEm!) : diasUteisDepois(libera > hoje ? libera : hoje, 1);
+        estado = enviado ? 'depositado' : s.situacao === 'realizado' ? 'programado' : 'previsto';
       } else if (s.situacao === 'realizado') {
         depositoEm = diasUteisDepois(dataBrasilia(fim), REGRAS.prazoDepositoDiasUteis);
         estado = depositoEm <= hoje ? 'depositado' : 'programado';
@@ -93,7 +116,7 @@ export function rotasGanhos(app: FastifyInstance, ctx: Contexto) {
         depositoEm = null;
         estado = 'aguardando_conclusao';
       }
-      const taxa = taxaDe(bruto);
+      const taxa = taxaDe(bruto, percentualDaTaxa(beneficio, s.inicio));
       return [
         {
           servicoId: s.id,
@@ -111,8 +134,8 @@ export function rotasGanhos(app: FastifyInstance, ctx: Contexto) {
           taxaCentavos: taxa,
           liquidoCentavos: bruto - taxa,
           depositoEm,
-          // forma de pagamento: chega com o gateway
-          pagamento: null,
+          // forma de pagamento da família, quando pagou pelo gateway
+          pagamento: s.pagamento?.metodo ? { metodo: s.pagamento.metodo, parcelas: s.pagamento.parcelas } : null,
         },
       ];
     });
@@ -136,6 +159,11 @@ export function rotasGanhos(app: FastifyInstance, ctx: Contexto) {
       // sem pagamento real ainda: valores e datas seguem as regras propostas
       simulado: true,
       regras: REGRAS,
+      // taxa menor de convite especial: o percentual e até quando vale (null: sem prazo ou ainda sem aprovação)
+      taxaEspecial:
+        beneficio?.taxaEspecialPercentual != null
+          ? { percentual: beneficio.taxaEspecialPercentual, meses: beneficio.taxaEspecialMeses, ate: beneficio.taxaEspecialAte }
+          : null,
       resumo: {
         atendimentosFeitos: feitos.length,
         horasFeitas: feitos.reduce((t, l) => t + l.horas, 0),

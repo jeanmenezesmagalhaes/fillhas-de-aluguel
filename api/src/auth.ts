@@ -5,6 +5,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import { contratantes, profissionais, sessoes, usuarios } from './db/schema.js';
 import type { Contexto } from './contexto.js';
 import { ErroApi } from './erros.js';
+import { chaveLogin, contarTentativa, JANELA_LOGIN_MS, MAX_FALHAS_LOGIN, muitasFalhasDeLogin, zerarTentativas } from './limites.js';
 
 export const COOKIE_SESSAO = 'mc_sessao';
 const DURACAO_SESSAO_MS = 30 * 24 * 60 * 60 * 1000;
@@ -112,4 +113,18 @@ export function exigirAdmin(req: FastifyRequest): UsuarioSessao {
   const u = exigirUsuario(req);
   if (!u.admin) throw new ErroApi(403, 'so_admin', 'Esta ação é da administração.');
   return u;
+}
+
+// Para mudança sensível (a chave Pix do repasse): pede de novo a senha, mesmo com a sessão aberta.
+// As falhas somam no mesmo contador do login, para a sessão roubada não servir para adivinhar a senha.
+export async function exigirSenhaAtual(ctx: Contexto, u: UsuarioSessao, senha: string | undefined) {
+  if (!senha) throw new ErroApi(422, 'senha_exigida', 'Confirme com a sua senha.', { senhaAtual: 'Confirme com a sua senha.' });
+  const chave = chaveLogin(u.email);
+  const { contagem } = await contarTentativa(ctx.db, chave, JANELA_LOGIN_MS, ctx.agora());
+  if (contagem > MAX_FALHAS_LOGIN) throw muitasFalhasDeLogin();
+  const [linha] = await ctx.db.select({ senhaHash: usuarios.senhaHash }).from(usuarios).where(eq(usuarios.id, u.id));
+  if (!(await conferirSenha(linha?.senhaHash, senha))) {
+    throw new ErroApi(422, 'senha_incorreta', 'Senha incorreta.', { senhaAtual: 'Senha incorreta.' });
+  }
+  await zerarTentativas(ctx.db, chave);
 }

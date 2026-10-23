@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { profissionais } from '../src/db/schema.js';
+import type { FastifyInstance } from 'fastify';
+import { criarApp } from '../src/app.js';
 import { ambiente, cliente, DIA, familia, profissional, profissionalAprovada, type Ambiente } from './ajuda.js';
 
 let amb: Ambiente;
@@ -121,18 +123,77 @@ describe('sessão', () => {
 });
 
 describe('limite de tentativas', () => {
-  it('bloqueia muitas tentativas de login seguidas', async () => {
-    const outro = await ambiente({ limiteTentativas: 3 });
+  const login = (app: FastifyInstance, ip: string, email: string, senha = 'errada') =>
+    app.inject({ method: 'POST', url: '/api/sessoes', remoteAddress: ip, payload: { email, senha } });
+
+  it('o limite por IP vale para todas as instâncias da API (o contador fica no banco)', async () => {
+    // duas instâncias sobre o mesmo banco, como as da Vercel
+    const [a, b] = await Promise.all([1, 2].map(() => criarApp({ db: amb.banco.db, agora: () => amb.relogio.agora, site: false, limiteTentativas: 3 })));
     try {
-      const c = cliente(outro.app);
-      const tentar = () => c.post('/api/sessoes', { email: 'a@exemplo.com', senha: 'errada' });
-      for (let i = 0; i < 3; i++) expect((await tentar()).status).toBe(401);
-      const r = await tentar();
-      expect(r.status).toBe(429);
-      expect(r.corpo.erro.codigo).toBe('muitas_tentativas');
+      const email = 'ninguem-ip@exemplo.com';
+      expect((await login(a!, '203.0.113.7', email)).statusCode).toBe(401);
+      expect((await login(b!, '203.0.113.7', email)).statusCode).toBe(401);
+      expect((await login(a!, '203.0.113.7', email)).statusCode).toBe(401);
+      const r = await login(b!, '203.0.113.7', email);
+      expect(r.statusCode).toBe(429);
+      expect(r.json().erro.codigo).toBe('muitas_tentativas');
+      // outro IP segue livre; passado o minuto, este também
+      expect((await login(b!, '203.0.113.8', email)).statusCode).toBe(401);
+      amb.relogio.avancar(61_000);
+      expect((await login(a!, '203.0.113.7', email)).statusCode).toBe(401);
     } finally {
-      await outro.fechar();
+      await Promise.all([a!.close(), b!.close()]);
     }
+  });
+
+  it('atrás do Cloudflare conta o IP do visitante, e só confia no cabeçalho vindo do Cloudflare', async () => {
+    const app = await criarApp({ db: amb.banco.db, agora: () => amb.relogio.agora, site: false, limiteTentativas: 2, producao: true });
+    // na Vercel, o x-forwarded-for traz quem conectou nela
+    const via = (conectou: string, visitante: string) =>
+      app.inject({
+        method: 'POST',
+        url: '/api/sessoes',
+        headers: { 'x-forwarded-for': conectou, 'cf-connecting-ip': visitante },
+        payload: { email: 'ninguem-cf@exemplo.com', senha: 'errada' },
+      });
+    try {
+      expect((await via('172.64.10.1', '198.51.100.1')).statusCode).toBe(401);
+      expect((await via('104.16.0.9', '198.51.100.1')).statusCode).toBe(401);
+      expect((await via('172.64.10.1', '198.51.100.1')).statusCode).toBe(429);
+      // outro visitante, pelo mesmo Cloudflare, segue livre
+      expect((await via('172.64.10.1', '198.51.100.2')).statusCode).toBe(401);
+      // direto na Vercel, trocar o cabeçalho não escapa do limite
+      expect((await via('203.0.113.9', '198.51.100.3')).statusCode).toBe(401);
+      expect((await via('203.0.113.9', '198.51.100.4')).statusCode).toBe(401);
+      expect((await via('203.0.113.9', '198.51.100.5')).statusCode).toBe(429);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it('trava o e-mail depois de 10 tentativas, venham de que IP vierem, e solta em 15 minutos', async () => {
+    const dados = familia();
+    await cliente(amb.app).post('/api/contas', dados);
+    for (let i = 0; i < 10; i++) expect((await login(amb.app, `198.51.100.${i}`, dados.email)).statusCode).toBe(401);
+    // nem a senha certa entra enquanto está travado
+    const travado = await login(amb.app, '198.51.100.200', dados.email, dados.senha);
+    expect(travado.statusCode).toBe(429);
+    expect(travado.json().erro.codigo).toBe('muitas_tentativas');
+    amb.relogio.avancar(15 * 60 * 1000);
+    expect((await login(amb.app, '198.51.100.200', dados.email, dados.senha)).statusCode).toBe(201);
+  });
+
+  it('e-mail sem conta trava do mesmo jeito, para não revelar quais têm conta', async () => {
+    for (let i = 0; i < 10; i++) expect((await login(amb.app, `198.51.101.${i}`, 'sem-conta@exemplo.com')).statusCode).toBe(401);
+    expect((await login(amb.app, '198.51.101.200', 'sem-conta@exemplo.com')).statusCode).toBe(429);
+  });
+
+  it('entrar com a senha certa zera as falhas', async () => {
+    const dados = familia();
+    await cliente(amb.app).post('/api/contas', dados);
+    for (let i = 0; i < 9; i++) await login(amb.app, `198.51.102.${i}`, dados.email);
+    expect((await login(amb.app, '198.51.102.100', dados.email, dados.senha)).statusCode).toBe(201);
+    for (let i = 0; i < 10; i++) expect((await login(amb.app, `198.51.102.${i}`, dados.email)).statusCode).toBe(401);
   });
 });
 

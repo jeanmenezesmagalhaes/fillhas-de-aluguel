@@ -23,7 +23,7 @@ Não publicar como serviço operacional. Não implementar uploads, WhatsApp, tra
 ## Backend (a partir de 20/10/2026)
 A pedido do usuário, começou o backend em `api/`: contas da família e da profissional, login com sessão, pedidos de serviço e avaliação nos dois sentidos, por serviço. Node + Fastify + PostgreSQL (Drizzle). Ver `api/README.md`. Com a API rodando (`cd api && npm run dev`), as telas abrem em http://127.0.0.1:4175 (a 4173 continua para o servidor estático, sem API) e `entrar.html` cria contas e entra de verdade; aberta direto do arquivo, a tela continua só lembrando o nome no navegador. Isso vai além do escopo de `docs/CONTRATO.txt`, que previa só telas.
 
-A taxa de R$ 15 é somente exemplo. O modelo de recebimento permanece pendente.
+Pagamento (MVP, AbacatePay): a família paga quando a profissional aceita, o valor fica retido e a equipe libera o repasse por Pix depois da avaliação. Sem a chave do AbacatePay, o pagamento é simulado. Ver "Pagamentos" em `api/README.md`.
 
 Ver `docs/CONTRATO.txt`, `docs/MAPA-DE-TELAS.md` e `docs/PASSAGEM.md`.
 

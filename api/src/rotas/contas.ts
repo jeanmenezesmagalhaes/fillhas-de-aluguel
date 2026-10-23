@@ -16,9 +16,12 @@ import { contratantes, pessoasAcompanhadas, profissionais, usuarios } from '../d
 import { conflito, ErroApi, violouUnico } from '../erros.js';
 import * as v from '../validacao.js';
 import { codigoIndicacao, registrarIndicacao } from './indicacoes.js';
+import { codigoConvite, usarConvite } from './convites.js';
 import { tarefasDe } from '../tarefas.js';
 import { disponibilidadeDe } from '../disponibilidade.js';
 import { fotoDaConta } from './fotos.js';
+import { CARENCIA_CHAVE_PIX_MS } from '../financeiro.js';
+import { chaveLogin, contarTentativa, JANELA_LOGIN_MS, MAX_FALHAS_LOGIN, muitasFalhasDeLogin, zerarTentativas } from '../limites.js';
 
 const pessoa = z.object({
   nome: v.nome,
@@ -49,6 +52,8 @@ const cadastroProfissional = cadastroBase.extend({
     .trim()
     .toUpperCase()
     .regex(/^[A-Z]{2}$/, 'Use a sigla do estado, como SP.'),
+  // convite especial da equipe, vindo do link (?convite=MC-7K2P9QXA), com os benefícios dele
+  codigoConvite: z.preprocess((x) => (x === '' ? undefined : x), codigoConvite.optional()),
 });
 
 const login = z.object({
@@ -89,7 +94,14 @@ async function slugLivre(db: Db, nome: string): Promise<string> {
   return `${base}-${n}`;
 }
 
-export async function dadosDaConta(db: Db, usuarioId: string) {
+// fim da carência de uma chave Pix trocada há pouco; null quando ela já recebe repasse
+export function carenciaDaChave(alteradaEm: Date | null, agora: Date): Date | null {
+  if (!alteradaEm) return null;
+  const fim = new Date(alteradaEm.getTime() + CARENCIA_CHAVE_PIX_MS);
+  return fim > agora ? fim : null;
+}
+
+export async function dadosDaConta(db: Db, usuarioId: string, agora: Date) {
   const [linha] = await db
     .select({
       id: usuarios.id,
@@ -114,6 +126,9 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
         anosExperiencia: profissionais.anosExperiencia,
         apresentacao: profissionais.apresentacao,
         bairros: profissionais.bairros,
+        chavePix: profissionais.chavePix,
+        tipoChavePix: profissionais.tipoChavePix,
+        chavePixAlteradaEm: profissionais.chavePixAlteradaEm,
       },
     })
     .from(usuarios)
@@ -136,7 +151,11 @@ export async function dadosDaConta(db: Db, usuarioId: string) {
     papeis,
     profissional: linha.profissional
       ? {
-          ...linha.profissional,
+          ...(({ chavePix, tipoChavePix, chavePixAlteradaEm, ...p }) => ({
+            ...p,
+            // `recebeAPartirDe`: fim da carência de uma chave trocada há pouco; null quando já vale
+            chavePix: chavePix && tipoChavePix ? { tipo: tipoChavePix, chave: chavePix, recebeAPartirDe: carenciaDaChave(chavePixAlteradaEm, agora) } : null,
+          }))(linha.profissional),
           tarefas: await tarefasDe(db, linha.id),
           disponibilidade: await disponibilidadeDe(db, linha.id),
           ...(await fotoDaConta(db, linha.id)),
@@ -171,7 +190,7 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
       throw err;
     }
     await abrirSessao(ctx, req, reply, id);
-    return reply.status(201).send({ usuario: await dadosDaConta(ctx.db, id) });
+    return reply.status(201).send({ usuario: await dadosDaConta(ctx.db, id, ctx.agora()) });
   });
 
   // conta da profissional: começa em rascunho; preço, bairros e documentos vêm depois
@@ -185,11 +204,13 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
           .insert(usuarios)
           .values({ nome: dados.nome, email: dados.email, celular: dados.celular, senhaHash, termosAceitosEm: ctx.agora() })
           .returning({ id: usuarios.id });
+        const convite = await usarConvite(tx as unknown as Db, dados.codigoConvite, dados.email, ctx.agora());
         await tx.insert(profissionais).values({
           usuarioId: u!.id,
           slug: await slugLivre(tx as unknown as Db, dados.nome),
           cidade: dados.cidade,
           uf: dados.uf,
+          ...convite,
         });
         await registrarIndicacao(tx as unknown as Db, dados.codigoIndicacao, u!.id);
         return u!.id;
@@ -202,11 +223,15 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
       throw err;
     }
     await abrirSessao(ctx, req, reply, id);
-    return reply.status(201).send({ usuario: await dadosDaConta(ctx.db, id) });
+    return reply.status(201).send({ usuario: await dadosDaConta(ctx.db, id, ctx.agora()) });
   });
 
   app.post('/api/sessoes', { config }, async (req, reply) => {
     const dados = login.parse(req.body);
+    // Conta a tentativa antes de conferir a senha: o limite por IP não segura quem troca de IP.
+    // Vale também para e-mail sem conta, para a resposta não revelar quais têm.
+    const { contagem } = await contarTentativa(ctx.db, chaveLogin(dados.email), JANELA_LOGIN_MS, ctx.agora());
+    if (contagem > MAX_FALHAS_LOGIN) throw muitasFalhasDeLogin();
     const [u] = await ctx.db
       .select({ id: usuarios.id, senhaHash: usuarios.senhaHash })
       .from(usuarios)
@@ -215,8 +240,9 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
     if (!(await conferirSenha(u?.senhaHash, dados.senha)) || !u) {
       throw new ErroApi(401, 'credenciais_invalidas', 'E-mail ou senha incorretos.');
     }
+    await zerarTentativas(ctx.db, chaveLogin(dados.email));
     await abrirSessao(ctx, req, reply, u.id);
-    return reply.status(201).send({ usuario: await dadosDaConta(ctx.db, u.id) });
+    return reply.status(201).send({ usuario: await dadosDaConta(ctx.db, u.id, ctx.agora()) });
   });
 
   app.delete('/api/sessoes/atual', async (req, reply) => {
@@ -229,12 +255,12 @@ export function rotasContas(app: FastifyInstance, ctx: Contexto, limite: { max: 
   // sempre 200, com a conta ou null.
   app.get('/api/sessao', async (req, reply) => {
     reply.header('cache-control', 'no-store');
-    return { usuario: req.usuario ? await dadosDaConta(ctx.db, req.usuario.id) : null };
+    return { usuario: req.usuario ? await dadosDaConta(ctx.db, req.usuario.id, ctx.agora()) : null };
   });
 
   app.get('/api/eu', async (req) => {
     const u = exigirUsuario(req);
-    return { usuario: await dadosDaConta(ctx.db, u.id) };
+    return { usuario: await dadosDaConta(ctx.db, u.id, ctx.agora()) };
   });
 
   // pessoas acompanhadas pela família (mãe, pai)

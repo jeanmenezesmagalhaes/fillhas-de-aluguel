@@ -17,6 +17,7 @@ import {
   tornarAdmin,
   ultimoCodigo,
   type Ambiente,
+  aceitarEPagar,
 } from './ajuda.js';
 
 let amb: Ambiente;
@@ -159,9 +160,24 @@ describe('lista de espera', () => {
     await c.post('/api/profissionais', profissional());
     const r = await c.post('/api/profissionais/eu/analise');
     expect(r.status).toBe(422);
-    expect(Object.keys(r.corpo.erro.campos).sort()).toEqual(['dadosFiscais', 'documentos', 'email', 'endereco', 'whatsapp']);
+    expect(Object.keys(r.corpo.erro.campos).sort()).toEqual(['dadosFiscais', 'documentos', 'email', 'endereco']);
     const v = await c.get('/api/profissionais/eu/verificacao');
     expect(v.corpo.verificacao).toMatchObject({ situacao: 'rascunho', podeEnviar: false, filaDeEspera: null });
+    expect(v.corpo.verificacao.contatos.whatsapp).toMatchObject({ verificado: false, exigido: false });
+  });
+
+  it('com a verificação do WhatsApp ligada, também exige o código dele', async () => {
+    const outro = await ambiente({ verificarWhatsapp: true });
+    try {
+      const c = cliente(outro.app);
+      await c.post('/api/profissionais', profissional());
+      const r = await c.post('/api/profissionais/eu/analise');
+      expect(Object.keys(r.corpo.erro.campos).sort()).toEqual(['dadosFiscais', 'documentos', 'email', 'endereco', 'whatsapp']);
+      const v = await c.get('/api/profissionais/eu/verificacao');
+      expect(v.corpo.verificacao.contatos.whatsapp).toMatchObject({ verificado: false, exigido: true });
+    } finally {
+      await outro.fechar();
+    }
   });
 
   it('entra na fila com posição e fica sem poder mudar os dados', async () => {
@@ -251,7 +267,7 @@ describe('indicações', () => {
     const pro = await profissionalAprovada(amb);
     const inicio = new Date(amb.relogio.agora.getTime() + DIA).toISOString();
     const { id } = (await fam.post('/api/servicos', { profissional: pro.slug, tarefa: 'Banco', inicio, horas: 2 })).corpo.servico;
-    await pro.c.post(`/api/servicos/${id}/aceitar`);
+    await aceitarEPagar(pro.c, fam, id);
     amb.relogio.avancar(DIA + 3 * HORA);
     await pro.c.post(`/api/servicos/${id}/concluir`);
 

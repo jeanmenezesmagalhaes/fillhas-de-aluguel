@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script>document.documentElement.classList.add('js', 'carregando')</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Painel da equipe · Minha companhia</title>
+<link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="admin-painel.css?v=2">
+</head>
+<body>
+
+<div class="app" data-gestao hidden>
+  <nav class="lateral" id="menu" aria-label="Administração" data-lateral>
+    <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg><span><strong>minha companhia</strong><small>Equipe</small></span></a>
+    <button class="fechar-menu" type="button" data-fechar-menu hidden>Fechar menu</button>
+    <a class="nav-item" href="#visao" data-nav="visao"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2.5h5v5H2zM9 2.5h5v3H9zM9 7.5h5v6H9zM2 9.5h5v4H2z"/></svg>Visão geral</a>
+    <a class="nav-item" href="#usuarios" data-nav="usuarios"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5" r="2.5"/><path d="M1.5 13.5c.4-2.4 2.2-4 4.5-4s4.1 1.6 4.5 4M11 3a2.5 2.5 0 0 1 0 4.6M12.5 9.6c1.1.6 1.8 1.9 2 3.9"/></svg>Usuários</a>
+    <a class="nav-item" href="#convites" data-nav="convites"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12v8.5H2zM2 4.5l6 4.5 6-4.5"/></svg>Convites</a>
+    <p class="grupo">Conferência</p>
+    <a class="nav-item" href="admin"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h6l3 3v10H4zM10 1.5v3h3M6.5 9.5l1.5 1.5 3-3"/></svg>Cadastros e documentos<span class="contagem num" data-n-conferencia></span></a>
+    <a class="nav-item" href="admin#pagamentos"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4h13v8.5h-13zM1.5 6.5h13M4 10h3"/></svg>Repasses<span class="contagem num" data-n-repasses></span></a>
+    <div class="pe"><strong data-nome-conta>Equipe</strong><button type="button" data-sair>Sair</button></div>
+  </nav>
+
+  <header class="topo">
+    <button class="menu-botao" type="button" aria-controls="menu" aria-expanded="false" data-menu><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>Menu</button>
+    <span class="titulo-curto" data-titulo-curto>Visão geral</span>
+    <form class="topo-busca" role="search" data-busca-topo>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+      <label class="vh" for="busca-topo">Buscar conta</label>
+      <input id="busca-topo" name="busca" type="search" placeholder="Buscar conta por nome, e-mail, celular ou CPF" autocomplete="off">
+    </form>
+    <p class="carimbo" aria-live="polite"><span data-carimbo></span> <button type="button" data-atualizar>Atualizar</button></p>
+  </header>
+
+  <main class="folha">
+    <!-- visão geral -->
+    <section data-tela="visao" aria-labelledby="h-visao">
+      <div class="titulo">
+        <div>
+          <h1 id="h-visao">Visão geral</h1>
+          <p class="sub" data-achado><span class="carregando-linha" style="width:420px"></span></p>
+        </div>
+        <a class="btn primario" href="#convites">Criar convite</a>
+      </div>
+
+      <div class="vg">
+        <div class="vg-principal">
+          <dl class="kpis" data-kpis aria-label="Números principais">
+            <div class="kpi"><dt>Recebido neste mês</dt><dd><span class="carregando-linha"></span></dd></div>
+            <div class="kpi"><dt>Receita da plataforma</dt><dd><span class="carregando-linha"></span></dd></div>
+            <div class="kpi"><dt>Contas</dt><dd><span class="carregando-linha"></span></dd></div>
+            <div class="kpi"><dt>Profissionais no ar</dt><dd><span class="carregando-linha"></span></dd></div>
+          </dl>
+
+          <section class="painel" aria-labelledby="h-fat">
+            <header><h2 id="h-fat">Faturamento</h2><p class="legenda" data-legenda-fat><span><i style="background:var(--chart-1)"></i>Este mês</span><span><i style="background:var(--chart-muted)"></i>Meses anteriores</span></p></header>
+            <div class="fat">
+              <div class="fat-grafico"><p class="meta" data-fat-titulo>Recebido das famílias por mês</p><div data-grafico-fat></div></div>
+              <dl class="chave" data-fin></dl>
+            </div>
+          </section>
+
+          <section class="painel" aria-labelledby="h-caminho">
+            <header><h2 id="h-caminho">Caminho da profissional</h2><span class="meta num" data-caminho-meta></span></header>
+            <div class="caminho-barra" data-caminho-barra aria-hidden="true"></div>
+            <div class="etapas" data-etapas></div>
+            <ul class="acompanhar linhas" data-acompanhar></ul>
+          </section>
+        </div>
+
+        <div class="vg-lado">
+          <section class="painel" aria-labelledby="h-espera">
+            <header><h2 id="h-espera">Esperando a equipe</h2><span class="meta num" data-espera-meta></span></header>
+            <ul class="linhas" data-espera></ul>
+            <footer><a class="btn pequeno" href="admin">Abrir a conferência</a></footer>
+          </section>
+          <section class="painel" aria-labelledby="h-pedidos">
+            <header><h2 id="h-pedidos">Pedidos</h2><span class="meta num" data-pedidos-meta></span></header>
+            <dl class="chave" data-pedidos></dl>
+          </section>
+          <section class="painel" aria-labelledby="h-recentes">
+            <header><h2 id="h-recentes">Cadastros recentes</h2><a class="link-cartao" href="#usuarios">Ver todos</a></header>
+            <ul class="linhas" data-recentes></ul>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- usuários -->
+    <section data-tela="usuarios" aria-labelledby="h-usuarios" hidden>
+      <div class="titulo">
+        <div>
+          <h1 id="h-usuarios">Usuários</h1>
+          <p class="sub" data-usuarios-sub>Todas as contas, das famílias, das profissionais e da equipe.</p>
+        </div>
+      </div>
+      <div class="abas" role="group" aria-label="Tipo de conta" data-abas-usuarios>
+        <button type="button" aria-pressed="true" data-grupo="">Todas</button>
+        <button type="button" aria-pressed="false" data-grupo="familias">Famílias</button>
+        <button type="button" aria-pressed="false" data-grupo="profissionais">Profissionais</button>
+        <button type="button" aria-pressed="false" data-grupo="rascunho">Cadastro não finalizado</button>
+        <button type="button" aria-pressed="false" data-grupo="admins">Equipe</button>
+      </div>
+      <form class="barra-filtros" role="search" data-filtros>
+        <div class="campo-busca">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <label class="vh" for="busca">Buscar</label>
+          <input class="entrada" id="busca" name="busca" type="search" placeholder="Nome, e-mail, celular ou CPF" autocomplete="off">
+        </div>
+        <label class="vh" for="filtro">Situação</label>
+        <select id="filtro" name="filtro">
+          <option value="">Qualquer situação</option>
+          <optgroup label="Famílias">
+            <option value="familias_sem_pedido">Famílias sem nenhum pedido</option>
+          </optgroup>
+          <optgroup label="Profissionais">
+            <option value="correcao">Em correção</option>
+            <option value="em_analise">Na lista de espera</option>
+            <option value="aprovado">Aprovadas</option>
+            <option value="vencido">Revisão vencida</option>
+            <option value="por_convite">Vieram por convite</option>
+          </optgroup>
+          <optgroup label="Todas">
+            <option value="email_pendente">E-mail não confirmado</option>
+          </optgroup>
+        </select>
+        <p class="meta num total" data-total aria-live="polite"></p>
+      </form>
+      <table class="tabela">
+        <thead><tr><th scope="col">Conta</th><th scope="col">Situação</th><th scope="col" class="so-mesa">Atende em</th><th scope="col" class="n">Pedidos</th><th scope="col" class="n so-mesa">Movimento</th><th scope="col" class="n so-mesa">Último acesso</th><th scope="col"><span class="vh">Detalhes</span></th></tr></thead>
+        <tbody data-usuarios></tbody>
+      </table>
+      <div class="paginas" data-paginas hidden><button class="btn pequeno" type="button" data-pagina="-1">Anteriores</button><span class="meta num" data-pagina-atual></span><button class="btn pequeno" type="button" data-pagina="1">Próximos</button></div>
+    </section>
+
+    <!-- convites -->
+    <section data-tela="convites" aria-labelledby="h-convites" hidden>
+      <div class="titulo">
+        <div>
+          <h1 id="h-convites">Convites</h1>
+          <p class="sub" data-convites-sub>Links de cadastro para profissionais, com taxa menor e prioridade na análise.</p>
+        </div>
+      </div>
+
+      <div class="cv">
+        <section class="painel" aria-labelledby="h-novo">
+          <header><h2 id="h-novo">Novo convite</h2><span class="meta">a taxa especial começa a contar na aprovação</span></header>
+          <form class="form-convite" data-form-convite novalidate>
+            <div class="campo"><label for="c-nome">Para quem</label><input class="entrada" id="c-nome" name="nome" type="text" autocomplete="off" placeholder="Maria Souza"><p class="erro" data-erro="nome" hidden></p></div>
+            <div class="campo"><label for="c-email">E-mail <span class="opc">(opcional)</span></label><input class="entrada" id="c-email" name="email" type="email" autocomplete="off" inputmode="email"><p class="ajuda">Com e-mail, só ela consegue usar.</p><p class="erro" data-erro="email" hidden></p></div>
+            <div class="campo"><label for="c-celular">WhatsApp <span class="opc">(opcional)</span></label><input class="entrada" id="c-celular" name="celular" type="tel" autocomplete="off" inputmode="tel" placeholder="(19) 99999-0000"><p class="erro" data-erro="celular" hidden></p></div>
+            <div class="campo"><label for="c-validade">Vale por</label><select class="entrada" id="c-validade" name="validadeDias"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option></select><p class="erro" data-erro="validadeDias" hidden></p></div>
+
+            <fieldset class="beneficios">
+              <legend>Benefícios</legend>
+              <div class="campo"><label for="c-taxa">Taxa da plataforma</label><select class="entrada" id="c-taxa" name="taxaPercentual" data-opcoes-taxa><option value="">Padrão</option></select><p class="erro" data-erro="taxaPercentual" hidden></p></div>
+              <div class="campo"><label for="c-meses">Por quanto tempo</label><select class="entrada" id="c-meses" name="taxaMeses"><option value="">Sem prazo</option><option value="1">1 mês</option><option value="3">3 meses</option><option value="6" selected>6 meses</option><option value="12">12 meses</option></select><p class="erro" data-erro="taxaMeses" hidden></p></div>
+              <label class="marcar"><input type="checkbox" name="prioridadeFila"><span>Prioridade na análise<small>passa na frente da lista de espera</small></span></label>
+            </fieldset>
+
+            <div class="campo largo"><label for="c-mensagem">Recado para ela <span class="opc">(opcional)</span></label><textarea id="c-mensagem" name="mensagem" rows="2" maxlength="600" placeholder="Foi um prazer conhecer você na feira de Campinas."></textarea><p class="erro" data-erro="mensagem" hidden></p></div>
+            <div class="campo"><label for="c-usos">Quantas pessoas podem usar</label><input class="entrada num" id="c-usos" name="usosMaximos" type="number" min="1" max="500" step="1" value="1" inputmode="numeric"><p class="ajuda">Mais de 1 para uma turma ou parceria.</p><p class="erro" data-erro="usosMaximos" hidden></p></div>
+            <div class="campo"><label for="c-obs">Anotação da equipe <span class="opc">(só a equipe vê)</span></label><input class="entrada" id="c-obs" name="observacao" type="text" maxlength="300" placeholder="Parceria com o Senac"><p class="erro" data-erro="observacao" hidden></p></div>
+            <p class="erro largo" data-erro-geral role="alert" hidden></p>
+            <div class="botoes">
+              <label class="marcar"><input type="checkbox" name="enviarEmail"> Enviar por e-mail agora</label>
+              <button class="btn primario" type="submit" data-criar>Criar convite</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="previa" aria-labelledby="h-previa">
+          <section class="painel">
+            <header><h2 id="h-previa">Como ela recebe</h2><span class="meta">por WhatsApp ou e-mail</span></header>
+            <p class="previa-msg" data-previa></p>
+          </section>
+          <div class="pronto" data-pronto hidden></div>
+        </aside>
+      </div>
+
+      <section class="painel lista-convites" aria-labelledby="h-lista-convites">
+        <header><h2 id="h-lista-convites">Convites criados</h2><span class="meta num" data-convites-meta></span></header>
+        <table class="tabela">
+          <thead><tr><th scope="col">Para</th><th scope="col">Situação</th><th scope="col" class="so-mesa">Benefícios</th><th scope="col" class="n so-mesa">Usos</th><th scope="col" class="n so-mesa">Vale até</th><th scope="col"><span class="vh">Ações</span></th></tr></thead>
+          <tbody data-convites></tbody>
+        </table>
+      </section>
+    </section>
+  </main>
+</div>
+
+<main class="fora" data-fora hidden>
+  <section class="painel">
+    <h1>Área da equipe</h1>
+    <p>Entre com uma conta da administração para ver o painel.</p>
+    <a class="btn primario" href="entrar?volta=admin-painel">Entrar</a>
+  </section>
+</main>
+
+<script src="gestao.js"></script>
+<script src="graficos.js?v=1"></script>
+<script src="admin-painel.js?v=2"></script>
+</body>
+</html>

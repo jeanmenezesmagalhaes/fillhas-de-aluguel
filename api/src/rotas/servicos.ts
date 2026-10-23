@@ -5,10 +5,11 @@ import { z } from 'zod';
 import { exigirContratante, exigirUsuario, type UsuarioSessao } from '../auth.js';
 import { avaliacaoRevelada, notaRecebida, PRAZO_AVALIACAO_MS, type Sentido } from '../avaliacoes.js';
 import type { Contexto } from '../contexto.js';
-import { avaliacoes, pessoasAcompanhadas, profissionais, servicos, usuarios } from '../db/schema.js';
+import { avaliacoes, pagamentos, pessoasAcompanhadas, profissionais, servicos, usuarios } from '../db/schema.js';
 import { conflito, ErroApi, naoEncontrado, violouUnico } from '../erros.js';
 import * as v from '../validacao.js';
 import { marcarPrimeiroServico } from './indicacoes.js';
+import { estornarDoServico } from './pagamentos.js';
 import { conferirHorario, expirarVencidos, prazoDeResposta } from '../disponibilidade.js';
 import { mensagemAbaixoDoMinimo, NOME_TAREFA, TIPOS_FIXOS, tarefasDe } from '../tarefas.js';
 
@@ -67,6 +68,15 @@ const colunasServico = {
   profissional: { id: pro.id, nome: pro.nome, slug: profissionais.slug, veiculoIncluso: profissionais.veiculoIncluso },
   pessoaAcompanhada: { id: pessoasAcompanhadas.id, nome: pessoasAcompanhadas.nome, dataNascimento: pessoasAcompanhadas.dataNascimento },
   minhaNota: minha.nota,
+  pagamento: {
+    situacao: pagamentos.situacao,
+    metodo: pagamentos.metodo,
+    parcelas: pagamentos.parcelas,
+    acrescimoCentavos: pagamentos.acrescimoCentavos,
+    pagoEm: pagamentos.pagoEm,
+    repasseSituacao: pagamentos.repasseSituacao,
+    repassadoEm: pagamentos.repassadoEm,
+  },
 };
 
 type LinhaServico = Awaited<ReturnType<ReturnType<typeof consultaServicos>['where']>>[number];
@@ -80,7 +90,8 @@ function consultaServicos(ctx: Contexto, usuarioId: string) {
     .innerJoin(pro, eq(pro.id, servicos.profissionalId))
     .innerJoin(profissionais, eq(profissionais.usuarioId, servicos.profissionalId))
     .leftJoin(pessoasAcompanhadas, eq(pessoasAcompanhadas.id, servicos.pessoaAcompanhadaId))
-    .leftJoin(minha, and(eq(minha.servicoId, servicos.id), eq(minha.autorId, usuarioId)));
+    .leftJoin(minha, and(eq(minha.servicoId, servicos.id), eq(minha.autorId, usuarioId)))
+    .leftJoin(pagamentos, eq(pagamentos.servicoId, servicos.id));
 }
 
 function paraResposta(ctx: Contexto, usuarioId: string, s: LinhaServico) {
@@ -268,10 +279,11 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
     if (s.inicio <= ctx.agora()) throw new ErroApi(422, 'ja_comecou', 'O horário do serviço já começou; ele não pode mais mudar.');
   };
 
-  // aceitar não pode bater com outro atendimento já confirmado (os horários dela ela mesma conhece)
-  transicao('aceitar', 'profissional', ['solicitado'], 'confirmado', {
+  // aceitar não pode bater com outro atendimento já confirmado (os horários dela ela mesma conhece).
+  // O aceite segura o horário, mas só confirma quando a família pagar, no mesmo prazo de resposta.
+  transicao('aceitar', 'profissional', ['solicitado'], 'aguardando_pagamento', {
     validar: (s) => conferirHorario(ctx.db, s.profissionalId, s.inicio, s.horas, { conferirFaixas: false, ignorarServico: s.id }),
-    campos: () => ({ respondaAte: null }),
+    campos: (agora, _corpo, s) => ({ respondaAte: prazoDeResposta(agora, s.inicio) }),
   });
   transicao('recusar', 'profissional', ['solicitado'], 'recusado');
   // a profissional propõe outro horário ou outra duração; o pedido espera o novo aceite da família
@@ -291,11 +303,11 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
       return { propostaInicio: inicio, propostaHoras: p.horas, propostaRecado: p.recado || null, respondaAte: prazoDeResposta(agora, inicio) };
     },
   });
-  transicao('aceitar-proposta', 'contratante', ['proposta_alterada'], 'confirmado', {
+  transicao('aceitar-proposta', 'contratante', ['proposta_alterada'], 'aguardando_pagamento', {
     validar: (s) =>
       conferirHorario(ctx.db, s.profissionalId, s.propostaInicio!, s.propostaHoras!, { conferirFaixas: false, ignorarServico: s.id }),
-    campos: () => ({
-      respondaAte: null,
+    campos: (agora, _corpo, s) => ({
+      respondaAte: prazoDeResposta(agora, s.propostaInicio!),
       inicio: sql`${servicos.propostaInicio}`,
       horas: sql`${servicos.propostaHoras}`,
       propostaInicio: null,
@@ -303,10 +315,12 @@ export function rotasServicos(app: FastifyInstance, ctx: Contexto) {
     }),
   });
   transicao('recusar-proposta', 'contratante', ['proposta_alterada'], 'recusado');
-  // quem cancelou e quando: cancelamento da família em cima da hora entra nos ganhos dela
-  transicao('cancelar', 'qualquer', ['solicitado', 'proposta_alterada', 'confirmado'], 'cancelado', {
+  // quem cancelou e quando. No MVP, o que a família pagou volta inteiro, quem quer que cancele;
+  // se o estorno falhar, o serviço fica cancelado e a equipe tenta de novo pela administração.
+  transicao('cancelar', 'qualquer', ['solicitado', 'proposta_alterada', 'aguardando_pagamento', 'confirmado'], 'cancelado', {
     validar: antesDoInicio,
     campos: (agora, _corpo, s) => ({ canceladoEm: agora, canceladoPor: s.papel }),
+    depois: (s) => estornarDoServico(ctx, s.id, s.papel === 'contratante' ? 'Cancelado pela família.' : 'Cancelado pela profissional.'),
   });
   transicao('concluir', 'profissional', ['confirmado'], 'realizado', {
     validar: (s) => {
