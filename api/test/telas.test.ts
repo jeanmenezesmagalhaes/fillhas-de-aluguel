@@ -21,6 +21,7 @@ beforeAll(async () => {
   grava('index.html', '<h1>início</h1>');
   grava('busca.html', '<h1>busca</h1>');
   grava('site.css', 'body{}');
+  grava('404.html', '<h1>o cachorro comeu</h1>');
   grava('assets/foto.webp', 'webp');
   grava('.env.local', 'DATABASE_URL=segredo');
   grava('assets/.oculto.json', '{"segredo":true}');
@@ -68,6 +69,22 @@ describe('telas estáticas', () => {
     expect(foto.statusCode).toBe(200);
     expect(foto.headers['content-type']).toBe('image/webp');
     expect(foto.headers['x-content-type-options']).toBe('nosniff');
+  });
+
+  it('mostra a página 404 a quem abre uma tela que não existe, e JSON à API', async () => {
+    const navegador = { accept: 'text/html,application/xhtml+xml,*/*;q=0.8' };
+    for (const caminho of ['/nao-existe', '/a/b/c', '/assets/sumiu.webp']) {
+      const r = await pedir(caminho, navegador);
+      expect(r.statusCode).toBe(404);
+      expect(r.headers['content-type']).toBe('text/html; charset=utf-8');
+      expect(r.body).toContain('o cachorro comeu');
+    }
+    for (const caminho of ['/api/nao-existe', '/api']) {
+      const r = await pedir(caminho, navegador);
+      expect(r.statusCode).toBe(404);
+      expect(JSON.parse(r.body).erro.codigo).toBe('nao_encontrado');
+    }
+    expect(JSON.parse((await pedir('/nao-existe')).body).erro.codigo).toBe('nao_encontrado');
   });
 
   it('não deixa outro site abrir as telas nem a API numa moldura', async () => {

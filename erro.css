@@ -1,0 +1,131 @@
+/* Páginas de erro (404 e 500): mesmo sistema da home, com os cachorros como suspeitos.
+   Os caminhos são absolutos porque a 404 pode abrir em qualquer endereço (/a/b/c). */
+
+.erro-barra { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px var(--margin) 0; }
+.erro-nav { display: flex; align-items: center; gap: 28px; }
+.erro-nav a:not(.botao-linha) { text-decoration: none; font-weight: 500; }
+@media (hover: hover) and (pointer: fine) { .erro-nav a:not(.botao-linha):hover { text-decoration: underline; text-underline-offset: 6px; } }
+
+/* topo: o título à esquerda e a ficha do suspeito à direita */
+.erro-topo { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: center; padding: clamp(56px, 7vw, 104px) var(--margin) 0; }
+.erro-texto { grid-column: 1 / 8; }
+.erro-texto h1 { font-size: clamp(2.5rem, 5.2vw, 5.25rem); line-height: 0.98; letter-spacing: -0.035em; }
+.erro-apoio { max-width: 36ch; margin-top: 32px; font-size: var(--step-lead); font-weight: 500; line-height: 1.3; }
+.erro-acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 48px; }
+.erro-codigo { margin-top: 40px; font-size: var(--step-small); color: var(--tinta-2); }
+
+.ficha { position: relative; grid-column: 8 / -1; margin: var(--tab-h) 0 0; padding: 20px 20px 28px; background: var(--salvia); }
+.ficha .aba { left: 24px; }
+.ficha-ipe { background: var(--ipe); }
+.ficha-foto { position: relative; overflow: hidden; aspect-ratio: 1; max-height: 56svh; width: 100%; background: var(--salvia-2); }
+.ficha-foto img { width: 100%; height: 100%; object-fit: cover; }
+.ficha-ipe .ficha-foto { aspect-ratio: 4 / 3; }
+.ficha-foto img { position: absolute; inset: 0; }
+.ficha-texto { display: flex; flex-direction: column; gap: 6px; margin-top: 20px; }
+.ficha-texto strong { font-size: var(--step-lead); font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+
+/* o carimbo da ficha: a única caixa alta da página, como na ficha de documentos da home */
+.carimbo { position: absolute; top: 20px; right: 20px; display: grid; place-items: center; width: 116px; height: 116px; border: 4px solid currentColor; border-radius: 50%; background: rgb(255 255 255 / 0.86); color: var(--folha); font-size: 0.875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; transform: rotate(-14deg); }
+.ficha-ipe .carimbo { color: var(--tinta); }
+
+/* a fila de suspeitos: quatro fotos que trocam a ficha */
+.suspeitos { margin-top: var(--gap-section); padding: 0 var(--margin); }
+.suspeitos-cab { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: end; }
+.suspeitos-cab h2 { grid-column: 1 / 8; font-size: var(--step-head); line-height: 1; letter-spacing: -0.03em; }
+.suspeitos-cab p { grid-column: 8 / -1; max-width: 40ch; }
+.fila { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 48px 0 0; padding: 0; list-style: none; }
+.suspeito { display: flex; flex-direction: column; width: 100%; padding: 0; border: 0; background: var(--salvia); color: var(--tinta); text-align: left; cursor: pointer; clip-path: polygon(0 var(--tab-h), 16px var(--tab-h), 32px 0, 45% 0, calc(45% + 16px) var(--tab-h), 100% var(--tab-h), 100% 100%, 0 100%); padding-top: var(--tab-h); transition: background-color var(--t-hover) ease, transform var(--t-press) var(--ease-out); }
+.suspeito img { width: 100%; aspect-ratio: 1; object-fit: cover; transition: transform var(--t-ui) var(--ease-out); }
+.suspeito span { padding: 14px 16px 18px; font-size: var(--step-lead); font-weight: 500; }
+.suspeito[aria-pressed="true"] { background: var(--rosa); }
+.suspeito:focus-visible { outline-offset: -8px; }
+.suspeito:active { transform: scale(0.98); }
+@media (hover: hover) and (pointer: fine) {
+  .suspeito:not([aria-pressed="true"]):hover { background: var(--salvia-2); }
+  .suspeito:hover img { transform: scale(1.04); }
+}
+
+/* a prova: o cartão de 1882 numa pasta verde */
+.prova { position: relative; display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: center; margin: calc(var(--gap-section) + var(--tab-h)) var(--margin) 0; padding: clamp(24px, 4vw, 64px); background: var(--folha); color: #fff; }
+.prova::before { content: ""; position: absolute; bottom: 100%; left: 12%; width: clamp(120px, 14vw, 200px); height: var(--tab-h); background: inherit; clip-path: polygon(var(--tab-cut) 0, calc(100% - var(--tab-cut)) 0, 100% 100%, 0 100%); }
+.prova-foto { grid-column: 1 / 8; margin: 0; overflow: hidden; }
+.prova-foto img { width: 100%; }
+.prova-texto { grid-column: 9 / -1; display: flex; flex-direction: column; gap: 20px; }
+.prova-texto h2 { font-size: clamp(2rem, 1.2rem + 2.2vw, 3.25rem); line-height: 1.02; letter-spacing: -0.03em; }
+.prova-texto p { max-width: 40ch; }
+.prova-texto a { color: #fff; text-underline-offset: 4px; }
+.prova :focus-visible { outline-color: #fff; }
+
+/* 500: o relógio da nova tentativa, o aviso do pedido e a equipe de plantão */
+.relogio { margin-top: 24px; font-size: var(--step-body); }
+.link { padding: 0; border: 0; background: none; color: var(--tinta); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.aviso { display: flex; gap: 14px; align-items: flex-start; max-width: 52ch; margin-top: 32px; padding: 18px 20px; background: var(--salvia); }
+.aviso svg { flex: none; width: 26px; height: 26px; color: var(--folha); }
+.aviso a { font-weight: 500; text-underline-offset: 4px; }
+.pagina-500 .erro-acoes { margin-top: 40px; }
+.plantao { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: center; margin-top: var(--gap-section); padding: 0 var(--margin); }
+.plantao-texto { grid-column: 1 / 6; display: flex; flex-direction: column; gap: 20px; }
+.plantao-texto h2 { font-size: clamp(2rem, 1.2rem + 2.2vw, 3.25rem); line-height: 1.02; letter-spacing: -0.03em; }
+.plantao-texto a { font-weight: 500; text-underline-offset: 4px; }
+.plantao-foto { grid-column: 7 / -1; margin: 0; }
+.plantao-foto img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; clip-path: polygon(0 var(--tab-h), 24px var(--tab-h), 40px 0, 30% 0, calc(30% + 16px) var(--tab-h), 100% var(--tab-h), 100% 100%, 0 100%); }
+.plantao-foto figcaption { margin-top: 12px; font-size: var(--step-small); color: var(--tinta-2); }
+
+.pagina-erro .rodape-fim a { color: #fff; text-underline-offset: 4px; }
+
+/* movimento: o texto sobe em sequência, o carimbo bate na ficha e cada seção entra ao aparecer */
+@media (prefers-reduced-motion: no-preference) {
+  .sobe { animation: erro-sobe 720ms var(--ease-out) both; }
+  .erro-texto .sobe:nth-child(2) { animation-delay: 80ms; }
+  .erro-texto .sobe:nth-child(3) { animation-delay: 160ms; }
+  .erro-texto .sobe:nth-child(4) { animation-delay: 240ms; }
+  .erro-texto .sobe:nth-child(5) { animation-delay: 320ms; }
+  .erro-texto .sobe:nth-child(6) { animation-delay: 400ms; }
+  .ficha.sobe { animation-delay: 200ms; }
+  .ficha .carimbo { animation: erro-carimbo 520ms var(--ease-expo) 900ms both; }
+  .ficha.trocando .carimbo { animation: erro-carimbo 460ms var(--ease-expo) 120ms both; }
+  .ficha.trocando .ficha-foto img { animation: erro-foto 420ms var(--ease-out) both; }
+  .ficha-ipe .ficha-foto img { animation: erro-respira 6s var(--ease-in-out) infinite alternate; }
+
+  .anima .entra { opacity: 0; transform: translateY(28px); transition: opacity 640ms var(--ease-out), transform 640ms var(--ease-out); }
+  .anima .entra.visto { opacity: 1; transform: none; }
+}
+@keyframes erro-sobe { from { opacity: 0; transform: translateY(24px); } }
+@keyframes erro-carimbo { 0% { opacity: 0; transform: rotate(-30deg) scale(1.7); } 70% { opacity: 1; } 100% { opacity: 1; transform: rotate(-14deg) scale(1); } }
+@keyframes erro-foto { from { opacity: 0.2; transform: scale(1.05); } }
+@keyframes erro-respira { to { transform: scale(1.06) translateY(-1%); } }
+
+@media (max-width: 1100px) and (min-width: 761px) {
+  .erro-texto { grid-column: 1 / 8; }
+  .ficha { grid-column: 8 / -1; }
+  .prova-foto { grid-column: 1 / -1; }
+  .prova-texto { grid-column: 1 / -1; }
+  .plantao-texto { grid-column: 1 / 7; }
+}
+
+@media (max-width: 900px) {
+  .erro-nav a:not(.botao-linha) { display: none; }
+}
+
+@media (max-width: 760px) {
+  :root { --tab-h: 32px; }
+  .erro-topo { grid-template-columns: 1fr; gap: 0; padding-top: 40px; }
+  .erro-texto, .ficha { grid-column: 1; }
+  .erro-texto h1 { font-size: clamp(2.25rem, 10vw, 2.75rem); }
+  .erro-apoio { margin-top: 20px; }
+  .erro-acoes { margin-top: 32px; }
+  .erro-acoes .botao { flex: 1 1 100%; }
+  .erro-codigo { margin-top: 24px; }
+  .ficha { margin-top: calc(48px + var(--tab-h)); padding: 14px 14px 22px; }
+  .ficha-foto { aspect-ratio: 1; }
+  .carimbo { width: 92px; height: 92px; top: 14px; right: 14px; font-size: 0.75rem; }
+  .suspeitos-cab { grid-template-columns: 1fr; gap: 16px; }
+  .suspeitos-cab h2, .suspeitos-cab p { grid-column: 1; }
+  .fila { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
+  .suspeito span { padding: 10px 12px 14px; font-size: var(--step-body); }
+  .prova { grid-template-columns: 1fr; margin-left: 0; margin-right: 0; padding: 24px var(--margin) 40px; }
+  .prova-foto, .prova-texto { grid-column: 1; }
+  .plantao { grid-template-columns: 1fr; gap: 32px; }
+  .plantao-texto, .plantao-foto { grid-column: 1; }
+  .rodape-fim { flex-wrap: wrap; }
+}

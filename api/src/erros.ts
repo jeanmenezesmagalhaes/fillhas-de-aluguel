@@ -1,4 +1,6 @@
-import type { FastifyError, FastifyInstance } from 'fastify';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import type { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { ZodError } from 'zod';
 
 // Erro esperado da regra de negócio, com mensagem pronta para a tela.
@@ -27,8 +29,29 @@ export function violouUnico(err: unknown, restricao?: string): boolean {
   return false;
 }
 
-export function registrarTratamentoDeErros(app: FastifyInstance) {
-  app.setErrorHandler((err: FastifyError | ErroApi | ZodError, req, reply) => {
+// Quem abre uma tela no navegador (e não a API) recebe a página de erro do site, com o
+// status certo; fetch, curl e a própria API continuam recebendo o JSON.
+function querTela(req: FastifyRequest) {
+  return (
+    (req.method === 'GET' || req.method === 'HEAD') &&
+    !/^\/api(?:[/?]|$)/.test(req.url) &&
+    (req.headers.accept ?? '').includes('text/html')
+  );
+}
+
+async function paginaDeErro(reply: FastifyReply, site: string, status: 404 | 500) {
+  let html: Buffer;
+  try {
+    html = await readFile(join(site, `${status}.html`));
+  } catch {
+    return false;
+  }
+  await reply.status(status).header('cache-control', 'no-store').type('text/html; charset=utf-8').send(html);
+  return true;
+}
+
+export function registrarTratamentoDeErros(app: FastifyInstance, site: string | false = false) {
+  app.setErrorHandler(async (err: FastifyError | ErroApi | ZodError, req, reply) => {
     if (err instanceof ErroApi) {
       return reply.status(err.status).send({ erro: { codigo: err.codigo, mensagem: err.message, campos: err.campos } });
     }
@@ -49,10 +72,12 @@ export function registrarTratamentoDeErros(app: FastifyInstance) {
       return reply.status(status).send({ erro: { codigo: 'requisicao_invalida', mensagem: 'Não foi possível ler o pedido.' } });
     }
     req.log.error(err);
+    if (site && querTela(req) && (await paginaDeErro(reply, site, 500))) return reply;
     return reply.status(500).send({ erro: { codigo: 'erro_interno', mensagem: 'Algo deu errado do nosso lado. Tente de novo.' } });
   });
 
-  app.setNotFoundHandler((_req, reply) =>
-    reply.status(404).send({ erro: { codigo: 'nao_encontrado', mensagem: 'Endereço não encontrado.' } }),
-  );
+  app.setNotFoundHandler(async (req, reply) => {
+    if (site && querTela(req) && (await paginaDeErro(reply, site, 404))) return reply;
+    return reply.status(404).send({ erro: { codigo: 'nao_encontrado', mensagem: 'Endereço não encontrado.' } });
+  });
 }

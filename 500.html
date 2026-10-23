@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>Algo deu errado · Minha companhia</title>
+<link rel="preload" href="/fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/site.css">
+<link rel="stylesheet" href="/erro.css">
+</head>
+<body class="pagina-erro pagina-500">
+
+<header class="erro-barra">
+  <a class="marca" href="/"><svg viewBox="0 0 64 44" aria-hidden="true"><path d="M2 44 10 6h20l6 38z" fill="#f28cb1"/><path d="M26 44 34 0h20l8 44z" fill="#10251e"/></svg>minha companhia</a>
+  <nav class="erro-nav" aria-label="Principal"><a href="/busca">Encontrar profissional</a><a href="/pedidos">Meus pedidos</a><a class="botao-linha" href="/profissional">Área profissional</a></nav>
+</header>
+
+<main>
+  <section class="erro-topo" aria-labelledby="t-erro">
+    <div class="erro-texto">
+      <h1 id="t-erro" class="sobe">Nosso servidor tirou um cochilo.</h1>
+      <p class="erro-apoio sobe">Algo deu errado do nosso lado, não do seu. Espere alguns segundos e tente de novo.</p>
+      <div class="erro-acoes sobe">
+        <button class="botao" type="button" data-tentar>Tentar de novo</button>
+        <a class="botao escuro" href="/">Voltar ao início</a>
+      </div>
+      <p class="relogio sobe so-js" data-relogio aria-live="polite"><span data-relogio-texto>A gente tenta sozinho em <strong class="num" data-segundos>20</strong> segundos.</span> <button type="button" class="link" data-parar>Não tentar sozinho</button></p>
+      <p class="aviso sobe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5z" fill="currentColor"/><path d="M12 7v6M12 16.5v.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg><span>Estava enviando um pedido ou pagando? Antes de enviar de novo, confira em <a href="/pedidos">Meus pedidos</a> se ele já chegou.</span></p>
+      <p class="erro-codigo sobe">Erro 500: falha no servidor.</p>
+    </div>
+
+    <figure class="ficha ficha-ipe sobe">
+      <span class="aba vazia" aria-hidden="true"></span>
+      <div class="ficha-foto">
+        <img src="/assets/caes-cochilo.webp" width="1400" height="1050" alt="Filhote caramelo dormindo com a cabeça apoiada numa almofada" style="object-position: 30% 60%">
+        <span class="carimbo" aria-hidden="true">Dormindo</span>
+      </div>
+      <figcaption class="ficha-texto">
+        <strong>Pipoca, responsável pelo servidor</strong>
+        <span>Disse que ia fechar os olhos só por um minutinho.</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="plantao" aria-labelledby="t-plantao">
+    <div class="plantao-texto">
+      <h2 id="t-plantao">A equipe de plantão já foi chamada.</h2>
+      <p>O erro ficou registrado e chega para quem cuida do site. Se continuar depois de alguns minutos, escreva para <a href="mailto:ajuda@minhacompanhia.com.br?subject=Erro%20no%20site">ajuda@minhacompanhia.com.br</a> contando o que você estava fazendo.</p>
+    </div>
+    <figure class="plantao-foto">
+      <img src="/assets/caes-plantao.webp" width="1200" height="900" loading="lazy" alt="Filhotes dormindo amontoados uns sobre os outros">
+      <figcaption>A equipe de plantão, acordando.</figcaption>
+    </figure>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="blocos" aria-hidden="true"><span style="height:100%;background:#f28cb1" data-l="m"></span><span style="height:78%;background:#f2c94c" data-l="i"></span><span style="height:92%;background:#dce8e0" data-l="n"></span><span style="height:64%;background:#ffffff" data-l="h"></span><span style="height:86%;background:#f28cb1" data-l="a"></span><span class="espaco"></span><span style="height:72%;background:#f2c94c" data-l="c"></span><span style="height:100%;background:#dce8e0" data-l="o"></span><span style="height:76%;background:#ffffff" data-l="m"></span><span style="height:90%;background:#f28cb1" data-l="p"></span><span style="height:68%;background:#f2c94c" data-l="a"></span><span style="height:76%;background:#dce8e0" data-l="n"></span><span style="height:84%;background:#ffffff" data-l="h"></span><span style="height:100%;background:#f28cb1" data-l="i"></span><span style="height:70%;background:#f2c94c" data-l="a"></span></div>
+  <p class="vh">Minha companhia</p>
+  <p class="creditos">Fotos: “A puppy sleeps”, de Jami430 (<a href="https://commons.wikimedia.org/w/index.php?curid=56316101">CC BY-SA 4.0</a>) e “Cute puppies sleeping in puppy pile”, de vaishaliagola27 (<a href="https://wordpress.org/photos/photo/505645b866/">CC0, WordPress Photo Directory</a>). Os nomes são brincadeira nossa.</p>
+  <div class="rodape-fim"><span>Minha companhia · 2026</span><a href="/">Voltar ao início</a></div>
+</footer>
+<script src="/erro.js" defer></script>
+</body>
+</html>
